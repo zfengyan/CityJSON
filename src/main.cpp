@@ -81,9 +81,10 @@ int main(int argc, const char* argv[]) {
     }
 
     //-- write to disk the modified city model (myfile.city.json)
-    //std::ofstream o("myfile.city.json");
-    //o << j.dump(2) << std::endl;
-    //o.close();
+    std::string writefilename = "/testwrite.json";
+    std::ofstream o(DATA_PATH + writefilename);
+    o << j.dump(2) << std::endl;
+    o.close();
 
    
     return 0;
