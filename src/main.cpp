@@ -29,20 +29,19 @@
 +------------------------------------------------------------------------------+
 */
 
+
 #include <iostream>
 #include <fstream>
 #include <string>
 #include "json.hpp"
 
-using json = nlohmann::json;
 
+using json = nlohmann::json;
 
 
 int   get_no_roof_surfaces(json& j);
 void  list_all_vertices(json& j);
 void  visit_roofsurfaces(json& j);
-
-
 
 
 int main(int argc, const char* argv[]) {
@@ -54,8 +53,8 @@ int main(int argc, const char* argv[]) {
     input.close();
 
     //-- get total number of RoofSurface in the file
-    // int noroofsurfaces = get_no_roof_surfaces(j);
-    // std::cout << "Total RoofSurface: " << noroofsurfaces << std::endl;
+    int noroofsurfaces = get_no_roof_surfaces(j); // depends on the geometry type: Multisurface, solid...
+    std::cout << "Total RoofSurface: " << noroofsurfaces << '\n';
 
     // list_all_vertices(j);
 
@@ -68,10 +67,10 @@ int main(int argc, const char* argv[]) {
             nobuildings += 1;
         }
     }
-    std::cout << "There are " << nobuildings << " Buildings in the file" << std::endl;
+    std::cout << "There are " << nobuildings << " Buildings in the file" << '\n';
 
     //-- print out the number of vertices in the file
-    std::cout << "Number of vertices " << j["vertices"].size() << std::endl;
+    std::cout << "Number of vertices " << j["vertices"].size() << '\n';
 
     //-- add an attribute "volume"
     for (auto& co : j["CityObjects"]) {
@@ -81,10 +80,10 @@ int main(int argc, const char* argv[]) {
     }
 
     //-- write to disk the modified city model (myfile.city.json)
-    std::string writefilename = "/testwrite.json";
+    /*std::string writefilename = "/testwrite.json";
     std::ofstream o(DATA_PATH + writefilename);
     o << j.dump(2) << std::endl;
-    o.close();
+    o.close();*/
 
    
     return 0;
@@ -93,6 +92,7 @@ int main(int argc, const char* argv[]) {
 
 // Visit every 'RoofSurface' in the CityJSON model and output its geometry (the arrays of indices)
 // Useful to learn to visit the geometry boundaries and at the same time check their semantics.
+// A city json object can contain several city objects, each city object may have ONE geometry
 void visit_roofsurfaces(json& j) {
     for (auto& co : j["CityObjects"].items()) {
         for (auto& g : co.value()["geometry"]) {
@@ -116,7 +116,7 @@ int get_no_roof_surfaces(json& j) {
     int total = 0;
     for (auto& co : j["CityObjects"].items()) {
         for (auto& g : co.value()["geometry"]) {
-            if (g["type"] == "Solid") {
+            if (g["type"] == "MultiSurface") { // Solid
                 for (auto& shell : g["semantics"]["values"]) {
                     for (auto& s : shell) {
                         if (g["semantics"]["surfaces"][s.get<int>()]["type"].get<std::string>().compare("RoofSurface") == 0) {
@@ -125,8 +125,8 @@ int get_no_roof_surfaces(json& j) {
                     }
                 }
             }
-        }
-    }
+        } // end for: geometry
+    } // end for: CityObjects
     return total;
 }
 
