@@ -41,7 +41,9 @@ using json = nlohmann::json;
 
 int   get_no_roof_surfaces(json& j);
 void  list_all_vertices(json& j);
-void  visit_roofsurfaces(json& j);
+void  Hugo_visit_roofsurfaces(json& j);
+
+void visit_roofsurfaces(json& j);
 
 
 int main(int argc, const char* argv[]) {
@@ -93,37 +95,86 @@ int main(int argc, const char* argv[]) {
 // Visit every 'RoofSurface' in the CityJSON model and output its geometry (the arrays of indices)
 // Useful to learn to visit the geometry boundaries and at the same time check their semantics.
 // A city json object can contain several city objects, each city object may have ONE geometry
-void visit_roofsurfaces(json& j) {
-    for (auto& co : j["CityObjects"].items()) {
-        for (auto& g : co.value()["geometry"]) {
-            if (g["type"] == "Solid") {
-                for (int i = 0; i < g["boundaries"].size(); i++) {
-                    for (int j = 0; j < g["boundaries"][i].size(); j++) {
+void Hugo_visit_roofsurfaces(json& j) {
+    for (auto& co : j["CityObjects"].items()) { // each city object 
+        
+        for (auto& g : co.value()["geometry"]) { // each city object may only have ONE geometry
+            
+            if (g["type"] == "MultiSurface") { // type of geometry, may be multisurface, solid... 
+                
+                for (int i = 0; i < g["boundaries"].size(); i++) { // index of each primitive in "boundaries"
+                   
+                    for (int j = 0; j < g["boundaries"][i].size(); j++) { // for each primitive in "boundaries"
                         int sem_index = g["semantics"]["values"][i][j];
+                        
                         if (g["semantics"]["surfaces"][sem_index]["type"].get<std::string>().compare("RoofSurface") == 0) {
-                            std::cout << "RoofSurface: " << g["boundaries"][i][j] << std::endl;
+                            std::cout << "RoofSurface: " << g["boundaries"][i][j] << '\n';
                         }
-                    }
-                }
-            }
-        }
-    }
+                    } // end for: each primitive
+                } // end for: index of each primitive
+            } // end if
+        } // end for: each geometry
+    } // end for: each city object
+}
+
+
+// Visit every 'RoofSurface' in the CityJSON model and output its geometry (the arrays of indices)
+// Useful to learn to visit the geometry boundaries and at the same time check their semantics.
+void visit_roofsurfaces(json& j) {
+    for (auto& co : j["CityObjects"].items()) { // each city object 
+
+        for (auto& g : co.value()["geometry"]) { // each city object may only have ONE geometry
+
+            if (g["type"] == "MultiSurface") { // type of geometry, may be multisurface, solid... 
+
+                for (int i = 0; i < g["boundaries"].size(); i++) { // index of each primitive in "boundaries"
+					int semantic_index = g["semantics"]["values"][i];
+
+					if (g["semantics"]["surfaces"][semantic_index]["type"].get<std::string>().compare("RoofSurface") == 0) {
+                        if (g["boundaries"][i].size() == 1) // no inner face
+                        {
+                            std::cout << "RoofSurface index in boundaries: " << i << " ";
+                            std::cout << "RoofSurface: " << " ";
+
+                            // print the surface list
+                            int Noneface = (int)g["boundaries"][i][0].size();
+                            std::cout << "[ [ ";
+                            for (int j = 0; j != Noneface - 1; ++j) // except for the last element
+                            {
+                                std::cout << g["boundaries"][i][0][j] << ", ";
+                            }
+                            std::cout << g["boundaries"][i][0][Noneface - 1] << " ] ]" << '\n'; // print the last element
+                        }
+                        else {
+                            std::cout << "The RoofSurface: " << i << " contains inner face" << '\n';
+                        } // end else
+                        
+					} // end if: if the current surface belongs to "RoofSurface"
+
+                } // end for: index of each primitive
+            } // end if
+        } // end for: each geometry
+    } // end for: each city object
 }
 
 
 // Returns the number of 'RooSurface' in the CityJSON model
 int get_no_roof_surfaces(json& j) {
     int total = 0;
-    for (auto& co : j["CityObjects"].items()) {
-        for (auto& g : co.value()["geometry"]) {
-            if (g["type"] == "MultiSurface") { // Solid
+    for (auto& co : j["CityObjects"].items()) { // for each city object
+        
+        for (auto& g : co.value()["geometry"]) { // each city object can only have one geometry
+            
+            if (g["type"] == "MultiSurface") { // type of geometry, may be multisurface, solid...
+                
                 for (auto& shell : g["semantics"]["values"]) {
+                    
                     for (auto& s : shell) {
                         if (g["semantics"]["surfaces"][s.get<int>()]["type"].get<std::string>().compare("RoofSurface") == 0) {
                             total += 1;
                         }
                     }
-                }
+                } // end for: each item in "values" array
             }
         } // end for: geometry
     } // end for: CityObjects
