@@ -58,11 +58,16 @@ public:
 		{
 			/*
 			* each v_each_triangulated_face: [vertex1, vertex2, vertex3]
-			* oriented: CCW or CW? each face is the same orientation
+			* oriented: CCW or CW but faces must be the same orientation
 			*/
 			sum_det += calculate_determinant(v_each_triangulated_face[0], v_each_triangulated_face[1], v_each_triangulated_face[2]);
 		}
 
+		/*
+		* because absolute value is used in the fomula
+		* the orientation of each triangulated face can be CCW or CW
+		* but all the faces' orientations should be associated(all CCW or all CW)
+		*/
 		return one_six * abs(sum_det); // (1/6)*|sum_det|
 	}
 };
