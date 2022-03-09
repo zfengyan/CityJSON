@@ -47,9 +47,82 @@ void  list_all_vertices(json& j);
 void visit_roofsurfaces(json& j);
 
 
+namespace volume {
+
+    /*
+    * calculate the volume of each building object(building object is one kind of city object)
+    * in one json file(in one json object)
+    * geometry type: MultiSurface
+    */
+    void calculate_volume_json_object(json& j)
+    {
+        /*
+        * store the 3 vertices for a single triangulated face:
+        * std::vector<Vertex> v_each_triangulated_face
+        * each element : v1, v2, v3, type: Vertex
+        *
+        * store all the vertices for a single solid
+        * std::vector<std::vector<Vertex>> v_one_solid
+        * each element: [v1, v2, v3] -- a vector contains 3 vertices
+        */
+
+        /*
+        * define vectors
+        ***************************************************/
+
+        std::vector<Vertex> v_each_triangulated_face;
+        v_each_triangulated_face.reserve(3); // maintain 3 elements
+
+        std::vector<std::vector<Vertex>> v_one_solid;
+
+        // result -- finally needs to be removed
+        std::vector<double> volume_results;
+
+        /**************************************************/
+
+
+        /*
+        * get the vertices with their ACTUAL coordinates
+        * store all the vertices of each building object
+        * calculate the volume of each building
+        * store all the results in vector volume_results -- needs to be removed finally
+        * write the calculated volume to the attributes of each building -- under construction
+        ***************************************************/
+
+        for (auto& co : j["CityObjects"].items()) {
+            std::cout << "CityObject: " << co.key() << '\n';
+            for (auto& g : co.value()["geometry"]) {
+                if (g["type"] == "MultiSurface") { // geometry type
+                    for (auto& shell : g["boundaries"]) {
+                        for (auto& surface : shell) {
+                            for (auto& ring : surface) {
+                                //std::cout << "---" << std::endl;
+                                for (auto& v : ring) {
+                                    std::vector<int> vi = j["vertices"][v.get<int>()];
+                                    double x = (vi[0] * j["transform"]["scale"][0].get<double>()) + j["transform"]["translate"][0].get<double>();
+                                    double y = (vi[1] * j["transform"]["scale"][1].get<double>()) + j["transform"]["translate"][1].get<double>();
+                                    double z = (vi[2] * j["transform"]["scale"][2].get<double>()) + j["transform"]["translate"][2].get<double>();
+                                    std::cout << v << " (" << x << ", " << y << ", " << z << ")" << '\n';
+
+                                    // store the 3 vertices of each triangulated face
+                                    v_each_triangulated_face.emplace_back(Vertex(x, y, z));
+                                } // end for: xyz coordinates of each vertex of one triangulated face
+
+
+                            } // end for: each item: index e1, e2, e3
+                        } // end for: each item: [e1, e2, e3]
+                    } // end for: each item( [[e1, e2, e3]] ) in "boundaries"
+                } // end if: MultiSurface
+            } // end for: each item in geometry
+        } // end for: each item in city object
+    }
+
+}
+
+
 int main(int argc, const char* argv[]) {
     //-- reading the file with nlohmann json: https://github.com/nlohmann/json  
-    std::string filename = "/cube.json";
+    std::string filename = "/cube.triangulated.json";
     std::ifstream input(DATA_PATH + filename);
     json j;
     input >> j;
@@ -120,7 +193,7 @@ int main(int argc, const char* argv[]) {
 
     one_solid.emplace_back(each_triangulated_face);
 
-    double volume_one_solid = Volume::calculate_volume(one_solid);
+    double volume_one_solid = Volume::calculate_volume_one_solid(one_solid);
     std::cout << "volume of one solid: " << volume_one_solid << '\n';
 
     //-- write to disk the modified city model (myfile.city.json)
@@ -129,6 +202,8 @@ int main(int argc, const char* argv[]) {
     o << j.dump(2) << std::endl;
     o.close();*/
 
+    std::cout << "vertices: " << '\n';
+    volume::calculate_volume_json_object(j);
    
     return 0;
 }
@@ -249,6 +324,10 @@ void list_all_vertices(json& j) {
         }
     }
 }
+
+
+
+
 
 
 
