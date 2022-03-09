@@ -45,11 +45,24 @@ public:
 			v1.x * v3.y * v2.z;
 	}
 
-	// calculate the "volume" of each (triangulated)face
-	static double calculate_volume_each_triangulated_face(
-		Vertex& v1, Vertex& v2, Vertex& v3)
+	/*
+	* calculate the "volume" of each solid
+	* Vertices_one_solid: [[v1, v2, v3], [v4, v5, v6], ... []]
+	*/
+	static double calculate_volume(
+		std::vector<std::vector<Vertex>>& Vertices_one_solid)
 	{
-		double det = calculate_determinant(v1, v2, v3);
-		return one_six * abs(det);
+		double sum_det = 0;
+
+		for (auto& v_each_triangulated_face : Vertices_one_solid)
+		{
+			/*
+			* each v_each_triangulated_face: [vertex1, vertex2, vertex3]
+			* oriented: CCW or CW? each face is the same orientation
+			*/
+			sum_det += calculate_determinant(v_each_triangulated_face[0], v_each_triangulated_face[1], v_each_triangulated_face[2]);
+		}
+
+		return one_six * abs(sum_det); // (1/6)*|sum_det|
 	}
 };
