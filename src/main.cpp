@@ -33,15 +33,16 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 #include "json.hpp"
-
+#include "calculation.hpp"
 
 using json = nlohmann::json;
 
 
 int   get_no_roof_surfaces(json& j);
 void  list_all_vertices(json& j);
-void  Hugo_visit_roofsurfaces(json& j);
+// void  Hugo_visit_roofsurfaces(json& j);
 
 void visit_roofsurfaces(json& j);
 
@@ -80,6 +81,16 @@ int main(int argc, const char* argv[]) {
             co["attributes"]["volume"] = rand();
         }
     }
+
+    //std::cout << "list all vertices" << '\n';
+    //list_all_vertices(j);
+
+    /*
+    * test determinant calculation
+    */
+    Vertex v1(1, 1, 0), v2(0, 1, 0), v3(0, 1, 1);
+    double d = Volume::calculate_volume_each_triangulated_face(v1, v2, v3);
+    std::cout << "volume of each triangulated face: " << d << '\n';
 
     //-- write to disk the modified city model (myfile.city.json)
     /*std::string writefilename = "/testwrite.json";
@@ -188,7 +199,7 @@ void list_all_vertices(json& j) {
     for (auto& co : j["CityObjects"].items()) {
         std::cout << "= CityObject: " << co.key() << std::endl;
         for (auto& g : co.value()["geometry"]) {
-            if (g["type"] == "Solid") {
+            if (g["type"] == "MultiSurface") { // geometry type
                 for (auto& shell : g["boundaries"]) {
                     for (auto& surface : shell) {
                         for (auto& ring : surface) {
@@ -207,4 +218,6 @@ void list_all_vertices(json& j) {
         }
     }
 }
+
+
 
