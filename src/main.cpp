@@ -146,13 +146,15 @@ namespace volume {
             std::cout << v_one_solid.size() << '\n';
             for (auto& v_tuple : v_one_solid)
             {
-                for (auto& v : v_tuple)
+                for (auto& v : v_tuple) // v_tuple: [v1, v2, v3] -- a triangulated surface
                 {
                     std::cout << " id: " << v.vid << " ";
                     std::cout << " (" << v.x << ", " << v.y << ", " << v.z << ")";
                 }
                 std::cout << '\n';
             }
+            double volume_one_solid = Volume::calculate_volume_one_solid(v_one_solid);
+            std::cout << "volume of one solid: " << volume_one_solid << '\n';
             v_one_solid.clear();
 
         } // end for: each item in building object
