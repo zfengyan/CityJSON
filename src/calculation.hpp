@@ -10,11 +10,13 @@ struct Vertex {
 	double y;
 	double z;
 
-	Vertex() :
-		x(0), y(0), z(0){}
+	int vid;
 
-	Vertex(double X, double Y, double Z) :
-		x(X), y(Y), z(Z) {}
+	Vertex() :
+		x(0), y(0), z(0), vid(0){}
+
+	Vertex(double X, double Y, double Z, int id) :
+		x(X), y(Y), z(Z), vid(id){}
 };
 
 

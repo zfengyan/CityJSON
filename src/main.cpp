@@ -94,27 +94,69 @@ namespace volume {
             for (auto& g : co.value()["geometry"]) {
                 if (g["type"] == "MultiSurface") { // geometry type
                     for (auto& shell : g["boundaries"]) {
+
+                        /*
+                        * for each triangulated surface
+                        */
                         for (auto& surface : shell) {
+                            //std::cout << "---" << '\n';
+                         
+                            /*
+                            * each shell: [[v1, v2, v3]] -- without inner ring
+                            * each surface in each shell: [v1, v2, v3]
+                            * each ring: v1, v2, v3
+                            */
                             for (auto& ring : surface) {
-                                //std::cout << "---" << std::endl;
-                                for (auto& v : ring) {
+                                
+                                // v = ring? why a v:ring for loop
+                                for (auto& v : ring) { 
                                     std::vector<int> vi = j["vertices"][v.get<int>()];
                                     double x = (vi[0] * j["transform"]["scale"][0].get<double>()) + j["transform"]["translate"][0].get<double>();
                                     double y = (vi[1] * j["transform"]["scale"][1].get<double>()) + j["transform"]["translate"][1].get<double>();
                                     double z = (vi[2] * j["transform"]["scale"][2].get<double>()) + j["transform"]["translate"][2].get<double>();
-                                    std::cout << v << " (" << x << ", " << y << ", " << z << ")" << '\n';
+                                    //std::cout << v << " (" << x << ", " << y << ", " << z << ")" << '\n';
 
                                     // store the 3 vertices of each triangulated face
-                                    v_each_triangulated_face.emplace_back(Vertex(x, y, z));
-                                } // end for: xyz coordinates of each vertex of one triangulated face
+                                    // x, y, z, vid
+                                    v_each_triangulated_face.emplace_back(Vertex(x, y, z, v));
+                                } // end for: xyz coordinates of one vertex
 
+                            } // end for: each triangulated surface
 
-                            } // end for: each item: index e1, e2, e3
+                            /*
+                            * add the 3 vertices vector to the one_solid vector
+                            * clear the items in the 3 vertices vector
+                            */
+                            v_one_solid.emplace_back(v_each_triangulated_face);
+                            v_each_triangulated_face.clear();
+
                         } // end for: each item: [e1, e2, e3]
+
                     } // end for: each item( [[e1, e2, e3]] ) in "boundaries"
+
                 } // end if: MultiSurface
+
             } // end for: each item in geometry
-        } // end for: each item in city object
+
+
+            /* print all vertices for one building object
+            * process them
+            * clear -- v_one_solid store the vertices for one solid each
+            */
+            std::cout << v_one_solid.size() << '\n';
+            for (auto& v_tuple : v_one_solid)
+            {
+                for (auto& v : v_tuple)
+                {
+                    std::cout << " id: " << v.vid << " ";
+                    std::cout << " (" << v.x << ", " << v.y << ", " << v.z << ")";
+                }
+                std::cout << '\n';
+            }
+            v_one_solid.clear();
+
+        } // end for: each item in building object
+
     }
 
 }
@@ -166,8 +208,8 @@ int main(int argc, const char* argv[]) {
 
     std::vector<std::vector<Vertex>> one_solid;
 
-    Vertex v1(3, 3, 0), v2(2, 3, 4);
-    Vertex v3(3, 2, 4), v4(3, 3, 4);
+    Vertex v1(3, 3, 0, 0), v2(2, 3, 4, 1);
+    Vertex v3(3, 2, 4, 2), v4(3, 3, 4, 3);
     
     each_triangulated_face.emplace_back(v1);
     each_triangulated_face.emplace_back(v2);
