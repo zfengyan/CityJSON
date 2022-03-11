@@ -42,9 +42,8 @@ using json = nlohmann::json;
 
 int   get_no_roof_surfaces(json& j);
 void  list_all_vertices(json& j);
-// void  Hugo_visit_roofsurfaces(json& j);
+void  visit_roofsurfaces(json& j);
 
-void visit_roofsurfaces(json& j);
 
 
 namespace volume {
@@ -57,13 +56,15 @@ namespace volume {
     void calculate_volume_json_object(json& j)
     {
         /*
-        * store the 3 vertices for a single triangulated face:
         * std::vector<Vertex> v_each_triangulated_face
-        * each element : v1, v2, v3, type: Vertex
+        * --> [v1, v2, v3]
+        * --> store the 3 vertices for a single triangulated face:
+        * --> each element : v1, v2, v3, type: Vertex
         *
-        * store all the vertices for a single solid
         * std::vector<std::vector<Vertex>> v_one_solid
-        * each element: [v1, v2, v3] -- a vector contains 3 vertices
+        * --> [[v1, v2, v3], [v4, v5, v6] ... [vn, vn+1, vn+2]]
+        * --> store all the triangulated_faces for a single solid
+        * --> each element: [v1, v2, v3] -- a vector contains 3 vertices
         */
 
         /*
@@ -166,7 +167,7 @@ namespace volume {
 
 int main(int argc, const char* argv[]) {
     //-- reading the file with nlohmann json: https://github.com/nlohmann/json  
-    std::string filename = "/cube.triangulated.json";
+    std::string filename = "/cube.json";
     std::ifstream input(DATA_PATH + filename);
     json j;
     input >> j;
@@ -199,12 +200,13 @@ int main(int argc, const char* argv[]) {
         }
     }
 
-    //std::cout << "list all vertices" << '\n';
-    //list_all_vertices(j);
+    std::cout << "list all vertices" << '\n';
+    list_all_vertices(j);
 
     /*
     * test determinant calculation
-    */
+    ***************************************************/
+
     std::vector<Vertex> each_triangulated_face;
     each_triangulated_face.reserve(3);
 
@@ -240,14 +242,16 @@ int main(int argc, const char* argv[]) {
     double volume_one_solid = Volume::calculate_volume_one_solid(one_solid);
     std::cout << "volume of one solid: " << volume_one_solid << '\n';
 
+    /***************************************************/
+
     //-- write to disk the modified city model (myfile.city.json)
     /*std::string writefilename = "/testwrite.json";
     std::ofstream o(DATA_PATH + writefilename);
     o << j.dump(2) << std::endl;
     o.close();*/
 
-    std::cout << "vertices: " << '\n';
-    volume::calculate_volume_json_object(j);
+    //std::cout << "vertices: " << '\n';
+    //volume::calculate_volume_json_object(j);
    
     return 0;
 }
@@ -256,12 +260,12 @@ int main(int argc, const char* argv[]) {
 // Visit every 'RoofSurface' in the CityJSON model and output its geometry (the arrays of indices)
 // Useful to learn to visit the geometry boundaries and at the same time check their semantics.
 // A city json object can contain several city objects, each city object may have ONE geometry
-void Hugo_visit_roofsurfaces(json& j) {
+void visit_roofsurfaces(json& j) {
     for (auto& co : j["CityObjects"].items()) { // each city object 
         
         for (auto& g : co.value()["geometry"]) { // each city object may only have ONE geometry
             
-            if (g["type"] == "MultiSurface") { // type of geometry, may be multisurface, solid... 
+            if (g["type"] == "Solid") { // type of geometry, may be multisurface, solid... 
                 
                 for (int i = 0; i < g["boundaries"].size(); i++) { // index of each primitive in "boundaries"
                    
@@ -279,46 +283,6 @@ void Hugo_visit_roofsurfaces(json& j) {
 }
 
 
-// Visit every 'RoofSurface' in the CityJSON model and output its geometry (the arrays of indices)
-// Useful to learn to visit the geometry boundaries and at the same time check their semantics.
-void visit_roofsurfaces(json& j) {
-    for (auto& co : j["CityObjects"].items()) { // each city object 
-
-        for (auto& g : co.value()["geometry"]) { // each city object may only have ONE geometry
-
-            if (g["type"] == "MultiSurface") { // type of geometry, may be multisurface, solid... 
-
-                for (int i = 0; i < g["boundaries"].size(); i++) { // index of each primitive in "boundaries"
-					int semantic_index = g["semantics"]["values"][i];
-
-					if (g["semantics"]["surfaces"][semantic_index]["type"].get<std::string>().compare("RoofSurface") == 0) {
-                        if (g["boundaries"][i].size() == 1) // no inner face
-                        {
-                            std::cout << "RoofSurface index in boundaries: " << i << " ";
-                            std::cout << "RoofSurface: " << " ";
-
-                            // print the surface list
-                            int Noneface = (int)g["boundaries"][i][0].size();
-                            std::cout << "[ [ ";
-                            for (int j = 0; j != Noneface - 1; ++j) // except for the last element
-                            {
-                                std::cout << g["boundaries"][i][0][j] << ", ";
-                            }
-                            std::cout << g["boundaries"][i][0][Noneface - 1] << " ] ]" << '\n'; // print the last element
-                        }
-                        else {
-                            std::cout << "The RoofSurface: " << i << " contains inner face" << '\n';
-                        } // end else
-                        
-					} // end if: if the current surface belongs to "RoofSurface"
-
-                } // end for: index of each primitive
-            } // end if
-        } // end for: each geometry
-    } // end for: each city object
-}
-
-
 // Returns the number of 'RooSurface' in the CityJSON model
 int get_no_roof_surfaces(json& j) {
     int total = 0;
@@ -326,7 +290,7 @@ int get_no_roof_surfaces(json& j) {
         
         for (auto& g : co.value()["geometry"]) { // each city object can only have one geometry
             
-            if (g["type"] == "MultiSurface") { // type of geometry, may be multisurface, solid...
+            if (g["type"] == "Solid") { // type of geometry, may be multisurface, solid...
                 
                 for (auto& shell : g["semantics"]["values"]) {
                     
@@ -349,7 +313,7 @@ void list_all_vertices(json& j) {
     for (auto& co : j["CityObjects"].items()) {
         std::cout << "= CityObject: " << co.key() << std::endl;
         for (auto& g : co.value()["geometry"]) {
-            if (g["type"] == "MultiSurface") { // geometry type
+            if (g["type"] == "Solid") { // geometry type: Solid
                 for (auto& shell : g["boundaries"]) {
                     for (auto& surface : shell) {
                         for (auto& ring : surface) {
