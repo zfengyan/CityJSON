@@ -113,13 +113,6 @@ namespace volume {
                 volume_dictionary.insert(std::pair<std::string, double>(co.key(), 0));
             }
         }
-        
-        // test
-        std::map<std::string, double>::iterator it;
-        for (it = volume_dictionary.begin(); it != volume_dictionary.end(); ++it)
-        {
-            std::cout << it->first << " " << it->second << '\n';
-        }
 
         /***********************************************************************************/
 
