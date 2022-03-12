@@ -157,7 +157,8 @@ namespace volume {
 
 
 
-            /* print all vertices for one building object
+            /* 
+            * print all vertices for one building object
             * process them
             * clear -- v_one_solid store the vertices for one solid each
             ***************************************************/
