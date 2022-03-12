@@ -49,9 +49,23 @@ void  visit_roofsurfaces(json& j);
 namespace volume {
 
     /*
-    * calculate the volume of each building object(building object is one kind of city object)
-    * in one json file(in one json object)
-    * geometry type: MultiSurface
+    * Function: 
+    * calculate the volume of each Building object(building object is one kind of city object)
+    * 
+    * !NB!: 
+    * sum up all the volumes of children(BuildingPart) of one Building
+    * and add to the parent Building's attributes list
+    * 
+    * !NB!: 
+    * each Building object may have several childen, type of children: BuildingPart
+    * 
+    * !NB!: 
+    * in myfile.city.json, Building object's geometry is a null list: 
+    * "geometry": [] -- need to verify if this is for all Building objects
+    * 
+    * geometry type of BuildingPart: 
+    
+    * Solid(array depth: 4)
     */
     void calculate_volume_json_object(json& j)
     {
@@ -166,20 +180,23 @@ namespace volume {
 
 
 int main(int argc, const char* argv[]) {
+    
+    /*
+    * from teacher
+    ***********************************************************************************/
+
     //-- reading the file with nlohmann json: https://github.com/nlohmann/json  
-    std::string filename = "/cube.json";
+    std::string filename = "/myfile.city.json";
     std::ifstream input(DATA_PATH + filename);
     json j;
     input >> j;
     input.close();
 
     //-- get total number of RoofSurface in the file
-    int noroofsurfaces = get_no_roof_surfaces(j); // depends on the geometry type: Multisurface, solid...
-    std::cout << "Total RoofSurface: " << noroofsurfaces << '\n';
+    // int noroofsurfaces = get_no_roof_surfaces(j); // depends on the geometry type: Multisurface, solid...
+    // std::cout << "Total RoofSurface: " << noroofsurfaces << '\n';
 
-    // list_all_vertices(j);
-
-    visit_roofsurfaces(j);
+    //visit_roofsurfaces(j);
 
     //-- print out the number of Buildings in the file
     int nobuildings = 0;
@@ -190,22 +207,40 @@ int main(int argc, const char* argv[]) {
     }
     std::cout << "There are " << nobuildings << " Buildings in the file" << '\n';
 
+    // juedge geometry 
+    int ngeometry = 0;
+    for (auto& co : j["CityObjects"]) { // each city object 
+		if (co["type"] == "Building") {
+			std::cout << co["geometry"].size() << " ";
+		}        
+    }
+
     //-- print out the number of vertices in the file
     std::cout << "Number of vertices " << j["vertices"].size() << '\n';
 
     //-- add an attribute "volume"
-    for (auto& co : j["CityObjects"]) {
+    /*for (auto& co : j["CityObjects"]) {
         if (co["type"] == "Building") {
             co["attributes"]["volume"] = rand();
         }
-    }
+    }*/
 
-    std::cout << "list all vertices" << '\n';
-    list_all_vertices(j);
+    //std::cout << "list all vertices" << '\n';
+    //list_all_vertices(j);
+
+    //-- write to disk the modified city model (myfile.city.json)
+    /*std::string writefilename = "/testwrite.json";
+    std::ofstream o(DATA_PATH + writefilename);
+    o << j.dump(2) << std::endl;
+    o.close();*/
+
+    /**********************************************************************************/
+
+
 
     /*
     * test determinant calculation
-    ***************************************************/
+    ***********************************************************************************/
 
     std::vector<Vertex> each_triangulated_face;
     each_triangulated_face.reserve(3);
@@ -242,14 +277,9 @@ int main(int argc, const char* argv[]) {
     double volume_one_solid = Volume::calculate_volume_one_solid(one_solid);
     std::cout << "volume of one solid: " << volume_one_solid << '\n';
 
-    /***************************************************/
+    /**********************************************************************************/
 
-    //-- write to disk the modified city model (myfile.city.json)
-    /*std::string writefilename = "/testwrite.json";
-    std::ofstream o(DATA_PATH + writefilename);
-    o << j.dump(2) << std::endl;
-    o.close();*/
-
+    
     //std::cout << "vertices: " << '\n';
     //volume::calculate_volume_json_object(j);
    
