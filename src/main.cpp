@@ -61,11 +61,13 @@ namespace volume {
     * 
     * !NB!: 
     * in myfile.city.json, Building object's geometry is a null list: 
-    * "geometry": [] -- need to verify if this is for all Building objects
+    * "geometry": []
     * 
     * geometry type of BuildingPart: 
-    
     * Solid(array depth: 4)
+    * 
+    * array depth of "values"(in "geometry" -> "semantics" -> "values"):
+    * (array depth of Solid) - 2 = 2
     */
     void calculate_volume_json_object(json& j)
     {
@@ -83,31 +85,30 @@ namespace volume {
 
         /*
         * define vectors
-        ***************************************************/
+        ************************************************************************************/
 
         std::vector<Vertex> v_each_triangulated_face;
         v_each_triangulated_face.reserve(3); // maintain 3 elements
 
         std::vector<std::vector<Vertex>> v_one_solid;
 
-        // result -- finally needs to be removed
-        std::vector<double> volume_results;
-
-        /**************************************************/
+        /***********************************************************************************/
 
 
         /*
         * get the vertices with their ACTUAL coordinates
-        * store all the vertices of each building object
-        * calculate the volume of each building
-        * store all the results in vector volume_results -- needs to be removed finally
-        * write the calculated volume to the attributes of each building -- under construction
-        ***************************************************/
+        * store all the vertices of each BuildingPart object
+        * 
+        * calculate the volume of each building(sum up all BuildingParts)
+        * 
+        * write the calculated volume to the attributes of each building
+         ************************************************************************************/
 
         for (auto& co : j["CityObjects"].items()) {
-            std::cout << "CityObject: " << co.key() << '\n';
+            std::cout << "CityObject: " << co.key() << " ";
+            std::cout << "Object type: " << co.value()["type"] << '\n';
             for (auto& g : co.value()["geometry"]) {
-                if (g["type"] == "MultiSurface") { // geometry type
+                if (g["type"] == "Solid") { // geometry type
                     for (auto& shell : g["boundaries"]) {
 
                         /*
@@ -117,13 +118,13 @@ namespace volume {
                             //std::cout << "---" << '\n';
                          
                             /*
-                            * each shell: [[v1, v2, v3]] -- without inner ring
-                            * each surface in each shell: [v1, v2, v3]
-                            * each ring: v1, v2, v3
+                            * each shell: [ [[v1, v2, v3]], [[v4, v5, v6]]...[[...]] ]
+                            * each surface in each shell: [[v1, v2, v3]]
+                            * each ring: [v1, v2, v3]
                             */
                             for (auto& ring : surface) {
                                 
-                                // v = ring? why a v:ring for loop
+                                // ring: [v1, v2, v2]
                                 for (auto& v : ring) { 
                                     std::vector<int> vi = j["vertices"][v.get<int>()];
                                     double x = (vi[0] * j["transform"]["scale"][0].get<double>()) + j["transform"]["translate"][0].get<double>();
@@ -154,11 +155,12 @@ namespace volume {
             } // end for: each item in geometry
 
 
+
             /* print all vertices for one building object
             * process them
             * clear -- v_one_solid store the vertices for one solid each
-            */
-            std::cout << v_one_solid.size() << '\n';
+            ***************************************************/
+
             for (auto& v_tuple : v_one_solid)
             {
                 for (auto& v : v_tuple) // v_tuple: [v1, v2, v3] -- a triangulated surface
@@ -172,11 +174,18 @@ namespace volume {
             std::cout << "volume of one solid: " << volume_one_solid << '\n';
             v_one_solid.clear();
 
+            std::cout << '\n';
+
+            /**************************************************/
+
         } // end for: each item in building object
+
+        /***********************************************************************************/
 
     }
 
 }
+
 
 
 int main(int argc, const char* argv[]) {
@@ -200,10 +209,10 @@ int main(int argc, const char* argv[]) {
     input_triangulated.close();
 
     //-- get total number of RoofSurface in the file
-    // int noroofsurfaces = get_no_roof_surfaces(j); // depends on the geometry type: Multisurface, solid...
-    // std::cout << "Total RoofSurface: " << noroofsurfaces << '\n';
+    int noroofsurfaces = get_no_roof_surfaces(j); // depends on the geometry type: Multisurface, solid...
+    std::cout << "Total RoofSurface: " << noroofsurfaces << '\n';
 
-    //visit_roofsurfaces(j);
+    visit_roofsurfaces(j);
 
     //-- print out the number of Buildings in the file
     int nobuildings = 0;
@@ -213,14 +222,6 @@ int main(int argc, const char* argv[]) {
         }
     }
     std::cout << "There are " << nobuildings << " Buildings in the file" << '\n';
-
-    // juedge geometry 
-  //  int ngeometry = 0;
-  //  for (auto& co : j["CityObjects"]) { // each city object 
-		//if (co["type"] == "Building") {
-		//	std::cout << co["geometry"].size() << " ";
-		//}        
-  //  }
 
     //-- print out the number of vertices in the file
     std::cout << "Number of vertices " << j["vertices"].size() << '\n';
@@ -232,66 +233,22 @@ int main(int argc, const char* argv[]) {
         }
     }*/
 
-    std::cout << "list all vertices" << '\n';
-    list_all_vertices(j);
-
     //-- write to disk the modified city model (myfile.city.json)
     /*std::string writefilename = "/testwrite.json";
     std::ofstream o(DATA_PATH + writefilename);
     o << j.dump(2) << std::endl;
     o.close();*/
+    std::cout << '\n';
 
     /**********************************************************************************/
 
-
-
-    /*
-    * test determinant calculation
-    ***********************************************************************************/
-
-    std::vector<Vertex> each_triangulated_face;
-    each_triangulated_face.reserve(3);
-
-    std::vector<std::vector<Vertex>> one_solid;
-
-    Vertex v1(3, 3, 0, 0), v2(2, 3, 4, 1);
-    Vertex v3(3, 2, 4, 2), v4(3, 3, 4, 3);
-    
-    each_triangulated_face.emplace_back(v1);
-    each_triangulated_face.emplace_back(v2);
-    each_triangulated_face.emplace_back(v3);
-
-    one_solid.emplace_back(each_triangulated_face);
-
-    each_triangulated_face[0] = v2;
-    each_triangulated_face[1] = v1;
-    each_triangulated_face[2] = v4;
-
-    one_solid.emplace_back(each_triangulated_face);
-
-    each_triangulated_face[0] = v4;
-    each_triangulated_face[1] = v1;
-    each_triangulated_face[2] = v3;
-
-    one_solid.emplace_back(each_triangulated_face);
-
-    each_triangulated_face[0] = v4;
-    each_triangulated_face[1] = v3;
-    each_triangulated_face[2] = v2;
-
-    one_solid.emplace_back(each_triangulated_face);
-
-    double volume_one_solid = Volume::calculate_volume_one_solid(one_solid);
-    std::cout << "volume of one solid: " << volume_one_solid << '\n';
-
-    /**********************************************************************************/
-
-    
-    //std::cout << "vertices: " << '\n';
-    //volume::calculate_volume_json_object(j);
+    std::cout << "my output: " << '\n';
+    std::cout << "list all vertices" << '\n';
+    volume::calculate_volume_json_object(j_triangulated);
    
     return 0;
 }
+
 
 
 // Visit every 'RoofSurface' in the CityJSON model and output its geometry (the arrays of indices)

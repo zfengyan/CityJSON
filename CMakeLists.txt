@@ -17,7 +17,7 @@ add_definitions(
   -DDATA_PATH=\"${PROJECT_SOURCE_DIR}/data\"
 )
 
-add_executable (CityJSON "src/main.cpp"  "src/calculation.hpp")
+add_executable (CityJSON "src/main.cpp"  "src/calculation.hpp" "src/memo.h")
 
 target_link_libraries(${PROJECT_NAME})
 # TODO: 如有需要，请添加测试并安装目标。
