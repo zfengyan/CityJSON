@@ -34,6 +34,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>
 #include "json.hpp"
 #include "calculation.hpp"
 
@@ -83,6 +84,7 @@ namespace volume {
         * --> each element: [v1, v2, v3] -- a vector contains 3 vertices
         */
 
+
         /*
         * define vectors
         ************************************************************************************/
@@ -96,17 +98,44 @@ namespace volume {
 
 
         /*
+        * std::map<std::string, double> volume_dictionary;
+        * --> each key is the Building ID
+        * --> each value is the volume of the corresponding Building
+        ************************************************************************************/
+
+        std::map<std::string, double> volume_dictionary;
+
+        // initialize -- only store the volume of Building(not BuildingPart)
+        for (auto& co : j["CityObjects"].items())
+        {
+            if (co.value()["type"] == "Building")
+            {
+                volume_dictionary.insert(std::pair<std::string, double>(co.key(), 0));
+            }
+        }
+        
+        // test
+        std::map<std::string, double>::iterator it;
+        for (it = volume_dictionary.begin(); it != volume_dictionary.end(); ++it)
+        {
+            std::cout << it->first << " " << it->second << '\n';
+        }
+
+        /***********************************************************************************/
+
+
+        /*
         * get the vertices with their ACTUAL coordinates
         * store all the vertices of each BuildingPart object
         * 
         * calculate the volume of each building(sum up all BuildingParts)
         * 
         * write the calculated volume to the attributes of each building
-         ************************************************************************************/
+         ************************************************************************************/     
 
         for (auto& co : j["CityObjects"].items()) {
-            std::cout << "CityObject: " << co.key() << " ";
-            std::cout << "Object type: " << co.value()["type"] << '\n';
+            std::cout << "CityObject: " << co.key() << '\n';
+            
             for (auto& g : co.value()["geometry"]) {
                 if (g["type"] == "Solid") { // geometry type
                     for (auto& shell : g["boundaries"]) {
