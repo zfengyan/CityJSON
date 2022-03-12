@@ -186,7 +186,7 @@ int main(int argc, const char* argv[]) {
     ***********************************************************************************/
 
     //-- reading the file with nlohmann json: https://github.com/nlohmann/json  
-    std::string filename = "/myfile.city.json";
+    std::string filename = "/cube.json";
     std::ifstream input(DATA_PATH + filename);
     json j;
     input >> j;
