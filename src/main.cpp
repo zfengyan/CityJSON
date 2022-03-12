@@ -185,12 +185,19 @@ int main(int argc, const char* argv[]) {
     * from teacher
     ***********************************************************************************/
 
-    //-- reading the file with nlohmann json: https://github.com/nlohmann/json  
-    std::string filename = "/cube.json";
+    //-- reading the (original)file with nlohmann json: https://github.com/nlohmann/json  
+    std::string filename = "/cube.city.json";
     std::ifstream input(DATA_PATH + filename);
     json j;
     input >> j;
     input.close();
+
+    // -- reading the (triangulated)file
+    std::string filename_triangulated = "/triangulated.cube.city.json";
+    std::ifstream input_triangulated(DATA_PATH + filename_triangulated);
+    json j_triangulated;
+    input_triangulated >> j_triangulated;
+    input_triangulated.close();
 
     //-- get total number of RoofSurface in the file
     // int noroofsurfaces = get_no_roof_surfaces(j); // depends on the geometry type: Multisurface, solid...
@@ -208,12 +215,12 @@ int main(int argc, const char* argv[]) {
     std::cout << "There are " << nobuildings << " Buildings in the file" << '\n';
 
     // juedge geometry 
-    int ngeometry = 0;
-    for (auto& co : j["CityObjects"]) { // each city object 
-		if (co["type"] == "Building") {
-			std::cout << co["geometry"].size() << " ";
-		}        
-    }
+  //  int ngeometry = 0;
+  //  for (auto& co : j["CityObjects"]) { // each city object 
+		//if (co["type"] == "Building") {
+		//	std::cout << co["geometry"].size() << " ";
+		//}        
+  //  }
 
     //-- print out the number of vertices in the file
     std::cout << "Number of vertices " << j["vertices"].size() << '\n';
@@ -225,8 +232,8 @@ int main(int argc, const char* argv[]) {
         }
     }*/
 
-    //std::cout << "list all vertices" << '\n';
-    //list_all_vertices(j);
+    std::cout << "list all vertices" << '\n';
+    list_all_vertices(j);
 
     //-- write to disk the modified city model (myfile.city.json)
     /*std::string writefilename = "/testwrite.json";
@@ -353,7 +360,8 @@ void list_all_vertices(json& j) {
                                 double x = (vi[0] * j["transform"]["scale"][0].get<double>()) + j["transform"]["translate"][0].get<double>();
                                 double y = (vi[1] * j["transform"]["scale"][1].get<double>()) + j["transform"]["translate"][1].get<double>();
                                 double z = (vi[2] * j["transform"]["scale"][2].get<double>()) + j["transform"]["translate"][2].get<double>();
-                                std::cout << std::setprecision(2) << std::fixed << v << " (" << x << ", " << y << ", " << z << ")" << std::endl;
+                                //std::cout << std::setprecision(2) << std::fixed << v << " (" << x << ", " << y << ", " << z << ")" << std::endl;
+                                std::cout << v << " (" << x << ", " << y << ", " << z << ")" << '\n';
                             }
                         }
                     }
