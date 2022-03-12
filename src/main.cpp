@@ -119,7 +119,7 @@ namespace volume {
                          
                             /*
                             * each shell: [ [[v1, v2, v3]], [[v4, v5, v6]]...[[...]] ]
-                            * each surface in each shell: [[v1, v2, v3]]
+                            * each surface in each shell: [[v1, v2, v3]] -- without inner ring
                             * each ring: [v1, v2, v3]
                             */
                             for (auto& ring : surface) {
@@ -137,20 +137,21 @@ namespace volume {
                                     v_each_triangulated_face.emplace_back(Vertex(x, y, z, v));
                                 } // end for: xyz coordinates of one vertex
 
+
+                                /*
+                                * add the 3 vertices vector to the one_solid vector
+                                * clear the items in the 3 vertices vector
+                                */
+                                v_one_solid.emplace_back(v_each_triangulated_face);
+                                v_each_triangulated_face.clear();
+
                             } // end for: each triangulated surface
 
-                            /*
-                            * add the 3 vertices vector to the one_solid vector
-                            * clear the items in the 3 vertices vector
-                            */
-                            v_one_solid.emplace_back(v_each_triangulated_face);
-                            v_each_triangulated_face.clear();
+                        } // end for: each surface: [[e1, e2, e3]] -- without inner ring
 
-                        } // end for: each item: [e1, e2, e3]
+                    } // end for: each shell in "boundaries"
 
-                    } // end for: each item( [[e1, e2, e3]] ) in "boundaries"
-
-                } // end if: MultiSurface
+                } // end if: Solid
 
             } // end for: each item in geometry
 
