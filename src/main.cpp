@@ -139,7 +139,6 @@ namespace volume {
                 co.value()["parents"].size() == 1)
             {
                 std::cout << "CityObject has geometry: " << co.key() << '\n';
-                std::cout << '\n';
                 //std::cout << "parent id: " << co.value()["parents"][0] << '\n';
 
 
@@ -207,6 +206,7 @@ namespace volume {
             }// end if: BuildingPart object
 
         } // end for: each item in building object
+        std::cout << '\n';
 
         /***********************************************************************************/
 
@@ -236,15 +236,22 @@ int main(int argc, const char* argv[]) {
     * from teacher
     ***********************************************************************************/
 
+    /*
+    * INPUT files
+    ***********************************************************************************/
+
+    std::string filename = "/myfile.city.json";
+    std::string filename_triangulated = "/myfile.triangulated.city.json";
+
+    /**********************************************************************************/
+
     //-- reading the (original)file with nlohmann json: https://github.com/nlohmann/json  
-    std::string filename = "/cube.city.json";
     std::ifstream input(DATA_PATH + filename);
     json j;
     input >> j;
     input.close();
 
     // -- reading the (triangulated)file
-    std::string filename_triangulated = "/triangulated.cube.city.json";
     std::ifstream input_triangulated(DATA_PATH + filename_triangulated);
     json j_triangulated;
     input_triangulated >> j_triangulated;
