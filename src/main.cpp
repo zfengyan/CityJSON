@@ -217,10 +217,13 @@ namespace volume {
 
         std::cout << "volume dictionary: " << '\n';
 		std::map<std::string, double>::iterator it;
+        int count = 0;
 		for (it = volume_dictionary.begin(); it != volume_dictionary.end(); ++it)
 		{
             std::cout << it->first << "    " << it->second << '\n';
+            ++count;
 		}
+        std::cout << "total elements in volume dictionary: " << count << '\n';
 
         /***********************************************************************************/
 
