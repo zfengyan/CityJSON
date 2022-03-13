@@ -57,6 +57,7 @@
 /**********************************************************************************/
 
 
+
 /*
 * test volume_dictionary
 ***********************************************************************************/
@@ -65,6 +66,34 @@
 //for (it = volume_dictionary.begin(); it != volume_dictionary.end(); ++it)
 //{
 //    std::cout << it->first << " " << it->second << '\n';
+//}
+
+/**********************************************************************************/
+
+
+
+/*
+* boundaries list size of each BuildingPart: if it contains inner shells
+***********************************************************************************/
+
+//for (auto& co : j["CityObjects"].items()) {
+//    //std::cout << "CityObject: " << co.key() << '\n';
+//
+//
+//    /*
+//    * for each BuildingPart object:
+//    * --> geometry list is not null
+//    * --> has one "parent" object
+//    */
+//    if (co.value()["geometry"].size() != 0 &&
+//        co.value()["parents"].size() == 1)
+//    {
+//        for (auto& g : co.value()["geometry"])
+//        {
+//            std::cout << g["boundaries"].size() << '\n'; // if size() == 1 --> no inner shells
+//        }
+//
+//    }
 //}
 
 /**********************************************************************************/

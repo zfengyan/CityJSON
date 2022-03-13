@@ -92,7 +92,7 @@ namespace volume {
         std::vector<Vertex> v_each_triangulated_face;
         v_each_triangulated_face.reserve(3); // maintain 3 elements
 
-        std::vector<std::vector<Vertex>> v_one_solid;
+        std::vector<std::vector<Vertex>> v_one_shell; // in this case no inner shells, one solid is one shell
 
         /***********************************************************************************/
 
@@ -124,85 +124,103 @@ namespace volume {
         * calculate the volume of each building(sum up all BuildingParts)
         * 
         * write the calculated volume to the attributes of each building
-         ************************************************************************************/     
+        ************************************************************************************/
 
         for (auto& co : j["CityObjects"].items()) {
-            std::cout << "CityObject: " << co.key() << '\n';
+            //std::cout << "CityObject: " << co.key() << '\n';
             
-            for (auto& g : co.value()["geometry"]) {
-                if (g["type"] == "Solid") { // geometry type
-                    for (auto& shell : g["boundaries"]) {
 
-                        /*
-                        * for each triangulated surface
-                        */
-                        for (auto& surface : shell) {
-                            //std::cout << "---" << '\n';
-                         
+            /*
+            * for each BuildingPart object:
+            * --> geometry list is not null
+            * --> has one "parent" object
+            */
+            if (co.value()["geometry"].size() != 0 &&
+                co.value()["parents"].size() == 1)
+            {
+                std::cout << "CityObject has geometry: " << co.key() << '\n';
+                std::cout << '\n';
+                //std::cout << "parent id: " << co.value()["parents"][0] << '\n';
+
+
+                // geometry of BuildingPart object
+                for (auto& g : co.value()["geometry"]) {
+                    if (g["type"] == "Solid" &&
+                        g["boundaries"].size() == 1) // without inner shells
+                    { 
+                        for (auto& shell : g["boundaries"]) {
+
                             /*
-                            * each shell: [ [[v1, v2, v3]], [[v4, v5, v6]]...[[...]] ]
-                            * each surface in each shell: [[v1, v2, v3]] -- without inner ring
-                            * each ring: [v1, v2, v3]
+                            * for each triangulated surface
                             */
-                            for (auto& ring : surface) {
-                                
-                                // ring: [v1, v2, v2]
-                                for (auto& v : ring) { 
-                                    std::vector<int> vi = j["vertices"][v.get<int>()];
-                                    double x = (vi[0] * j["transform"]["scale"][0].get<double>()) + j["transform"]["translate"][0].get<double>();
-                                    double y = (vi[1] * j["transform"]["scale"][1].get<double>()) + j["transform"]["translate"][1].get<double>();
-                                    double z = (vi[2] * j["transform"]["scale"][2].get<double>()) + j["transform"]["translate"][2].get<double>();
-                                    //std::cout << v << " (" << x << ", " << y << ", " << z << ")" << '\n';
-
-                                    // store the 3 vertices of each triangulated face
-                                    // x, y, z, vid
-                                    v_each_triangulated_face.emplace_back(Vertex(x, y, z, v));
-                                } // end for: xyz coordinates of one vertex
-
+                            for (auto& surface : shell) {
+                                //std::cout << "---" << '\n';
 
                                 /*
-                                * add the 3 vertices vector to the one_solid vector
-                                * clear the items in the 3 vertices vector
+                                * each shell: [ [[v1, v2, v3]], [[v4, v5, v6]]...[[...]] ] -- without inner shells
+                                * each surface in each shell: [[v1, v2, v3]] -- without inner rings
+                                * each ring: [v1, v2, v3]
                                 */
-                                v_one_solid.emplace_back(v_each_triangulated_face);
-                                v_each_triangulated_face.clear();
+                                for (auto& ring : surface) {
 
-                            } // end for: each triangulated surface
+                                    // ring: [v1, v2, v2]
+                                    for (auto& v : ring) {
+                                        std::vector<int> vi = j["vertices"][v.get<int>()];
+                                        double x = (vi[0] * j["transform"]["scale"][0].get<double>()) + j["transform"]["translate"][0].get<double>();
+                                        double y = (vi[1] * j["transform"]["scale"][1].get<double>()) + j["transform"]["translate"][1].get<double>();
+                                        double z = (vi[2] * j["transform"]["scale"][2].get<double>()) + j["transform"]["translate"][2].get<double>();
+                                        //std::cout << v << " (" << x << ", " << y << ", " << z << ")" << '\n';
 
-                        } // end for: each surface: [[e1, e2, e3]] -- without inner ring
-
-                    } // end for: each shell in "boundaries"
-
-                } // end if: Solid
-
-            } // end for: each item in geometry
+                                        // store the 3 vertices of each triangulated face
+                                        // x, y, z, vid
+                                        v_each_triangulated_face.emplace_back(Vertex(x, y, z, v));
+                                    } // end for: xyz coordinates of one vertex
 
 
+                                    /*
+                                    * add the 3 vertices vector to the one_solid vector
+                                    * clear the items in the 3 vertices vector
+                                    */
+                                    v_one_shell.emplace_back(v_each_triangulated_face);
+                                    v_each_triangulated_face.clear();
 
-            /* 
-            * print all vertices for one building object
-            * process them
-            * clear -- v_one_solid store the vertices for one solid each
-            ***************************************************/
+                                } // end for: each triangulated surface
 
-            for (auto& v_tuple : v_one_solid)
-            {
-                for (auto& v : v_tuple) // v_tuple: [v1, v2, v3] -- a triangulated surface
-                {
-                    std::cout << " id: " << v.vid << " ";
-                    std::cout << " (" << v.x << ", " << v.y << ", " << v.z << ")";
-                }
-                std::cout << '\n';
-            }
-            double volume_one_solid = Volume::calculate_volume_one_solid(v_one_solid);
-            std::cout << "volume of one solid: " << volume_one_solid << '\n';
-            v_one_solid.clear();
+                            } // end for: each surface: [[e1, e2, e3]] -- without inner ring
 
-            std::cout << '\n';
+                        } // end for: each shell in "boundaries"
 
-            /**************************************************/
+                    } // end if: Solid and without inner shells
+
+                } // end for: each item in geometry
+
+
+                // calculate volume for the shell of this BuildingPart object
+                // one BuildingPart has one shell in this case
+                double volume_one_shell = Volume::calculate_volume_one_shell(v_one_shell);
+                v_one_shell.clear(); // after calculation, elements need to be cleared
+
+                // sum up volume of this BuildingPart object's "parent" Building object
+                std::string parentBuilding_id = co.value()["parents"][0];
+                volume_dictionary[parentBuilding_id] += volume_one_shell;
+
+            }// end if: BuildingPart object
 
         } // end for: each item in building object
+
+        /***********************************************************************************/
+
+
+        /*
+        * iterate volume_dictionary
+        ************************************************************************************/
+
+        std::cout << "volume dictionary: " << '\n';
+		std::map<std::string, double>::iterator it;
+		for (it = volume_dictionary.begin(); it != volume_dictionary.end(); ++it)
+		{
+            std::cout << it->first << "    " << it->second << '\n';
+		}
 
         /***********************************************************************************/
 
@@ -236,7 +254,7 @@ int main(int argc, const char* argv[]) {
     int noroofsurfaces = get_no_roof_surfaces(j); // depends on the geometry type: Multisurface, solid...
     std::cout << "Total RoofSurface: " << noroofsurfaces << '\n';
 
-    visit_roofsurfaces(j);
+    //visit_roofsurfaces(j);
 
     //-- print out the number of Buildings in the file
     int nobuildings = 0;
@@ -267,9 +285,9 @@ int main(int argc, const char* argv[]) {
     /**********************************************************************************/
 
     std::cout << "my output: " << '\n';
-    std::cout << "list all vertices" << '\n';
+    //std::cout << "list all vertices" << '\n';
     volume::calculate_volume_json_object(j_triangulated);
-   
+
     return 0;
 }
 

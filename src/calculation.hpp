@@ -52,12 +52,12 @@ public:
 	* calculate the "volume" of each solid
 	* Vertices_one_solid: [[v1, v2, v3], [v4, v5, v6], ... []]
 	*/
-	static double calculate_volume_one_solid(
-		std::vector<std::vector<Vertex>>& v_one_solid)
+	static double calculate_volume_one_shell(
+		std::vector<std::vector<Vertex>>& v_one_shell)
 	{
 		double sum_det = 0;
 
-		for (auto& v_each_triangulated_face : v_one_solid)
+		for (auto& v_each_triangulated_face : v_one_shell)
 		{
 			/*
 			* each v_each_triangulated_face: [vertex1, vertex2, vertex3]
