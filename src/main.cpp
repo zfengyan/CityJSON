@@ -34,6 +34,7 @@
 #include <fstream>
 #include <string>
 #include <map>
+#include <cassert>
 #include "json.hpp"
 #include "calculation.hpp"
 
@@ -259,42 +260,93 @@ namespace orientation {
     }
 
 
+    void test_vertices(json& j)
+    {
+        std::vector<int> vi = j["vertices"][0];
+        double x = (vi[0] * j["transform"]["scale"][0].get<double>()) + j["transform"]["translate"][0].get<double>();
+        double y = (vi[1] * j["transform"]["scale"][1].get<double>()) + j["transform"]["translate"][1].get<double>();
+        double z = (vi[2] * j["transform"]["scale"][2].get<double>()) + j["transform"]["translate"][2].get<double>();
+        //std::cout << std::setprecision(2) << std::fixed << v << " (" << x << ", " << y << ", " << z << ")" << std::endl;
+        std::cout << " (" << x << ", " << y << ", " << z << ")" << '\n';
+    }
+
+
     /*
     * orientation
     */
     void calculate_orientation(
-        json& j, 
+        json& jsonfile, 
         std::map<std::string, std::vector<RoofSurface>>& roof_surfaces_dictionary)
     {
-        for (auto& co : j["CityObjects"].items())
-        { // each city object 
-
-            if (co.value()["geometry"].size() != 0) // BuildingPart
+        for (auto& co : jsonfile["CityObjects"].items()) // each city object 
+        {   
+            if (co.value()["geometry"].size() != 0) // each BuildingPart
             {
                 for (auto& g : co.value()["geometry"]) { // each city object may only have ONE geometry
 
-                    if (g["type"] == "Solid") 
+                    if (g["type"] == "Solid") // valid geometry for one BuildingPart
                     { 
                         std::vector<RoofSurface> roof_surfaces; // store oriented roof surfaces for each BuildingPart
                         roof_surfaces_dictionary.insert(
                             std::pair<std::string, std::vector<RoofSurface>>(co.key(), roof_surfaces));
+
+                        // track the index in "semantics->surfaces" of the newly-added roofsurface with attributes
+                        int new_semantic_surfaces_index = (int)g["semantics"]["surfaces"].size();
                         
+                        // traverse each roof in "boundaries" to find the RoofSurfaces
                         for (int i = 0; i < g["boundaries"].size(); ++i) { // g["boundaries"]: [[ [[1,2,3,4]], [[5,6,7,8]] ]]
+                            for (int j = 0; j < g["boundaries"][i].size(); ++j) { // g["boundaries"][i]: [ [[1,2,3,4]], [[5,6,7,8]] ]         
+                                
+                                int sem_index = g["semantics"]["values"][i][j]; // semantic values index
+                                
+                                // if it's a roof surface
+                                if (g["semantics"]["surfaces"][sem_index]["type"].get<std::string>().compare("RoofSurface") == 0) 
+                                {
+                                    RoofSurface roof;
+                                    roof.BuildingPart_id = co.key();
+                                    roof.type = "RoofSurface";
+                                    roof.boundaries_index = j;
+                                    roof.semantics_surfaces_index = new_semantic_surfaces_index;
+                                    ++new_semantic_surfaces_index; // once added a new roof surface, the index += 1
+                                    
+                                    //std::cout << "RoofSurface: " << g["boundaries"][i][j] << '\n';
 
-                            for (int j = 0; j < g["boundaries"][i].size(); ++j) { // g["boundaries"][i]: [ [[1,2,3,4]], [[5,6,7,8]] ]
-                                int sem_index = g["semantics"]["values"][i][j];
-                                if (g["semantics"]["surfaces"][sem_index]["type"].get<std::string>().compare("RoofSurface") == 0) {
-                                    std::cout << "index: " << j << '\n';
-                                    std::cout << "BuildingPart: " << co.key() << '\n';
-                                    std::cout << "semantic size: " << g["semantics"]["surfaces"].size() << '\n';
+                                    // construct vertices of this roof
+                                    // g["boundaries"][i][j] : [[1,2,3,4]], each roof face
+                                    for (int m = 0; m < g["boundaries"][i][j].size(); ++m)
+                                    {
+                                        // g["boundaries"][i][j][m] : [1,2,3,4]
+                                        auto N = g["boundaries"][i][j][m].size();
+                                        //assert(N >= 3);
+                                        for (int n = 0; n < 3; ++n) // get the first 3 vertices
+                                        {                   
+                                            int v = g["boundaries"][i][j][m][n].get<int>();
+                                            std::vector<int> vi = jsonfile["vertices"][v];
+                                            
+                                            double x = (vi[0] * jsonfile["transform"]["scale"][0].get<double>()) + jsonfile["transform"]["translate"][0].get<double>();
+                                            double y = (vi[1] * jsonfile["transform"]["scale"][1].get<double>()) + jsonfile["transform"]["translate"][1].get<double>();
+                                            double z = (vi[2] * jsonfile["transform"]["scale"][2].get<double>()) + jsonfile["transform"]["translate"][2].get<double>();
+                                            
+                                            //std::cout << v << " (" << x << ", " << y << ", " << z << ")" << '\n';
 
-                                    // g["boundaries"][i][j] : [[1,2,3,4]]
-                                    std::cout << "RoofSurface: " << g["boundaries"][i][j] << '\n';
+                                            // add the vertex to the vector according to the default order
+                                            roof.RoofVertices.emplace_back(Vertex(x, y, z, v));
+                                        }
+                                        
+                                    } //end for: each roof surface
+
+                                    // calculate orientation of this roof surface
+                                    // ...
+
+                                    // add this roof to the roof surfaces dictionary
+                                    roof_surfaces_dictionary[co.key()].emplace_back(roof);
+
                                 }
                             } 
                         } 
                     } // end if
-                } // end for: each geometry
+
+                } // end for: each geometry of one BuildingPart object
 
             } // end if: BuildingPart            
 
@@ -308,18 +360,24 @@ namespace orientation {
         std::cout << "roof surfaces dictionary: " << '\n';
         std::map<std::string, std::vector<RoofSurface>>::iterator it;
         int count = 0;
+        int countRoof = 0;
         for (it = roof_surfaces_dictionary.begin(); it != roof_surfaces_dictionary.end(); ++it)
         {
             std::string key = it->first;
-            std::cout << "key: " << key << "    ";
-            roof_surfaces_dictionary[key].emplace_back(RoofSurface());
-            std::cout << "value: " << roof_surfaces_dictionary[key][0].roof_orientation << '\n';
+            std::cout << key << "    ";
+            std::cout << "roof surface(s): " << it->second.size() << '\n';
+            
             ++count;
+            countRoof += (int)it->second.size();
         }
-        std::cout << "total elements in roof surfaces dictionary: " << count << '\n';
+        std::cout << '\n';
+        std::cout << "total elements( num of BuildingParts ): " << count << '\n';
+        std::cout << "total roof surfaces: " << countRoof << '\n';
+        std::cout << '\n';
 
         /***********************************************************************************/
     }
+
 }
 
 
@@ -333,8 +391,8 @@ int main(int argc, const char* argv[]) {
     * INPUT files
     ***********************************************************************************/
 
-    std::string filename = "/cube.city.json";
-    std::string filename_triangulated = "/cube.triangulated.city.json";
+    std::string filename = "/myfile.city.json";
+    std::string filename_triangulated = "/myfile.triangulated.city.json";
 
     /**********************************************************************************/
 
@@ -363,10 +421,21 @@ int main(int argc, const char* argv[]) {
             nobuildings += 1;
         }
     }
-    std::cout << "There are " << nobuildings << " Buildings in the file" << '\n';
+    std::cout << "Total Buildings: " << nobuildings << '\n'; //std::cout << "There are " << nobuildings << " Buildings in the file" << '\n';
+    
+    //-- print out the number of BuildingParts in the file
+    int nobuildingparts = 0;
+    for (auto& co : j["CityObjects"]) {
+        if (co["type"] == "BuildingPart") {
+            nobuildingparts += 1;
+        }
+    }
+    std::cout << "Total BuildingParts: " << nobuildingparts << '\n';
 
     //-- print out the number of vertices in the file
     std::cout << "Number of vertices " << j["vertices"].size() << '\n';
+
+    std::cout << '\n';
 
     //-- add an attribute "volume"
     /*for (auto& co : j["CityObjects"]) {
@@ -385,17 +454,17 @@ int main(int argc, const char* argv[]) {
     /**********************************************************************************/
 
     std::cout << "my output: " << '\n';
-    //std::cout << "list all vertices" << '\n';
-    volume::calculate_volume(j_triangulated);
-
     std::cout << '\n';
+    //volume::calculate_volume(j_triangulated);
+
+    //std::cout << '\n';
 
     std::cout << "orientation test" << '\n';
+    std::cout << '\n';
     std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;
     orientation::calculate_orientation(j, roof_surfaces_dictionary);
+
     std::cout << "done" << '\n';
-    //std::cout << "test write: " << '\n';
-    //orientation::test(j);
 
     /*std::string writefilename = "/testwrite.json";
     std::ofstream o(DATA_PATH + writefilename);
@@ -469,7 +538,8 @@ void list_all_vertices(json& j) {
                     for (auto& surface : shell) {
                         for (auto& ring : surface) {
                             std::cout << "---" << std::endl;
-                            for (auto& v : ring) {
+                            for (auto& v : ring) 
+                            {
                                 std::vector<int> vi = j["vertices"][v.get<int>()];
                                 double x = (vi[0] * j["transform"]["scale"][0].get<double>()) + j["transform"]["translate"][0].get<double>();
                                 double y = (vi[1] * j["transform"]["scale"][1].get<double>()) + j["transform"]["translate"][1].get<double>();
