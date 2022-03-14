@@ -3,6 +3,7 @@
 #include <cmath>
 
 constexpr auto one_six = 0.1666666666666667; // value of 1/6
+constexpr auto _INFINITE_ = 9999; // value of infinite
 
 // struct to store vertex:
 struct Vertex {
@@ -20,6 +21,7 @@ struct Vertex {
 };
 
 
+// class related to volume
 class Volume {
 public:
 	/*
@@ -74,5 +76,24 @@ public:
 		return one_six * abs(sum_det); // (1/6)*|sum_det|
 	}
 
+};
+
+
+// struct to store the roofsurface
+struct RoofSurface {
+	std::string BuildingPart_id; // belongs to which BuildingPart
+	std::string type;
+
+	int boundaries_index; // also semantics_values_index
+	int semantics_surfaces_index;
+		
+	std::string roof_orientation;
+
+	RoofSurface():
+		BuildingPart_id("null"),
+		type("RoofSurface"),
+		boundaries_index(_INFINITE_),
+		semantics_surfaces_index(_INFINITE_),
+		roof_orientation("null"){}
 };
 
