@@ -399,6 +399,20 @@ namespace orientation {
 
 
 
+/*
+* write files
+*/
+namespace writefiles {
+    void write_json_file(json& j, std::string& writefilename)
+    {
+        std::ofstream o(DATA_PATH + writefilename); // std::string writefilename = "/testwrite.json";
+        o << j << std::endl;
+        o.close();
+    }
+}
+
+
+
 int main(int argc, const char* argv[]) {
     
     /*
@@ -407,10 +421,13 @@ int main(int argc, const char* argv[]) {
 
     /*
     * INPUT files
+    * OUTPUT file name
+    * Modify INPUT and OUTPUT files here
     ***********************************************************************************/
 
     std::string filename = "/cube.city.json";
     std::string filename_triangulated = "/cube.triangulated.city.json";
+    std::string writefilename = "/testwrite.json";
 
     /**********************************************************************************/
 
@@ -508,11 +525,8 @@ int main(int argc, const char* argv[]) {
     * write files
     ***********************************************************************************/
 
-    std::cout << "writing files..." << '\n';
-    std::string writefilename = "/testwrite.json";
-    std::ofstream o(DATA_PATH + writefilename);
-    o << j << std::endl;
-    o.close();
+    std::cout << "writing files..." << '\n';    
+    writefiles::write_json_file(j, writefilename);
     std::cout << "writing files done" << '\n';
 
     /**********************************************************************************/
