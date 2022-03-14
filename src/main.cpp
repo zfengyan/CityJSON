@@ -425,9 +425,9 @@ int main(int argc, const char* argv[]) {
     * Modify INPUT and OUTPUT files here
     ***********************************************************************************/
 
-    std::string filename = "/myfile.city.json";
-    std::string filename_triangulated = "/myfile.triangulated.city.json";
-    std::string writefilename = "/testwrite.myfile.city.json";
+    std::string filename = "/cube.city.json";
+    std::string filename_triangulated = "/cube.triangulated.city.json";
+    std::string writefilename = "/testwrite.cube.city.json";
 
     /**********************************************************************************/
 
