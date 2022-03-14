@@ -47,6 +47,9 @@ void  visit_roofsurfaces(json& j);
 
 
 
+/*
+* set the null value for buildings without geometry and invalid buildings?
+*/
 namespace volume {
 
     /*
@@ -232,6 +235,31 @@ namespace volume {
 }
 
 
+/*
+* calculate orientation
+* use the original file to calculate the orientation
+* to avoid the triangulated faces which point inwards
+*/
+namespace orientation {
+    void test(json& j)
+    {
+		for (auto& co : j["CityObjects"].items()) {
+			if (co.value()["type"] == "BuildingPart") {
+                for (auto& g : co.value()["geometry"])
+                {
+                    auto& sur = g["semantics"]["surfaces"];
+                    auto& val = g["semantics"]["values"];
+                    sur[0]["orientation"] = "NW";
+                    sur[3]["type"] = "mysurface";
+                    sur[4]["type"] = "wallmysurface";
+
+                    val[0][6] = 999;
+                }
+			}
+		}
+    }
+}
+
 
 int main(int argc, const char* argv[]) {
     
@@ -243,8 +271,8 @@ int main(int argc, const char* argv[]) {
     * INPUT files
     ***********************************************************************************/
 
-    std::string filename = "/myfile.city.json";
-    std::string filename_triangulated = "/myfile.triangulated.city.json";
+    std::string filename = "/cube.city.json";
+    std::string filename_triangulated = "/cube.triangulated.city.json";
 
     /**********************************************************************************/
 
@@ -289,14 +317,25 @@ int main(int argc, const char* argv[]) {
     /*std::string writefilename = "/testwrite.json";
     std::ofstream o(DATA_PATH + writefilename);
     o << j.dump(2) << std::endl;
-    o.close();*/
-    std::cout << '\n';
+    o.close();
+    std::cout << '\n';*/
 
     /**********************************************************************************/
 
     std::cout << "my output: " << '\n';
     //std::cout << "list all vertices" << '\n';
     volume::calculate_volume_json_object(j_triangulated);
+
+    std::cout << '\n';
+
+    std::cout << "test write: " << '\n';
+    orientation::test(j);
+
+    std::string writefilename = "/testwrite.json";
+    std::ofstream o(DATA_PATH + writefilename);
+    o << j << std::endl;
+    o.close();
+    std::cout << "done" << '\n';
 
     return 0;
 }
