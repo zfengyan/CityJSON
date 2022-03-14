@@ -262,17 +262,23 @@ namespace orientation {
     /*
     * orientation
     */
-    void calculate_orientation(json& j, std::vector<RoofSurface>& oriented_roof_surfaces)
+    void calculate_orientation(
+        json& j, 
+        std::map<std::string, std::vector<RoofSurface>>& roof_surfaces_dictionary)
     {
         for (auto& co : j["CityObjects"].items())
         { // each city object 
 
-            if (co.value()["geometry"].size() != 0)
+            if (co.value()["geometry"].size() != 0) // BuildingPart
             {
                 for (auto& g : co.value()["geometry"]) { // each city object may only have ONE geometry
 
-                    if (g["type"] == "Solid") { // type of geometry, may be multisurface, solid... 
-
+                    if (g["type"] == "Solid") 
+                    { 
+                        std::vector<RoofSurface> roof_surfaces; // store oriented roof surfaces for each BuildingPart
+                        roof_surfaces_dictionary.insert(
+                            std::pair<std::string, std::vector<RoofSurface>>(co.key(), roof_surfaces));
+                        
                         for (int i = 0; i < g["boundaries"].size(); ++i) { // g["boundaries"]: [[ [[1,2,3,4]], [[5,6,7,8]] ]]
 
                             for (int j = 0; j < g["boundaries"][i].size(); ++j) { // g["boundaries"][i]: [ [[1,2,3,4]], [[5,6,7,8]] ]
@@ -285,13 +291,34 @@ namespace orientation {
                                     // g["boundaries"][i][j] : [[1,2,3,4]]
                                     std::cout << "RoofSurface: " << g["boundaries"][i][j] << '\n';
                                 }
-                            } // end for: each primitive
-                        } // end for: index of each primitive
+                            } 
+                        } 
                     } // end if
                 } // end for: each geometry
 
-            } // end if: BuildingPart
+            } // end if: BuildingPart            
+
         } // end for: each city object
+
+
+        /*
+        * iterate roof_surfaces_dictionary
+        ************************************************************************************/
+
+        std::cout << "roof surfaces dictionary: " << '\n';
+        std::map<std::string, std::vector<RoofSurface>>::iterator it;
+        int count = 0;
+        for (it = roof_surfaces_dictionary.begin(); it != roof_surfaces_dictionary.end(); ++it)
+        {
+            std::string key = it->first;
+            std::cout << "key: " << key << "    ";
+            roof_surfaces_dictionary[key].emplace_back(RoofSurface());
+            std::cout << "value: " << roof_surfaces_dictionary[key][0].roof_orientation << '\n';
+            ++count;
+        }
+        std::cout << "total elements in roof surfaces dictionary: " << count << '\n';
+
+        /***********************************************************************************/
     }
 }
 
@@ -364,10 +391,8 @@ int main(int argc, const char* argv[]) {
     std::cout << '\n';
 
     std::cout << "orientation test" << '\n';
-    std::vector<RoofSurface> oriented_roof_surfaces;
-    oriented_roof_surfaces.reserve(noroofsurfaces);
-
-    orientation::calculate_orientation(j, oriented_roof_surfaces);
+    std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;
+    orientation::calculate_orientation(j, roof_surfaces_dictionary);
     std::cout << "done" << '\n';
     //std::cout << "test write: " << '\n';
     //orientation::test(j);
