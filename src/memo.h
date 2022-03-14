@@ -97,3 +97,47 @@
 //}
 
 /**********************************************************************************/
+
+
+
+/*
+* get the actual coordinates of vertices
+***********************************************************************************/
+
+//void test_vertices(json& j)
+//{
+//    std::vector<int> vi = j["vertices"][0];
+//    double x = (vi[0] * j["transform"]["scale"][0].get<double>()) + j["transform"]["translate"][0].get<double>();
+//    double y = (vi[1] * j["transform"]["scale"][1].get<double>()) + j["transform"]["translate"][1].get<double>();
+//    double z = (vi[2] * j["transform"]["scale"][2].get<double>()) + j["transform"]["translate"][2].get<double>();
+//    //std::cout << std::setprecision(2) << std::fixed << v << " (" << x << ", " << y << ", " << z << ")" << std::endl;
+//    std::cout << " (" << x << ", " << y << ", " << z << ")" << '\n';
+//}
+
+/**********************************************************************************/
+
+
+
+/*
+* add attributes in semantic objects
+***********************************************************************************/
+
+//void test_write_semantic_attributes(json& j)
+//{
+//    for (auto& co : j["CityObjects"].items()) {
+//        if (co.value()["type"] == "BuildingPart") {
+//            for (auto& g : co.value()["geometry"])
+//            {
+//                auto& sur = g["semantics"]["surfaces"];
+//                auto& val = g["semantics"]["values"];
+//                sur[0]["orientation"] = "NW";
+//                sur[3]["type"] = "mysurface";
+//                sur[4]["type"] = "wallmysurface";
+//
+//                val[0][6] = 999;
+//            }
+//        }
+//    }
+//}
+
+/**********************************************************************************/

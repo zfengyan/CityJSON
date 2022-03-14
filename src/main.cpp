@@ -235,42 +235,14 @@ namespace volume {
 }
 
 
+
 /*
 * calculate orientation
 * use the original file to calculate the orientation
 * to avoid the triangulated faces which point inwards
 */
 namespace orientation {
-    void test(json& j)
-    {
-		for (auto& co : j["CityObjects"].items()) {
-			if (co.value()["type"] == "BuildingPart") {
-                for (auto& g : co.value()["geometry"])
-                {
-                    auto& sur = g["semantics"]["surfaces"];
-                    auto& val = g["semantics"]["values"];
-                    sur[0]["orientation"] = "NW";
-                    sur[3]["type"] = "mysurface";
-                    sur[4]["type"] = "wallmysurface";
-
-                    val[0][6] = 999;
-                }
-			}
-		}
-    }
-
-
-    void test_vertices(json& j)
-    {
-        std::vector<int> vi = j["vertices"][0];
-        double x = (vi[0] * j["transform"]["scale"][0].get<double>()) + j["transform"]["translate"][0].get<double>();
-        double y = (vi[1] * j["transform"]["scale"][1].get<double>()) + j["transform"]["translate"][1].get<double>();
-        double z = (vi[2] * j["transform"]["scale"][2].get<double>()) + j["transform"]["translate"][2].get<double>();
-        //std::cout << std::setprecision(2) << std::fixed << v << " (" << x << ", " << y << ", " << z << ")" << std::endl;
-        std::cout << " (" << x << ", " << y << ", " << z << ")" << '\n';
-    }
-
-
+    
     /*
     * orientation
     */
@@ -290,7 +262,7 @@ namespace orientation {
                         roof_surfaces_dictionary.insert(
                             std::pair<std::string, std::vector<RoofSurface>>(co.key(), roof_surfaces));
 
-                        // track the index in "semantics->surfaces" of the newly-added roofsurface with attributes
+                        // track the index in "semantics->surfaces" of the newly-added roofsurface with attributes in each solid
                         int new_semantic_surfaces_index = (int)g["semantics"]["surfaces"].size();
                         
                         // traverse each roof in "boundaries" to find the RoofSurfaces
@@ -336,6 +308,7 @@ namespace orientation {
                                     } //end for: each roof surface
 
                                     // calculate orientation of this roof surface
+                                    // ...
                                     // ...
 
                                     // add this roof to the roof surfaces dictionary
@@ -419,6 +392,7 @@ namespace orientation {
 }
 
 
+
 int main(int argc, const char* argv[]) {
     
     /*
@@ -491,30 +465,51 @@ int main(int argc, const char* argv[]) {
 
     /**********************************************************************************/
 
+
     std::cout << "my output: " << '\n';
     std::cout << '\n';
-    //volume::calculate_volume(j_triangulated);
 
-    //std::cout << '\n';s
+
+    /*
+    * volume
+    ***********************************************************************************/
+
+    //volume::calculate_volume(j_triangulated); // use triangulated file to calculte the volume
+    //volume::write_volume(j); // write attributes to the original file
+    //std::cout << '\n';
+
+    /**********************************************************************************/
+
+
+    /*
+    * orientation
+    ***********************************************************************************/
 
     std::cout << "orientation test" << '\n';
     std::cout << '\n';
     std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;
-    orientation::calculate_orientation(j_triangulated, roof_surfaces_dictionary);
+    orientation::calculate_orientation(j, roof_surfaces_dictionary);
+    orientation::write_orientation(j, roof_surfaces_dictionary); // write attributes
+
+    /**********************************************************************************/
+
 
     std::cout << "processing done" << '\n';
-
     std::cout << '\n';
 
+
+    /*
+    * write files
+    ***********************************************************************************/
+
     std::cout << "writing files..." << '\n';
-
-    orientation::write_orientation(j_triangulated, roof_surfaces_dictionary);
-
     std::string writefilename = "/testwrite.json";
     std::ofstream o(DATA_PATH + writefilename);
     o << j_triangulated << std::endl;
     o.close();
     std::cout << "writing files done" << '\n';
+
+    /**********************************************************************************/
 
     return 0;
 }
