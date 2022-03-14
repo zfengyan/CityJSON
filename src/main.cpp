@@ -378,6 +378,44 @@ namespace orientation {
         /***********************************************************************************/
     }
 
+
+    /*
+    * write the orientation to the:
+    * "semantics" -> "surfaces"
+    * "semantics" -> "values"
+    */
+    void write_orientation(
+        json& jsonfile,
+        std::map<std::string, std::vector<RoofSurface>>& roof_surfaces_dictionary)
+    {
+        for (auto& co : jsonfile["CityObjects"].items()) {
+            if (co.value()["type"] == "BuildingPart") {
+                std::string key = co.key();
+
+                for (auto& g : co.value()["geometry"])
+                {
+                    auto& sur = g["semantics"]["surfaces"];
+                    auto& val = g["semantics"]["values"];
+
+                    for (auto& roof : roof_surfaces_dictionary[key])
+                    {
+                        sur[roof.semantics_surfaces_index]["type"] = roof.type;
+                        sur[roof.semantics_surfaces_index]["BuildingPart_id"] = roof.BuildingPart_id;
+                        sur[roof.semantics_surfaces_index]["boundaries_index"] = roof.boundaries_index;
+
+                        val[0][roof.boundaries_index] = roof.semantics_surfaces_index;
+                    }
+                    //sur[0]["orientation"] = "NW";
+                    //sur[3]["type"] = "mysurface";
+                    //sur[4]["type"] = "wallmysurface";
+
+                    //val[0][6] = 999;
+                }
+            }
+        }
+
+    }
+
 }
 
 
@@ -391,8 +429,8 @@ int main(int argc, const char* argv[]) {
     * INPUT files
     ***********************************************************************************/
 
-    std::string filename = "/myfile.city.json";
-    std::string filename_triangulated = "/myfile.triangulated.city.json";
+    std::string filename = "/cube.city.json";
+    std::string filename_triangulated = "/cube.triangulated.city.json";
 
     /**********************************************************************************/
 
@@ -457,20 +495,26 @@ int main(int argc, const char* argv[]) {
     std::cout << '\n';
     //volume::calculate_volume(j_triangulated);
 
-    //std::cout << '\n';
+    //std::cout << '\n';s
 
     std::cout << "orientation test" << '\n';
     std::cout << '\n';
     std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;
     orientation::calculate_orientation(j, roof_surfaces_dictionary);
 
-    std::cout << "done" << '\n';
+    std::cout << "processing done" << '\n';
 
-    /*std::string writefilename = "/testwrite.json";
+    std::cout << '\n';
+
+    std::cout << "writing files..." << '\n';
+
+    orientation::write_orientation(j, roof_surfaces_dictionary);
+
+    std::string writefilename = "/testwrite.json";
     std::ofstream o(DATA_PATH + writefilename);
     o << j << std::endl;
     o.close();
-    std::cout << "done" << '\n';*/
+    std::cout << "writing files done" << '\n';
 
     return 0;
 }
