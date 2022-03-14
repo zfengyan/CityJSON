@@ -500,7 +500,7 @@ int main(int argc, const char* argv[]) {
     std::cout << "orientation test" << '\n';
     std::cout << '\n';
     std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;
-    orientation::calculate_orientation(j, roof_surfaces_dictionary);
+    orientation::calculate_orientation(j_triangulated, roof_surfaces_dictionary);
 
     std::cout << "processing done" << '\n';
 
@@ -508,11 +508,11 @@ int main(int argc, const char* argv[]) {
 
     std::cout << "writing files..." << '\n';
 
-    orientation::write_orientation(j, roof_surfaces_dictionary);
+    orientation::write_orientation(j_triangulated, roof_surfaces_dictionary);
 
     std::string writefilename = "/testwrite.json";
     std::ofstream o(DATA_PATH + writefilename);
-    o << j << std::endl;
+    o << j_triangulated << std::endl;
     o.close();
     std::cout << "writing files done" << '\n';
 
