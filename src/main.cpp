@@ -366,21 +366,32 @@ namespace orientation {
 
                 for (auto& g : co.value()["geometry"])
                 {
-                    auto& sur = g["semantics"]["surfaces"];
-                    auto& val = g["semantics"]["values"];
-
-                    for (auto& roof : roof_surfaces_dictionary[key])
+                    if (g["type"] == "Solid") // valid geometry for one BuildingPart
                     {
-                        sur[roof.semantics_surfaces_index]["type"] = roof.type;
-                        sur[roof.semantics_surfaces_index]["BuildingPart_id"] = roof.BuildingPart_id;
-                        sur[roof.semantics_surfaces_index]["boundaries_index"] = roof.boundaries_index;
-                        sur[roof.semantics_surfaces_index]["orientation"] = roof.orientation;
-                        val[0][roof.boundaries_index] = roof.semantics_surfaces_index;
-                    }
+                        auto& sur = g["semantics"]["surfaces"];
+                        auto& val = g["semantics"]["values"];
+
+                        for (auto& roof : roof_surfaces_dictionary[key])
+                        {
+                            sur[roof.semantics_surfaces_index]["type"] = roof.type;
+                            sur[roof.semantics_surfaces_index]["BuildingPart_id"] = roof.BuildingPart_id;
+                            sur[roof.semantics_surfaces_index]["boundaries_index"] = roof.boundaries_index;
+                            sur[roof.semantics_surfaces_index]["orientation"] = roof.orientation;
+
+                            // change the corresponding index values in "semantics" -> "values" array
+                            // Solid array depth: 4
+                            // semantics -> values array depth: 4 - 2 = 2
+                            val[0][roof.boundaries_index] = roof.semantics_surfaces_index;
+
+                        } // end for: each roof surface of one BuildingPart
+
+                    } // end if: Solid geometry
                    
-                }
-            }
-        }
+                } // end for: each geometry
+
+            } // end if: BuildingPart
+
+        } // end for: each city object
 
     }
 
