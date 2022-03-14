@@ -89,7 +89,7 @@ public:
 	int boundaries_index; // also semantics_values_index
 	int semantics_surfaces_index;
 		
-	std::string roof_orientation;
+	std::string orientation;
 
 	std::vector<Vertex> RoofVertices; // store the 3 vertices of thie roof surface
 public:
@@ -98,9 +98,19 @@ public:
 		type("RoofSurface"),
 		boundaries_index(_INFINITE_),
 		semantics_surfaces_index(_INFINITE_),
-		roof_orientation("null")
+		orientation("null")
 	{
 		RoofVertices.reserve(3);
+	}
+
+
+	/*
+	* calculate and assign the orientation
+	* use y-axis as the North vector: [0,1,0]
+	*/
+	static std::string calculate_orientation(RoofSurface& roof)
+	{
+		return "null";
 	}
 };
 

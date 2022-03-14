@@ -308,8 +308,7 @@ namespace orientation {
                                     } //end for: each roof surface
 
                                     // calculate orientation of this roof surface
-                                    // ...
-                                    // ...
+                                    roof.orientation = RoofSurface::calculate_orientation(roof);
 
                                     // add this roof to the roof surfaces dictionary
                                     roof_surfaces_dictionary[co.key()].emplace_back(roof);
@@ -375,14 +374,10 @@ namespace orientation {
                         sur[roof.semantics_surfaces_index]["type"] = roof.type;
                         sur[roof.semantics_surfaces_index]["BuildingPart_id"] = roof.BuildingPart_id;
                         sur[roof.semantics_surfaces_index]["boundaries_index"] = roof.boundaries_index;
-
+                        sur[roof.semantics_surfaces_index]["orientation"] = roof.orientation;
                         val[0][roof.boundaries_index] = roof.semantics_surfaces_index;
                     }
-                    //sur[0]["orientation"] = "NW";
-                    //sur[3]["type"] = "mysurface";
-                    //sur[4]["type"] = "wallmysurface";
-
-                    //val[0][6] = 999;
+                   
                 }
             }
         }
@@ -505,7 +500,7 @@ int main(int argc, const char* argv[]) {
     std::cout << "writing files..." << '\n';
     std::string writefilename = "/testwrite.json";
     std::ofstream o(DATA_PATH + writefilename);
-    o << j_triangulated << std::endl;
+    o << j << std::endl;
     o.close();
     std::cout << "writing files done" << '\n';
 
