@@ -33,7 +33,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <vector>
 #include <map>
 #include "json.hpp"
 #include "calculation.hpp"

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <vector>
 
 constexpr auto one_six = 0.1666666666666667; // value of 1/6
 constexpr auto _INFINITE_ = 9999; // value of infinite
@@ -80,7 +81,8 @@ public:
 
 
 // struct to store the roofsurface
-struct RoofSurface {
+class RoofSurface {
+public:
 	std::string BuildingPart_id; // belongs to which BuildingPart
 	std::string type;
 
@@ -89,11 +91,16 @@ struct RoofSurface {
 		
 	std::string roof_orientation;
 
+	std::vector<Vertex> RoofVertices; // store the 3 vertices of thie roof surface
+public:
 	RoofSurface():
 		BuildingPart_id("null"),
 		type("RoofSurface"),
 		boundaries_index(_INFINITE_),
 		semantics_surfaces_index(_INFINITE_),
-		roof_orientation("null"){}
+		roof_orientation("null")
+	{
+		RoofVertices.reserve(3);
+	}
 };
 
