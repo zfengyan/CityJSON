@@ -80,7 +80,7 @@ public:
 };
 
 
-// struct to store the roofsurface
+// class to store the roofsurface
 class RoofSurface {
 public:
 	std::string BuildingPart_id; // belongs to which BuildingPart

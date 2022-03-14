@@ -72,7 +72,7 @@ namespace volume {
     * array depth of "values"(in "geometry" -> "semantics" -> "values"):
     * (array depth of Solid) - 2 = 2
     */
-    void calculate_volume_json_object(json& j)
+    void calculate_volume(json& j)
     {
         /*
         * std::vector<Vertex> v_each_triangulated_face
@@ -257,6 +257,42 @@ namespace orientation {
 			}
 		}
     }
+
+
+    /*
+    * orientation
+    */
+    void calculate_orientation(json& j, std::vector<RoofSurface>& oriented_roof_surfaces)
+    {
+        for (auto& co : j["CityObjects"].items())
+        { // each city object 
+
+            if (co.value()["geometry"].size() != 0)
+            {
+                for (auto& g : co.value()["geometry"]) { // each city object may only have ONE geometry
+
+                    if (g["type"] == "Solid") { // type of geometry, may be multisurface, solid... 
+
+                        for (int i = 0; i < g["boundaries"].size(); ++i) { // g["boundaries"]: [[ [[1,2,3,4]], [[5,6,7,8]] ]]
+
+                            for (int j = 0; j < g["boundaries"][i].size(); ++j) { // g["boundaries"][i]: [ [[1,2,3,4]], [[5,6,7,8]] ]
+                                int sem_index = g["semantics"]["values"][i][j];
+                                if (g["semantics"]["surfaces"][sem_index]["type"].get<std::string>().compare("RoofSurface") == 0) {
+                                    std::cout << "index: " << j << '\n';
+                                    std::cout << "BuildingPart: " << co.key() << '\n';
+                                    std::cout << "semantic size: " << g["semantics"]["surfaces"].size() << '\n';
+
+                                    // g["boundaries"][i][j] : [[1,2,3,4]]
+                                    std::cout << "RoofSurface: " << g["boundaries"][i][j] << '\n';
+                                }
+                            } // end for: each primitive
+                        } // end for: index of each primitive
+                    } // end if
+                } // end for: each geometry
+
+            } // end if: BuildingPart
+        } // end for: each city object
+    }
 }
 
 
@@ -323,18 +359,24 @@ int main(int argc, const char* argv[]) {
 
     std::cout << "my output: " << '\n';
     //std::cout << "list all vertices" << '\n';
-    volume::calculate_volume_json_object(j_triangulated);
+    volume::calculate_volume(j_triangulated);
 
     std::cout << '\n';
 
-    std::cout << "test write: " << '\n';
-    orientation::test(j);
+    std::cout << "orientation test" << '\n';
+    std::vector<RoofSurface> oriented_roof_surfaces;
+    oriented_roof_surfaces.reserve(noroofsurfaces);
 
-    std::string writefilename = "/testwrite.json";
+    orientation::calculate_orientation(j, oriented_roof_surfaces);
+    std::cout << "done" << '\n';
+    //std::cout << "test write: " << '\n';
+    //orientation::test(j);
+
+    /*std::string writefilename = "/testwrite.json";
     std::ofstream o(DATA_PATH + writefilename);
     o << j << std::endl;
     o.close();
-    std::cout << "done" << '\n';
+    std::cout << "done" << '\n';*/
 
     return 0;
 }
