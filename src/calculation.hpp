@@ -5,7 +5,7 @@
 
 
 
-#define one_six  0.166666667 // value of 1/6
+#define one_six 0.166666667 // value of 1/6
 #define _INFINITE_ 9999 // value of infinite
 #define epsilon 1e-8 // threshold
 #define quadrant_pi_radius 0.785398163 // pi/4 used for determine the prientation
@@ -55,16 +55,18 @@ public:
 	/*
 	* assign quadrant according to x y coordinates
 	* @return: 1, 2, 3, 4 -- indicating four quadrants
+	* if ">" not ">=", use: x+epsilon > 0, the same as "<"
+	* compared with 0 can directly use > or >= ?
 	*/
 	static int assign_quadrant(double x, double y)
 	{
-		if (x >= 0) { // quadrant 1 or 4
-			if (y >= 0)return 1;
-			else return 4;
+		if (x > epsilon || abs(x) < epsilon) { // x > 0 or x = 0 : quadrant 1 or 4
+			if (y > epsilon || abs(y) < epsilon)return 1; // y > 0 or y = 0 : quadrant 1
+			else return 4; // y < 0 : quadrant 4
 		}
 		else { // quadrant 2 or 3
-			if (y >= 0)return 2;
-			else return 3;
+			if (y > epsilon || abs(y) < epsilon)return 2; // y > 0 or y = 0 : quadrant 2
+			else return 3; // y < 0: quadrant 3
 		}
 	}
 
@@ -197,21 +199,15 @@ public:
 	{
 		// get the normal vector of curent roof surface
 		Vector3d& normal = Vector3d::find_normal(roof.RoofVertices);
-		
-		// get the absolute normal
-		Vector3d abs_normal(
-			abs(normal.x),
-			abs(normal.y),
-			abs(normal.z)
-		);
 
 		// situation cannot use alpha = arctan(x/y)
 		// orientaion is either East or West(using 2d coordinates x, y to estimate the orientation)
 		// in the orientation, only 8 values + "horizontal", E, W, N, S should be replaced with proper values(like EN)
-		if ((abs_normal.y - 0) <= epsilon) // y = 0
+		if (abs(normal.y) < epsilon) // y = 0
 		{
-			if (normal.x >= 0)return "EN"; // can also return "ES"
-			else return "WN"; // can also return "WS"
+			if (normal.x > epsilon)return "EN"; // x > 0 (y = 0)
+			else if (abs(normal.x) < epsilon)return "horizontal"; // x = 0 (y = 0)
+			else return "WN"; // x < 0 (y = 0)
 		}
 
 		// situation can use alpha = arctan(x/y)
@@ -224,28 +220,37 @@ public:
 		int quadrant = Vector3d::assign_quadrant(normal.x, normal.y);
 
 		// use abs_normal to get the angle(radius, value of atan(): [-pi, pi])
-		double radius_angle = atan(abs_normal.x / abs_normal.y);
+		double radius_angle = atan(abs(normal.x) / abs(normal.y));
 
 		switch (quadrant)
 		{
 		case 1: // 1-th quadrant
-
+			if (radius_angle > quadrant_pi_radius + epsilon) // > pi/4
+				return "EN";
+			else return "NE";
 			break;
+			
 		case 2: // 2-th quadrant
-
+			if (radius_angle > quadrant_pi_radius + epsilon) // > pi/4
+				return "WN";
+			else return "NW";
 			break;
+
 		case 3: // 3-th quadrant
-
+			if (radius_angle > quadrant_pi_radius + epsilon) // > pi/4
+				return "WS";
+			else return "SW";
 			break;
+
 		case 4: // 4-th quadrant
-
+			if (radius_angle > quadrant_pi_radius + epsilon) // > pi/4
+				return "ES";
+			else return "SE";
 			break;
+
 		default:
 			break;
 		}
-		
-
-		return "null";
 	}
 };
 

@@ -543,18 +543,11 @@ int main(int argc, const char* argv[]) {
     * write files
     ***********************************************************************************/
 
-    //std::cout << "writing files..." << '\n';    
-    //writeFiles::write_json_file(j, writefilename);
-    //std::cout << "writing files done" << '\n';
+    std::cout << "writing files..." << '\n';    
+    writeFiles::write_json_file(j, writefilename);
+    std::cout << "writing files done" << '\n';
 
-    /**********************************************************************************/
-
-
-    /*
-    * test orientation calculation
-    */
-    
-   
+    /**********************************************************************************/   
 
     return 0;
 }
