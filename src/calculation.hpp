@@ -48,13 +48,33 @@ public:
 
 	// get cross product
 	static Vector3d cross(Vector3d& v1, Vector3d& v2) {
-		return Vector3d();
+		return Vector3d(
+			(v1.y * v2.z - v1.z * v2.y),
+			(v1.z * v2.x - v1.x * v2.z),
+			(v1.x * v2.y - v1.y * v2.x)
+		);
 	}
 
 	// get normal vector of one face
 	// RoofVertices: store 3 vertices of one face, v1, v2, v3 should be oriented as CCW from outside
 	static Vector3d find_normal(std::vector<Vertex>& RoofVertices) {
+		
+		// define two vectors of this roof surface
+		// v1: starts from vertex[0], ends at vertex[1]
+		// v2: starts from vertex[1], ends at vertex[2]
+		Vector3d v1(
+			(RoofVertices[1].x - RoofVertices[0].x),
+			(RoofVertices[1].y - RoofVertices[0].y),
+			(RoofVertices[1].z - RoofVertices[0].z)
+		);
 
+		Vector3d v2(
+			(RoofVertices[2].x - RoofVertices[1].x),
+			(RoofVertices[2].y - RoofVertices[1].y),
+			(RoofVertices[2].z - RoofVertices[1].z)
+		);
+
+		return cross(v1, v2);
 	}
 };
 
