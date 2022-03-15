@@ -163,6 +163,18 @@ public:
 		RoofVertices.reserve(3);
 	}
 
+public:
+
+	/*
+	* assign quadrant according to x y coordinates
+	* @return: 1, 2, 3, 4 -- indicating four quadrants
+	*/
+	static int assign_quadrant(double x, double y)
+	{
+		//if ((x - 0) > epsilon && (y - 0) > epsilon))return 1; // 1-th quadrant
+		//else if((x - 0) > epsilon && (y - 0) > epsilon))
+	}
+
 
 	/*
 	* calculate and assign the orientation
@@ -183,12 +195,14 @@ public:
 		// situation cannot use alpha = arctan(x/y)
 		// orientaion is either East or West(using 2d coordinates x, y to estimate the orientation)
 		// in the orientation, only 8 values + "horizontal", E, W, N, S should be replaced with proper values(like EN)
-		if ((abs_normal.y - 0) <= epsilon)
+		if ((abs_normal.y - 0) <= epsilon) // y = 0
 		{
 			if ((normal.x - 0) > epsilon)return "EN"; // can also return "ES"
 			else return "WN"; // can also return "WS"
 		}
 
+		// first assign the quadrant according to x,y signs
+		
 		// situation can use alpha = arctan(x/y)
 		// double alpha = atan(abs_normal.x / abs_normal.y);
 
