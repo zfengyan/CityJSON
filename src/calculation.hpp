@@ -3,15 +3,20 @@
 #include <cmath>
 #include <vector>
 
-constexpr auto one_six = 0.1666666666666667; // value of 1/6
-constexpr auto _INFINITE_ = 9999; // value of infinite
-constexpr auto epsilon = 1e-8; // threshold
+
+
+#define one_six  0.166666667 // value of 1/6
+#define _INFINITE_ 9999 // value of infinite
+#define epsilon 1e-8 // threshold
+#define quadrant_pi_radius 0.785398163 // pi/4 used for determine the prientation
+
 
 
 class Vertex;
 class Vector3d;
 class Volume;
 class RoofSurface;
+
 
 
 // class to store vertex:
@@ -47,6 +52,23 @@ public:
 
 public:
 
+	/*
+	* assign quadrant according to x y coordinates
+	* @return: 1, 2, 3, 4 -- indicating four quadrants
+	*/
+	static int assign_quadrant(double x, double y)
+	{
+		if (x >= 0) { // quadrant 1 or 4
+			if (y >= 0)return 1;
+			else return 4;
+		}
+		else { // quadrant 2 or 3
+			if (y >= 0)return 2;
+			else return 3;
+		}
+	}
+
+
 	// get cross product
 	static Vector3d cross(Vector3d& v1, Vector3d& v2) {
 		return Vector3d(
@@ -55,6 +77,7 @@ public:
 			(v1.x * v2.y - v1.y * v2.x)
 		);
 	}
+
 
 	// get normal vector of one face
 	// RoofVertices: store 3 vertices of one face, v1, v2, v3 should be oriented as CCW from outside
@@ -77,6 +100,7 @@ public:
 
 		return cross(v1, v2);
 	}
+
 };
 
 
@@ -166,17 +190,6 @@ public:
 public:
 
 	/*
-	* assign quadrant according to x y coordinates
-	* @return: 1, 2, 3, 4 -- indicating four quadrants
-	*/
-	static int assign_quadrant(double x, double y)
-	{
-		//if ((x - 0) > epsilon && (y - 0) > epsilon))return 1; // 1-th quadrant
-		//else if((x - 0) > epsilon && (y - 0) > epsilon))
-	}
-
-
-	/*
 	* calculate and assign the orientation
 	* use y-axis as the North(North vector: [0, 1, 0])
 	*/
@@ -197,14 +210,40 @@ public:
 		// in the orientation, only 8 values + "horizontal", E, W, N, S should be replaced with proper values(like EN)
 		if ((abs_normal.y - 0) <= epsilon) // y = 0
 		{
-			if ((normal.x - 0) > epsilon)return "EN"; // can also return "ES"
+			if (normal.x >= 0)return "EN"; // can also return "ES"
 			else return "WN"; // can also return "WS"
 		}
 
-		// first assign the quadrant according to x,y signs
-		
 		// situation can use alpha = arctan(x/y)
 		// double alpha = atan(abs_normal.x / abs_normal.y);
+		// 
+		// use normal to decide the quadrant
+		// use abs_normal to calculate the angle
+		// 
+		// first assign the quadrant according to x,y signs
+		int quadrant = Vector3d::assign_quadrant(normal.x, normal.y);
+
+		// use abs_normal to get the angle(radius, value of atan(): [-pi, pi])
+		double radius_angle = atan(abs_normal.x / abs_normal.y);
+
+		switch (quadrant)
+		{
+		case 1: // 1-th quadrant
+
+			break;
+		case 2: // 2-th quadrant
+
+			break;
+		case 3: // 3-th quadrant
+
+			break;
+		case 4: // 4-th quadrant
+
+			break;
+		default:
+			break;
+		}
+		
 
 		return "null";
 	}

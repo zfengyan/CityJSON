@@ -553,9 +553,7 @@ int main(int argc, const char* argv[]) {
     /*
     * test orientation calculation
     */
-    double alpha = atan(1 /1);
-    double a = 0.00000001;
-    if ((a - 0) > epsilon) std::cout << a;
+    
    
 
     return 0;
