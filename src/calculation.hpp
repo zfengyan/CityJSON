@@ -6,6 +6,13 @@
 constexpr auto one_six = 0.1666666666666667; // value of 1/6
 constexpr auto _INFINITE_ = 9999; // value of infinite
 
+
+class Vertex;
+class Vector3d;
+class Volume;
+class RoofSurface;
+
+
 // class to store vertex:
 class Vertex {
 public:
@@ -26,6 +33,7 @@ public:
 };
 
 
+
 // class to represent normal vector
 class Vector3d : public Vertex 
 {
@@ -36,10 +44,20 @@ public:
 	Vector3d(double X, double Y, double Z):
 		Vertex(X, Y, Z){}
 
+public:
+
+	// get cross product
 	static Vector3d cross(Vector3d& v1, Vector3d& v2) {
 		return Vector3d();
 	}
+
+	// get normal vector of one face
+	// RoofVertices: store 3 vertices of one face, v1, v2, v3 should be oriented as CCW from outside
+	static Vector3d find_normal(std::vector<Vertex>& RoofVertices) {
+
+	}
 };
+
 
 
 // class related to volume
@@ -100,6 +118,7 @@ public:
 };
 
 
+
 // class to store the roofsurface
 class RoofSurface {
 public:
@@ -111,7 +130,7 @@ public:
 		
 	std::string orientation;
 
-	std::vector<Vertex> RoofVertices; // store the 3 vertices of thie roof surface
+	std::vector<Vertex> RoofVertices; // store the 3 vertices of thie roof surface(v1, v2, v3, CCW from outside)
 public:
 	RoofSurface():
 		BuildingPart_id("null"),
