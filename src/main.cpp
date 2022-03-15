@@ -50,7 +50,7 @@ void  visit_roofsurfaces(json& j);
 /*
 * set the null value for buildings without geometry and invalid buildings?
 */
-namespace calculateVolume {
+class calculateVolume {
 
     /*
     * Function: 
@@ -73,7 +73,7 @@ namespace calculateVolume {
     * array depth of "values"(in "geometry" -> "semantics" -> "values"):
     * (array depth of Solid) - 2 = 2
     */
-    void calculate_volume(json& j)
+    static void calculate_volume(json& j)
     {
         /*
         * std::vector<Vertex> v_each_triangulated_face
@@ -232,7 +232,7 @@ namespace calculateVolume {
 
     }
 
-}
+};
 
 
 
@@ -241,12 +241,12 @@ namespace calculateVolume {
 * use the original file to calculate the orientation
 * to avoid the triangulated faces which point inwards
 */
-namespace calculateOrientation {
-    
+class calculateOrientation {
+public:  
     /*
     * orientation
     */
-    void calculate_orientation(
+    static void calculate_orientation(
         json& jsonfile, 
         std::map<std::string, std::vector<RoofSurface>>& roof_surfaces_dictionary)
     {
@@ -350,21 +350,21 @@ namespace calculateOrientation {
         /***********************************************************************************/
     }
 
-}
+};
 
 
 
 /*
 * write attributes
 */
-namespace writeAttributes {
-
+class writeAttributes {
+public:
     /*
     * write the orientation to the:
     * "semantics" -> "surfaces"
     * "semantics" -> "values"
     */
-    void write_orientation(
+    static void write_orientation(
         json& jsonfile,
         std::map<std::string, std::vector<RoofSurface>>& roof_surfaces_dictionary)
     {
@@ -402,21 +402,22 @@ namespace writeAttributes {
         } // end for: each city object
 
     }
-}
+};
 
 
 
 /*
 * write files
 */
-namespace writeFiles {
-    void write_json_file(json& j, std::string& writefilename)
+class writeFiles {
+public:
+    static void write_json_file(json& j, std::string& writefilename)
     {
         std::ofstream o(DATA_PATH + writefilename); // std::string writefilename = "/testwrite.json";
         o << j << std::endl;
         o.close();
     }
-}
+};
 
 
 
