@@ -543,11 +543,22 @@ int main(int argc, const char* argv[]) {
     * write files
     ***********************************************************************************/
 
-    std::cout << "writing files..." << '\n';    
-    writeFiles::write_json_file(j, writefilename);
-    std::cout << "writing files done" << '\n';
+    //std::cout << "writing files..." << '\n';    
+    //writeFiles::write_json_file(j, writefilename);
+    //std::cout << "writing files done" << '\n';
 
     /**********************************************************************************/
+
+
+    /*
+    * test normal vector
+    */
+    std::vector<Vertex> roofvertices;
+    roofvertices.emplace_back(Vertex(1, 1, 0));
+    roofvertices.emplace_back(Vertex(0, 1, 0));
+    roofvertices.emplace_back(Vertex(0, 1, 1));
+    Vector3d& normal = Vector3d::find_normal(roofvertices);
+    std::cout << "normal: " << " " << normal.x << " " << normal.y << " " << normal.z << '\n';
 
     return 0;
 }
@@ -631,8 +642,6 @@ void list_all_vertices(json& j) {
         }
     }
 }
-
-
 
 
 
