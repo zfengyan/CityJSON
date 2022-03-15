@@ -50,7 +50,7 @@ void  visit_roofsurfaces(json& j);
 /*
 * set the null value for buildings without geometry and invalid buildings?
 */
-namespace volume {
+namespace calculateVolume {
 
     /*
     * Function: 
@@ -241,7 +241,7 @@ namespace volume {
 * use the original file to calculate the orientation
 * to avoid the triangulated faces which point inwards
 */
-namespace orientation {
+namespace calculateOrientation {
     
     /*
     * orientation
@@ -350,6 +350,14 @@ namespace orientation {
         /***********************************************************************************/
     }
 
+}
+
+
+
+/*
+* write attributes
+*/
+namespace writeAttributes {
 
     /*
     * write the orientation to the:
@@ -386,7 +394,7 @@ namespace orientation {
                         } // end for: each roof surface of one BuildingPart
 
                     } // end if: Solid geometry
-                   
+
                 } // end for: each geometry
 
             } // end if: BuildingPart
@@ -394,7 +402,6 @@ namespace orientation {
         } // end for: each city object
 
     }
-
 }
 
 
@@ -402,7 +409,7 @@ namespace orientation {
 /*
 * write files
 */
-namespace writefiles {
+namespace writeFiles {
     void write_json_file(json& j, std::string& writefilename)
     {
         std::ofstream o(DATA_PATH + writefilename); // std::string writefilename = "/testwrite.json";
@@ -497,8 +504,8 @@ int main(int argc, const char* argv[]) {
     * volume
     ***********************************************************************************/
 
-    //volume::calculate_volume(j_triangulated); // use triangulated file to calculte the volume
-    //volume::write_volume(j); // write attributes to the original file
+    //calculateVolume::calculate_volume(j_triangulated); // use triangulated file to calculte the volume
+    //calculateVolume::write_volume(j); // write attributes to the original file
     //std::cout << '\n';
 
     /**********************************************************************************/
@@ -511,8 +518,8 @@ int main(int argc, const char* argv[]) {
     std::cout << "orientation test" << '\n';
     std::cout << '\n';
     std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;
-    orientation::calculate_orientation(j, roof_surfaces_dictionary);
-    orientation::write_orientation(j, roof_surfaces_dictionary); // write attributes
+    calculateOrientation::calculate_orientation(j, roof_surfaces_dictionary);
+    writeAttributes::write_orientation(j, roof_surfaces_dictionary); // write attributes
 
     /**********************************************************************************/
 
@@ -526,7 +533,7 @@ int main(int argc, const char* argv[]) {
     ***********************************************************************************/
 
     std::cout << "writing files..." << '\n';    
-    writefiles::write_json_file(j, writefilename);
+    writeFiles::write_json_file(j, writefilename);
     std::cout << "writing files done" << '\n';
 
     /**********************************************************************************/
