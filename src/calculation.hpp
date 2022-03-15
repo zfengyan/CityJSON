@@ -6,19 +6,39 @@
 constexpr auto one_six = 0.1666666666666667; // value of 1/6
 constexpr auto _INFINITE_ = 9999; // value of infinite
 
-// struct to store vertex:
-struct Vertex {
+// class to store vertex:
+class Vertex {
+public:
 	double x;
 	double y;
 	double z;
 
-	int vid;
-
+	int vid; // might be used
+public:
 	Vertex() :
 		x(0), y(0), z(0), vid(0){}
 
 	Vertex(double X, double Y, double Z, int id) :
 		x(X), y(Y), z(Z), vid(id){}
+
+	Vertex(double X, double Y, double Z):
+		x(X), y(Y), z(Z), vid(0) {}
+};
+
+
+// class to represent normal vector
+class Vector3d : public Vertex 
+{
+public:
+	Vector3d() :
+		Vertex() {}
+
+	Vector3d(double X, double Y, double Z):
+		Vertex(X, Y, Z){}
+
+	static Vector3d cross(Vector3d& v1, Vector3d& v2) {
+		return Vector3d();
+	}
 };
 
 
