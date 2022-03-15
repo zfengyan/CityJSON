@@ -551,14 +551,10 @@ int main(int argc, const char* argv[]) {
 
 
     /*
-    * test normal vector
+    * test orientation calculation
     */
-    std::vector<Vertex> roofvertices;
-    roofvertices.emplace_back(Vertex(1, 1, 0));
-    roofvertices.emplace_back(Vertex(0, 1, 0));
-    roofvertices.emplace_back(Vertex(0, 1, 1));
-    Vector3d& normal = Vector3d::find_normal(roofvertices);
-    std::cout << "normal: " << " " << normal.x << " " << normal.y << " " << normal.z << '\n';
+    double alpha = atan(1.414 /1);
+    std::cout << alpha;
 
     return 0;
 }

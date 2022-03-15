@@ -5,6 +5,7 @@
 
 constexpr auto one_six = 0.1666666666666667; // value of 1/6
 constexpr auto _INFINITE_ = 9999; // value of infinite
+constexpr auto epsilon = 1e-8; // threshold
 
 
 class Vertex;
@@ -165,10 +166,32 @@ public:
 
 	/*
 	* calculate and assign the orientation
-	* use y-axis as the North vector: [0,1,0]
+	* use y-axis as the North(North vector: [0, 1, 0])
 	*/
 	static std::string calculate_orientation(RoofSurface& roof)
 	{
+		// get the normal vector of curent roof surface
+		Vector3d& normal = Vector3d::find_normal(roof.RoofVertices);
+		
+		// get the absolute normal
+		Vector3d abs_normal(
+			abs(normal.x),
+			abs(normal.y),
+			abs(normal.z)
+		);
+
+		// situation cannot use alpha = arctan(x/y)
+		// orientaion is either East or West(using 2d coordinates x, y to estimate the orientation)
+		// in the orientation, only 8 values + "horizontal", E, W, N, S should be replaced with proper values(like EN)
+		if ((abs_normal.y - 0) <= epsilon)
+		{
+			if ((normal.x - 0) > epsilon)return "EN"; // can also return "ES"
+			else return "WN"; // can also return "WS"
+		}
+
+		// situation can use alpha = arctan(x/y)
+		// double alpha = atan(abs_normal.x / abs_normal.y);
+
 		return "null";
 	}
 };
