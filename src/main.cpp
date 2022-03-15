@@ -38,12 +38,22 @@
 #include "json.hpp"
 #include "calculation.hpp"
 
+
+
 using json = nlohmann::json;
+
 
 
 int   get_no_roof_surfaces(json& j);
 void  list_all_vertices(json& j);
 void  visit_roofsurfaces(json& j);
+
+
+
+class calculateVolume;
+class calculateOrientation;
+class writeAttributes;
+class writeFiles;
 
 
 
