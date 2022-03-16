@@ -327,6 +327,7 @@ public:
 
                                     // construct vertices of this roof
                                     // g["boundaries"][i][j] : [[1,2,3,4], [4,5,6],...[]], each roof face, may contain inner faces
+                                    std::vector<Vertex> one_interior;
                                     for (int m = 0; m < g["boundaries"][i][j].size(); ++m)
                                     {
                                         // g["boundaries"][i][j][m] : [1,2,3,4], [4,5,6], ... []
@@ -346,9 +347,13 @@ public:
                                             // add the vertex to the vector according to the default order
                                             // exterior: CCW
                                             // inner: CW
-                                            if (m == 0)roof.exteriorVertices.emplace_back(Vertex(x, y, z, v));
-                                            else roof.interiorVertices.emplace_back(Vertex(x, y, z, v));
-                                         
+                                            if (m == 0)roof.exteriorSurface.emplace_back(Vertex(x, y, z, v));
+                                            else {
+                                                one_interior.emplace_back(Vertex(x, y, z, v));
+                                                roof.interiorSurfaces.emplace_back(one_interior);
+                                                one_interior.clear();
+                                            }
+                                                      
                                         }
                                         
                                     } //end for: each roof surface

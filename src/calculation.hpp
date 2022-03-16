@@ -187,8 +187,8 @@ public:
 	std::string orientation; // indicates orientaion
 	double area; // indicates area
 
-	std::vector<Vertex> exteriorVertices; // store the ecterior vertices, should be CCW from outside
-	std::vector<Vertex> interiorVertices; // store the inner vertices, should be CW from outside
+	std::vector<Vertex> exteriorSurface; // store the ecterior vertices, should be CCW from outside
+	std::vector<std::vector<Vertex>> interiorSurfaces; // store the inner vertices, should be CW from outside
 public:
 	RoofSurface():
 		BuildingPart_id("null"),
@@ -207,8 +207,8 @@ public:
 	*/
 	static std::string calculate_orientation(RoofSurface& roof)
 	{
-		// get the normal vector of curent roof surface
-		Vector3d& normal = Vector3d::find_normal(roof.exteriorVertices);
+		// use exterior surface of current roof surface to get the normal vector
+		Vector3d& normal = Vector3d::find_normal(roof.exteriorSurface);
 
 		// situation cannot use alpha = arctan(x/y)
 		// orientaion is either East or West(using 2d coordinates x, y to estimate the orientation)
@@ -270,20 +270,21 @@ public:
 	/*
 	* calculate the area of roof surface(2d)
 	*/
-	static double calculate_area_2d(std::vector<Vertex>& RoofVertices)
+	static double calculate_area_2d(RoofSurface& roof)
 	{
-		long N = (long)RoofVertices.size(); // DO NOT use size() - 1 directly, may cause subscript error
+		// First calculate the area of exterior
+		//long N = (long)RoofVertices.size(); // DO NOT use size() - 1 directly, may cause subscript error
 
-		double sum_determinant = 0;
-		for (long i = 0; i != N - 1; ++i)
-		{
-			sum_determinant += Vector3d::determinant_2x2(RoofVertices[i], RoofVertices[i + 1]);
-		}
-		sum_determinant += Vector3d::determinant_2x2(RoofVertices[N-1], RoofVertices[0]);
+		//double sum_determinant = 0;
+		//for (long i = 0; i != N - 1; ++i)
+		//{
+		//	sum_determinant += Vector3d::determinant_2x2(RoofVertices[i], RoofVertices[i + 1]);
+		//}
+		//sum_determinant += Vector3d::determinant_2x2(RoofVertices[N-1], RoofVertices[0]);
 
-		double result = 0.5 * abs(sum_determinant);
+		//double result = 0.5 * abs(sum_determinant);
 
-		return result;
+		//return result;
 	}
 
 
