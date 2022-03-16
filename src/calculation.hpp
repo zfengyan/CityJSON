@@ -107,7 +107,7 @@ public:
 	// 2x2 matrix:
 	// x1 y1
 	// x2 y2
-	static double determinant_2x2(Vertex& v1, Vertex& v2)
+	static double det_2x2(Vertex& v1, Vertex& v2)
 	{
 		return (v1.x * v2.y - v1.y * v2.x);
 	}
@@ -187,8 +187,8 @@ public:
 	std::string orientation; // indicates orientaion
 	double area; // indicates area
 
-	std::vector<Vertex> exteriorSurface; // store the ecterior vertices, should be CCW from outside
-	std::vector<std::vector<Vertex>> interiorSurfaces; // store the inner vertices, should be CW from outside
+	std::vector<Vertex> exteriorSurface; // store the vertices of exterior face, should be CCW from outside
+	std::vector<std::vector<Vertex>> interiorSurfaces; // store the vertices of interior faces, should be CW(for each interior face) from outside
 public:
 	RoofSurface():
 		BuildingPart_id("null"),
@@ -272,19 +272,37 @@ public:
 	*/
 	static double calculate_area_2d(RoofSurface& roof)
 	{
-		// First calculate the area of exterior
-		//long N = (long)RoofVertices.size(); // DO NOT use size() - 1 directly, may cause subscript error
+		// First calculate the area of exterior(one exterior face for each roof surface)
+		long N_exterior = (long)roof.exteriorSurface.size();
+		double sum_exterior_det = 0;
+		for (long i = 0; i != N_exterior - 1; ++i)
+		{
+			sum_exterior_det += Vector3d::det_2x2(roof.exteriorSurface[i], roof.exteriorSurface[i + 1]);
+		}
+		sum_exterior_det += Vector3d::det_2x2(roof.exteriorSurface[N_exterior - 1], roof.exteriorSurface[0]);
+		double exterior_area = 0.5 * abs(sum_exterior_det);
 
-		//double sum_determinant = 0;
-		//for (long i = 0; i != N - 1; ++i)
-		//{
-		//	sum_determinant += Vector3d::determinant_2x2(RoofVertices[i], RoofVertices[i + 1]);
-		//}
-		//sum_determinant += Vector3d::determinant_2x2(RoofVertices[N-1], RoofVertices[0]);
 
-		//double result = 0.5 * abs(sum_determinant);
+		// Second calculate the area of all interior faces(may be multiple interior faces for each roof surface)
+		double interior_area = 0; // interior area for all interior faces
+		for (auto& one_interior : roof.interiorSurfaces)
+		{
+			long N_one_interior = (long)one_interior.size();
+			double sum_one_interior_det = 0;
+			for (long i = 0; i != N_one_interior - 1; ++i)
+			{
+				sum_one_interior_det += Vector3d::det_2x2(one_interior[i], one_interior[i + 1]);
+			}
+			sum_one_interior_det += Vector3d::det_2x2(one_interior[N_one_interior - 1], one_interior[0]);
+			double one_interior_area = 0.5 * abs(sum_one_interior_det);
 
-		//return result;
+			interior_area += one_interior_area;
+		}
+
+
+		// area for this roof surface: exterior - interior
+		double area_2d = exterior_area - interior_area;
+		return area_2d > epsilon ? area_2d : 0;
 	}
 
 
