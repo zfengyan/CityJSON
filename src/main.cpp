@@ -353,7 +353,7 @@ public:
                                     roof.orientation = RoofSurface::calculate_orientation(roof);
 
                                     // calculate the area of this roof surface
-                                    roof.area = RoofSurface::calculate_area(roof);
+                                    roof.area = RoofSurface::calculate_area_3d(roof);
 
                                     // add this roof to the roof surfaces dictionary
                                     roof_surfaces_dictionary[co.key()].emplace_back(roof);
@@ -435,7 +435,7 @@ public:
                             else sur[roof.semantics_surfaces_index]["orientation"] = nullptr;
 
                             // area
-                            if (roof.area > epsilon)sur[roof.semantics_surfaces_index]["area"] = roof.area;
+                            if (roof.area > epsilon)sur[roof.semantics_surfaces_index]["area"] = ceil(roof.area * 100) / 100; // restrict the decimal places
                             else sur[roof.semantics_surfaces_index]["area"] = nullptr;
 
                             // change the corresponding index values in "semantics" -> "values" array
@@ -505,9 +505,9 @@ int main(int argc, const char* argv[]) {
     * Modify INPUT and OUTPUT files here
     ***********************************************************************************/
 
-    std::string filename = "/myfile.city.json";
-    std::string filename_triangulated = "/myfile.triangulated.city.json";
-    std::string writefilename = "/testwrite.myfile.city.json";
+    std::string filename = "/cube.city.json";
+    std::string filename_triangulated = "/cube.triangulated.city.json";
+    std::string writefilename = "/testwrite.cube.city.json";
 
     /**********************************************************************************/
 
@@ -621,6 +621,14 @@ int main(int argc, const char* argv[]) {
 
     /**********************************************************************************/   
 
+	std::vector<Vertex> roofvertices;
+	roofvertices.emplace_back(Vertex(1, 6, 0));
+	roofvertices.emplace_back(Vertex(3, 1, 1));
+	roofvertices.emplace_back(Vertex(7, 2, 2));
+    roofvertices.emplace_back(Vertex(4, 4, 3));
+    roofvertices.emplace_back(Vertex(8, 5, 4));
+
+    std::cout << "area 2d: " << " " << RoofSurface::calculate_area_2d(roofvertices) << '\n';
 
     return 0;
 }

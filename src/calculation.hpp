@@ -103,6 +103,15 @@ public:
 		return cross(v1, v2);
 	}
 
+
+	// 2x2 matrix:
+	// x1 y1
+	// x2 y2
+	static double determinant_2x2(Vertex& v1, Vertex& v2)
+	{
+		return (v1.x * v2.y - v1.y * v2.x);
+	}
+
 };
 
 
@@ -192,7 +201,7 @@ public:
 public:
 
 	/*
-	* calculate and assign the orientation
+	* calculate and assign the orientation of roof surface
 	* use y-axis as the North(North vector: [0, 1, 0])
 	*/
 	static std::string calculate_orientation(RoofSurface& roof)
@@ -258,10 +267,31 @@ public:
 
 
 	/*
-	* calculate the area
+	* calculate the area of roof surface(2d)
+	*/
+	static double calculate_area_2d(std::vector<Vertex>& RoofVertices)
+	{
+		long N = (long)RoofVertices.size(); // DO NOT use size() - 1 directly, may cause subscript error
+
+		double sum_determinant = 0;
+		for (long i = 0; i != N - 1; ++i)
+		{
+			sum_determinant += Vector3d::determinant_2x2(RoofVertices[i], RoofVertices[i + 1]);
+		}
+		sum_determinant += Vector3d::determinant_2x2(RoofVertices[N-1], RoofVertices[0]);
+
+		double result = 0.5 * abs(sum_determinant);
+
+		return result;
+	}
+
+
+
+	/*
+	* calculate the area of roof surface(3d)
 	* area must be >= 0
 	*/
-	static double calculate_area(RoofSurface& roof)
+	static double calculate_area_3d(RoofSurface& roof)
 	{
 		return 0;
 	}
