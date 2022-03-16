@@ -173,3 +173,27 @@
 //std::cout << "area 2d: " << " " << RoofSurface::calculate_area_2d(roofvertices) << '\n';
 
 /**********************************************************************************/
+
+
+
+/*
+* test interior vertices size
+***********************************************************************************/
+
+//std::cout << "inner faces: " << '\n';
+//std::cout << "roof surfaces dictionary: " << '\n';
+//std::map<std::string, std::vector<RoofSurface>>::iterator it;
+//
+//for (it = roof_surfaces_dictionary.begin(); it != roof_surfaces_dictionary.end(); ++it)
+//{
+//    std::string key = it->first;
+//    std::cout << key << " " << '\n';
+//    std::cout << "interior vertices list size for each roof surface of this BuildingPart: " << '\n';
+//    for (auto& surface : it->second)
+//    {
+//        std::cout << surface.interiorVertices.size() << " ";
+//    }
+//    std::cout << '\n';
+//}
+
+/**********************************************************************************/
