@@ -85,7 +85,7 @@ public:
 	// RoofVertices: store 3 vertices of one face, v1, v2, v3 should be oriented as CCW from outside
 	static Vector3d find_normal(std::vector<Vertex>& RoofVertices) {
 		
-		// define two vectors of this roof surface
+		// use the first 3 vertices to define two vectors of this roof surface
 		// v1: starts from vertex[0], ends at vertex[1]
 		// v2: starts from vertex[1], ends at vertex[2]
 		Vector3d v1(
@@ -175,7 +175,8 @@ public:
 	int boundaries_index; // also semantics_values_index
 	int semantics_surfaces_index;
 		
-	std::string orientation;
+	std::string orientation; // indicates orientaion
+	double area; // indicates area
 
 	std::vector<Vertex> RoofVertices; // store the 3 vertices of thie roof surface(v1, v2, v3, CCW from outside)
 public:
@@ -184,10 +185,9 @@ public:
 		type("RoofSurface"),
 		boundaries_index(_INFINITE_),
 		semantics_surfaces_index(_INFINITE_),
-		orientation("null")
-	{
-		RoofVertices.reserve(3);
-	}
+		orientation("null"),
+		area(0)
+	{}
 
 public:
 
@@ -253,6 +253,17 @@ public:
 		}
 
 		return "null"; // if no matching found, return null
+	}
+
+
+
+	/*
+	* calculate the area
+	* area must be >= 0
+	*/
+	static double calculate_area(RoofSurface& roof)
+	{
+		return 0;
 	}
 };
 

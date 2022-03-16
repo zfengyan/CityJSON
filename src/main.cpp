@@ -283,12 +283,12 @@ public:
 * use the original file to calculate the orientation
 * to avoid the triangulated faces which point inwards
 */
-class calculateOrientation {
+class calculateOrientationArea {
 public:  
     /*
-    * orientation
+    * orientation and area of roof surfaces
     */
-    static void calculate_orientation(
+    static void calculate_orientation_area(
         json& jsonfile, 
         std::map<std::string, std::vector<RoofSurface>>& roof_surfaces_dictionary)
     {
@@ -331,8 +331,8 @@ public:
                                     {
                                         // g["boundaries"][i][j][m] : [1,2,3,4]
                                         auto N = g["boundaries"][i][j][m].size();
-                                        //assert(N >= 3);
-                                        for (int n = 0; n < 3; ++n) // get the first 3 vertices
+                                      
+                                        for (int n = 0; n < N; ++n) // get vertices for this face
                                         {                   
                                             int v = g["boundaries"][i][j][m][n].get<int>();
                                             std::vector<int> vi = jsonfile["vertices"][v];
@@ -351,6 +351,9 @@ public:
 
                                     // calculate orientation of this roof surface
                                     roof.orientation = RoofSurface::calculate_orientation(roof);
+
+                                    // calculate the area of this roof surface
+                                    roof.area = RoofSurface::calculate_area(roof);
 
                                     // add this roof to the roof surfaces dictionary
                                     roof_surfaces_dictionary[co.key()].emplace_back(roof);
@@ -406,7 +409,7 @@ public:
     * "semantics" -> "surfaces"
     * "semantics" -> "values"
     */
-    static void write_orientation(
+    static void write_orientation_area(
         json& jsonfile,
         std::map<std::string, std::vector<RoofSurface>>& roof_surfaces_dictionary)
     {
@@ -427,8 +430,13 @@ public:
                             sur[roof.semantics_surfaces_index]["BuildingPart_id"] = roof.BuildingPart_id;
                             sur[roof.semantics_surfaces_index]["boundaries_index"] = roof.boundaries_index;
 
+                            // orientation
                             if(roof.orientation != "null")sur[roof.semantics_surfaces_index]["orientation"] = roof.orientation;
                             else sur[roof.semantics_surfaces_index]["orientation"] = nullptr;
+
+                            // area
+                            if (roof.area > epsilon)sur[roof.semantics_surfaces_index]["area"] = roof.area;
+                            else sur[roof.semantics_surfaces_index]["area"] = nullptr;
 
                             // change the corresponding index values in "semantics" -> "values" array
                             // Solid array depth: 4
@@ -587,14 +595,14 @@ int main(int argc, const char* argv[]) {
 
 
     /*
-    * orientation
+    * orientation and area
     ***********************************************************************************/
 
     std::cout << "orientation test" << '\n';
     std::cout << '\n';
     std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;
-    calculateOrientation::calculate_orientation(j, roof_surfaces_dictionary);
-    writeAttributes::write_orientation(j, roof_surfaces_dictionary); // write attributes
+    calculateOrientationArea::calculate_orientation_area(j, roof_surfaces_dictionary);
+    writeAttributes::write_orientation_area(j, roof_surfaces_dictionary); // write attributes
 
     /**********************************************************************************/
 
@@ -612,6 +620,7 @@ int main(int argc, const char* argv[]) {
     std::cout << "writing files done" << '\n';
 
     /**********************************************************************************/   
+
 
     return 0;
 }
