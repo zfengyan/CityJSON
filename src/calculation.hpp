@@ -187,7 +187,8 @@ public:
 	std::string orientation; // indicates orientaion
 	double area; // indicates area
 
-	std::vector<Vertex> RoofVertices; // store the 3 vertices of thie roof surface(v1, v2, v3, CCW from outside)
+	std::vector<Vertex> exteriorVertices; // store the ecterior vertices, should be CCW from outside
+	std::vector<Vertex> interiorVertices; // store the inner vertices, should be CW from outside
 public:
 	RoofSurface():
 		BuildingPart_id("null"),
@@ -207,7 +208,7 @@ public:
 	static std::string calculate_orientation(RoofSurface& roof)
 	{
 		// get the normal vector of curent roof surface
-		Vector3d& normal = Vector3d::find_normal(roof.RoofVertices);
+		Vector3d& normal = Vector3d::find_normal(roof.exteriorVertices);
 
 		// situation cannot use alpha = arctan(x/y)
 		// orientaion is either East or West(using 2d coordinates x, y to estimate the orientation)

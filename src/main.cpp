@@ -167,7 +167,7 @@ public:
 
                                 /*
                                 * each shell: [ [[v1, v2, v3]], [[v4, v5, v6]]...[[...]] ] -- without inner shells
-                                * each surface in each shell: [[v1, v2, v3]] -- without inner rings
+                                * each surface in each shell: [[v1, v2, v3]] -- in triangulated file, there are no inner rings
                                 * each ring: [v1, v2, v3]
                                 */
                                 for (auto& ring : surface) {
@@ -326,10 +326,10 @@ public:
                                     //std::cout << "RoofSurface: " << g["boundaries"][i][j] << '\n';
 
                                     // construct vertices of this roof
-                                    // g["boundaries"][i][j] : [[1,2,3,4], [4,5,6]], each roof face, may contain inner faces
+                                    // g["boundaries"][i][j] : [[1,2,3,4], [4,5,6],...[]], each roof face, may contain inner faces
                                     for (int m = 0; m < g["boundaries"][i][j].size(); ++m)
                                     {
-                                        // g["boundaries"][i][j][m] : [1,2,3,4]
+                                        // g["boundaries"][i][j][m] : [1,2,3,4], [4,5,6], ... []
                                         auto N = g["boundaries"][i][j][m].size();
                                       
                                         for (int n = 0; n < N; ++n) // get vertices for this face
@@ -344,7 +344,11 @@ public:
                                             //std::cout << v << " (" << x << ", " << y << ", " << z << ")" << '\n';
 
                                             // add the vertex to the vector according to the default order
-                                            roof.RoofVertices.emplace_back(Vertex(x, y, z, v));
+                                            // exterior: CCW
+                                            // inner: CW
+                                            if (m == 0)roof.exteriorVertices.emplace_back(Vertex(x, y, z, v));
+                                            else roof.interiorVertices.emplace_back(Vertex(x, y, z, v));
+                                         
                                         }
                                         
                                     } //end for: each roof surface
