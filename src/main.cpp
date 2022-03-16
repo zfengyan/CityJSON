@@ -61,7 +61,7 @@ class writeFiles;
 * set the null value for buildings without geometry and invalid buildings?
 */
 class calculateVolume {
-
+public:
     /*
     * Function: 
     * calculate the volume of each Building object(building object is one kind of city object)
@@ -82,8 +82,13 @@ class calculateVolume {
     * 
     * array depth of "values"(in "geometry" -> "semantics" -> "values"):
     * (array depth of Solid) - 2 = 2
+    * 
+    *  
+    * std::map<std::string, double> volume_dictionary;
+    * --> each key is the Building ID
+    * --> each value is the volume of the corresponding Building
     */
-    static void calculate_volume(json& j)
+    static void calculate_volume(json& j, std::map<std::string, double>& volume_dictionary)
     {
         /*
         * std::vector<Vertex> v_each_triangulated_face
@@ -109,14 +114,6 @@ class calculateVolume {
 
         /***********************************************************************************/
 
-
-        /*
-        * std::map<std::string, double> volume_dictionary;
-        * --> each key is the Building ID
-        * --> each value is the volume of the corresponding Building
-        ************************************************************************************/
-
-        std::map<std::string, double> volume_dictionary;
 
         // initialize -- only store the volume of Building(not BuildingPart)
         for (auto& co : j["CityObjects"].items())
@@ -412,6 +409,21 @@ public:
         } // end for: each city object
 
     }
+
+
+    /*
+    * write the volume to the building object
+    */
+    static void write_volume(
+        json& jsonfile,
+        std::map<std::string, double>& volume_dictionary)
+    {
+		for (auto& co : jsonfile["CityObjects"].items()) {
+			if (co.value()["type"] == "Building") {
+				co.value()["attributes"]["volume"] = volume_dictionary[co.key()];
+			}
+		}
+    }
 };
 
 
@@ -443,9 +455,9 @@ int main(int argc, const char* argv[]) {
     * Modify INPUT and OUTPUT files here
     ***********************************************************************************/
 
-    std::string filename = "/myfile.city.json";
-    std::string filename_triangulated = "/myfile.triangulated.city.json";
-    std::string writefilename = "/testwrite.myfile.city.json";
+    std::string filename = "/cube.city.json";
+    std::string filename_triangulated = "/cube.triangulated.city.json";
+    std::string writefilename = "/testwrite.cube.city.json";
 
     /**********************************************************************************/
 
@@ -515,9 +527,10 @@ int main(int argc, const char* argv[]) {
     * volume
     ***********************************************************************************/
 
-    //calculateVolume::calculate_volume(j_triangulated); // use triangulated file to calculte the volume
-    //calculateVolume::write_volume(j); // write attributes to the original file
-    //std::cout << '\n';
+    std::map<std::string, double> volume_dictionary;
+    calculateVolume::calculate_volume(j_triangulated, volume_dictionary); // use triangulated file to calculte the volume
+    writeAttributes::write_volume(j, volume_dictionary); // write attributes to the original file
+    std::cout << '\n';
 
     /**********************************************************************************/
 
