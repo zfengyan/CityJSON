@@ -163,14 +163,22 @@
  * test area in 2d
  ***********************************************************************************/
 
-//std::vector<Vertex> roofvertices;
-//roofvertices.emplace_back(Vertex(1, 6, 0));
-//roofvertices.emplace_back(Vertex(3, 1, 1));
-//roofvertices.emplace_back(Vertex(7, 2, 2));
-//roofvertices.emplace_back(Vertex(4, 4, 3));
-//roofvertices.emplace_back(Vertex(8, 5, 4));
+//RoofSurface roof;
 //
-//std::cout << "area 2d: " << " " << RoofSurface::calculate_area_2d(roofvertices) << '\n';
+//roof.exteriorSurface.emplace_back(Vertex(0, 0, 0));
+//roof.exteriorSurface.emplace_back(Vertex(2, 0, 1));
+//roof.exteriorSurface.emplace_back(Vertex(2, 2, 2));
+//roof.exteriorSurface.emplace_back(Vertex(0, 2, 3));
+//
+//std::vector<Vertex> interior;
+//interior.emplace_back(Vertex(1, 1, 0));
+//interior.emplace_back(Vertex(1, 2, 0));
+//interior.emplace_back(Vertex(2, 2, 0));
+//interior.emplace_back(Vertex(2, 1, 0));
+//
+//roof.interiorSurfaces.emplace_back(interior);
+//
+//std::cout << "area 2d: " << " " << RoofSurface::calculate_area_2d(roof) << '\n';
 
 /**********************************************************************************/
 
