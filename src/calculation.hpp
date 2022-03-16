@@ -251,6 +251,8 @@ public:
 		default:
 			break;
 		}
+
+		return "null"; // if no matching found, return null
 	}
 };
 

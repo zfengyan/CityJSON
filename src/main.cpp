@@ -58,7 +58,7 @@ class writeFiles;
 
 
 /*
-* set the null value for buildings without geometry and invalid buildings?
+* calculate volume
 */
 class calculateVolume {
 public:
@@ -244,6 +244,41 @@ public:
 
 
 /*
+* calculate floor and write to attributes of Buildings
+*/
+class calculateFloor {
+public:
+    // function to calculate the number of floor.
+    static void cal_floor(json& j)
+    {
+        for (auto& co : j["CityObjects"].items()) {
+            std::cout << co.value()["type"] << std::endl;
+            if (co.value()["type"] == "Building") {
+                //std::cout << co.value()["attributes"] << std::endl;
+                for (auto& g : co.value()) {
+                    //std::cout << g << std::endl;
+                    if (g["h_dak_max"] == nullptr || g["h_dak_min"] == nullptr || g["h_maaiveld"] == nullptr)
+                        break;
+                    else {
+                        double h_dak_max = g["h_dak_max"];
+                        double h_dak_min = g["h_dak_min"];
+                        double h_maaiveld = g["h_maaiveld"];
+                        double height = (h_dak_max - h_dak_min) * 0.7 + (h_dak_min - h_maaiveld);
+                        double floor = height / 3;
+                        if (floor >= int(height / 3) + 0.5) floor = int(height / 3) + 1;
+                        else if (floor<int(height / 3) + 0.5) floor = int(height / 3);
+                        g.push_back({ "floor:", floor });
+                        break;
+                    }
+                }
+            }
+        }
+    }
+};
+
+
+
+/*
 * calculate orientation
 * use the original file to calculate the orientation
 * to avoid the triangulated faces which point inwards
@@ -362,7 +397,7 @@ public:
 
 
 /*
-* write attributes
+* write attributes: volume, orientation, area
 */
 class writeAttributes {
 public:
@@ -391,7 +426,9 @@ public:
                             sur[roof.semantics_surfaces_index]["type"] = roof.type;
                             sur[roof.semantics_surfaces_index]["BuildingPart_id"] = roof.BuildingPart_id;
                             sur[roof.semantics_surfaces_index]["boundaries_index"] = roof.boundaries_index;
-                            sur[roof.semantics_surfaces_index]["orientation"] = roof.orientation;
+
+                            if(roof.orientation != "null")sur[roof.semantics_surfaces_index]["orientation"] = roof.orientation;
+                            else sur[roof.semantics_surfaces_index]["orientation"] = nullptr;
 
                             // change the corresponding index values in "semantics" -> "values" array
                             // Solid array depth: 4
@@ -413,15 +450,20 @@ public:
 
     /*
     * write the volume to the building object
+    * set the null value for buildings without geometry
     */
     static void write_volume(
         json& jsonfile,
         std::map<std::string, double>& volume_dictionary)
     {
 		for (auto& co : jsonfile["CityObjects"].items()) {
-			if (co.value()["type"] == "Building") {
-				co.value()["attributes"]["volume"] = volume_dictionary[co.key()];
-			}
+            if (co.value()["type"] == "Building") {
+                double volume = volume_dictionary[co.key()];
+
+                if (abs(volume) > epsilon) co.value()["attributes"]["volume"] = ceil(volume * 100) / 100; // restrict the decimal places
+                else co.value()["attributes"]["volume"] = nullptr; // set null for buildings without geometry
+            
+            }
 		}
     }
 };
@@ -531,6 +573,15 @@ int main(int argc, const char* argv[]) {
     calculateVolume::calculate_volume(j_triangulated, volume_dictionary); // use triangulated file to calculte the volume
     writeAttributes::write_volume(j, volume_dictionary); // write attributes to the original file
     std::cout << '\n';
+
+    /**********************************************************************************/
+
+
+    /*
+    * floor -- calculate and write to attributes
+    ***********************************************************************************/
+    
+    calculateFloor::cal_floor(j);
 
     /**********************************************************************************/
 
