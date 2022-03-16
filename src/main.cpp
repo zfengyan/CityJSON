@@ -326,7 +326,7 @@ public:
                                     //std::cout << "RoofSurface: " << g["boundaries"][i][j] << '\n';
 
                                     // construct vertices of this roof
-                                    // g["boundaries"][i][j] : [[1,2,3,4]], each roof face
+                                    // g["boundaries"][i][j] : [[1,2,3,4], [4,5,6]], each roof face, may contain inner faces
                                     for (int m = 0; m < g["boundaries"][i][j].size(); ++m)
                                     {
                                         // g["boundaries"][i][j][m] : [1,2,3,4]
@@ -621,14 +621,6 @@ int main(int argc, const char* argv[]) {
 
     /**********************************************************************************/   
 
-	std::vector<Vertex> roofvertices;
-	roofvertices.emplace_back(Vertex(1, 6, 0));
-	roofvertices.emplace_back(Vertex(3, 1, 1));
-	roofvertices.emplace_back(Vertex(7, 2, 2));
-    roofvertices.emplace_back(Vertex(4, 4, 3));
-    roofvertices.emplace_back(Vertex(8, 5, 4));
-
-    std::cout << "area 2d: " << " " << RoofSurface::calculate_area_2d(roofvertices) << '\n';
 
     return 0;
 }

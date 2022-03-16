@@ -156,3 +156,20 @@
 //std::cout << "normal: " << " " << normal.x << " " << normal.y << " " << normal.z << '\n';
 
 /**********************************************************************************/
+
+
+
+/*
+ * test area in 2d
+ ***********************************************************************************/
+
+//std::vector<Vertex> roofvertices;
+//roofvertices.emplace_back(Vertex(1, 6, 0));
+//roofvertices.emplace_back(Vertex(3, 1, 1));
+//roofvertices.emplace_back(Vertex(7, 2, 2));
+//roofvertices.emplace_back(Vertex(4, 4, 3));
+//roofvertices.emplace_back(Vertex(8, 5, 4));
+//
+//std::cout << "area 2d: " << " " << RoofSurface::calculate_area_2d(roofvertices) << '\n';
+
+/**********************************************************************************/
