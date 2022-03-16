@@ -252,7 +252,7 @@ public:
     static void cal_floor(json& j)
     {
         for (auto& co : j["CityObjects"].items()) {
-            std::cout << co.value()["type"] << std::endl;
+            //std::cout << co.value()["type"] << std::endl;
             if (co.value()["type"] == "Building") {
                 //std::cout << co.value()["attributes"] << std::endl;
                 for (auto& g : co.value()) {
@@ -267,7 +267,7 @@ public:
                         double floor = height / 3;
                         if (floor >= int(height / 3) + 0.5) floor = int(height / 3) + 1;
                         else if (floor<int(height / 3) + 0.5) floor = int(height / 3);
-                        g.push_back({ "floor:", floor });
+                        g.push_back({ "floor", floor });
                         break;
                     }
                 }
@@ -497,9 +497,9 @@ int main(int argc, const char* argv[]) {
     * Modify INPUT and OUTPUT files here
     ***********************************************************************************/
 
-    std::string filename = "/cube.city.json";
-    std::string filename_triangulated = "/cube.triangulated.city.json";
-    std::string writefilename = "/testwrite.cube.city.json";
+    std::string filename = "/myfile.city.json";
+    std::string filename_triangulated = "/myfile.triangulated.city.json";
+    std::string writefilename = "/testwrite.myfile.city.json";
 
     /**********************************************************************************/
 
