@@ -71,6 +71,19 @@ public:
 	}
 
 
+	/*
+	* get a vector of the surface(according to exterior surface)
+	*/
+	static Vector3d get_vector(std::vector<Vertex>& exteriorSurface)
+	{
+		return Vector3d(
+			(exteriorSurface[1].x - exteriorSurface[0].x),
+			(exteriorSurface[1].y - exteriorSurface[0].y),
+			(exteriorSurface[1].z - exteriorSurface[0].z)
+		);
+	}
+
+
 	// get cross product
 	static Vector3d cross(Vector3d& v1, Vector3d& v2) {
 		return Vector3d(
@@ -82,22 +95,23 @@ public:
 
 
 	// get normal vector of one face
-	// RoofVertices: store 3 vertices of one face, v1, v2, v3 should be oriented as CCW from outside
-	static Vector3d find_normal(std::vector<Vertex>& RoofVertices) {
+	// exteriorSurface: store vertices of one face's exterior surface, at least contains 3 vertices
+	// vertices should be oriented as CCW from outside
+	static Vector3d find_normal(std::vector<Vertex>& exteriorSurface) {
 		
 		// use the first 3 vertices to define two vectors of this roof surface
 		// v1: starts from vertex[0], ends at vertex[1]
 		// v2: starts from vertex[1], ends at vertex[2]
 		Vector3d v1(
-			(RoofVertices[1].x - RoofVertices[0].x),
-			(RoofVertices[1].y - RoofVertices[0].y),
-			(RoofVertices[1].z - RoofVertices[0].z)
+			(exteriorSurface[1].x - exteriorSurface[0].x),
+			(exteriorSurface[1].y - exteriorSurface[0].y),
+			(exteriorSurface[1].z - exteriorSurface[0].z)
 		);
 
 		Vector3d v2(
-			(RoofVertices[2].x - RoofVertices[1].x),
-			(RoofVertices[2].y - RoofVertices[1].y),
-			(RoofVertices[2].z - RoofVertices[1].z)
+			(exteriorSurface[2].x - exteriorSurface[1].x),
+			(exteriorSurface[2].y - exteriorSurface[1].y),
+			(exteriorSurface[2].z - exteriorSurface[1].z)
 		);
 
 		return cross(v1, v2);
@@ -313,6 +327,30 @@ public:
 	*/
 	static double calculate_area_3d(RoofSurface& roof)
 	{
+		Vector3d& surface_vector = Vector3d::get_vector(roof.exteriorSurface); //  get a vector in this surface
+
+		double length_x = abs(surface_vector.x);
+		double length_y = abs(surface_vector.y);
+		double length_z = abs(surface_vector.z);
+		if (length_z < epsilon)return calculate_area_2d(roof); // z = 0, horizontal surface
+
+		double length_2d = sqrt(length_x * length_x + length_y * length_y);
+		if (!length_2d) // vertical surface
+		{
+			std::cout << "alert: vertical roofsurface, BuildingPartid: " << roof.BuildingPart_id << '\n';
+			std::cout << "index in the geometry -> boundaries list: " << roof.boundaries_index << '\n';
+		}			
+		
+		double radius_angle = atan(length_z / length_2d);
+
+		// area_3d * cos(radius_angle) = area_2d
+		if (abs(cos(radius_angle)) < epsilon){
+			std::cout << "alert: calculation warning: " << roof.BuildingPart_id << '\n';
+			std::cout << "index in the geometry -> boundaries list: " << roof.boundaries_index << '\n';
+		}
+		else {
+			return calculate_area_2d(roof) / abs(cos(radius_angle));
+		}
 		return 0;
 	}
 };
