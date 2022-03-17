@@ -110,7 +110,7 @@ public:
     {
         for (auto& eobj : error_objects)
         {
-            if (eobj.error_code == 102) // each consecutive points object
+            if (eobj.error_code == 303) // each consecutive points object
             {
                 auto& bo = jsonfile["CityObjects"][eobj.building_id]; // building object
                 std::string building_part_key = bo["children"][0]; // one children of building object
