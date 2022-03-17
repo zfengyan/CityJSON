@@ -436,8 +436,8 @@ public:
                         for (auto& roof : roof_surfaces_dictionary[key])
                         {
                             sur[roof.semantics_surfaces_index]["type"] = roof.type;
-                            sur[roof.semantics_surfaces_index]["BuildingPart_id"] = roof.BuildingPart_id;
-                            sur[roof.semantics_surfaces_index]["boundaries_index"] = roof.boundaries_index;
+                            //sur[roof.semantics_surfaces_index]["BuildingPart_id"] = roof.BuildingPart_id;
+                            //sur[roof.semantics_surfaces_index]["boundaries_index"] = roof.boundaries_index;
 
                             // orientation
                             if(roof.orientation != "null")sur[roof.semantics_surfaces_index]["orientation"] = roof.orientation;
@@ -516,7 +516,7 @@ int main(int argc, const char* argv[]) {
 
     std::string filename = "/myfile.city.json";
     std::string filename_triangulated = "/myfile.triangulated.city.json";
-    std::string writefilename = "/testwrite.myfile.city.json";
+    std::string writefilename = "/testwrite.reduce.myfile.city.json";
 
     /**********************************************************************************/
 
