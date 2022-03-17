@@ -179,35 +179,35 @@ public:
             if (eobj.error_code == 303) // each consecutive points object
             {
                 auto& bo = jsonfile["CityObjects"][eobj.building_id]; // building object
-                std::cout << bo["children"];
-                //std::string building_part_key = bo["children"][0]; // one children of building object
-                //auto& bo_part = jsonfile["CityObjects"][building_part_key]; // building part
+                std::string building_part_key = bo["children"][0]; // one children of building object
+                auto& bo_part = jsonfile["CityObjects"][building_part_key]; // building part
 
-                std::cout << eobj.building_id << '\n';
-                std::cout << eobj.building_part_id << '\n';
-                //for (auto& g : bo_part["geometry"]) {
-                //    for (auto& shell : g["boundaries"]) {
-                //        // surface position in boundaries list: shell[index] -- [[1,2,3], [4,5,6]]
-                //        for (auto& index : eobj.boundaries_index)
-                //        {
-                //            auto& surface = shell[index];
-                //            for (auto& ring : surface)
-                //            {
-                //                std::cout << ring << '\n';
-                //                for (auto& v : ring)
-                //                {
-                //                    std::vector<int> vi = jsonfile["vertices"][v.get<int>()];
-                //                    double x = (vi[0] * jsonfile["transform"]["scale"][0].get<double>()) + jsonfile["transform"]["translate"][0].get<double>();
-                //                    double y = (vi[1] * jsonfile["transform"]["scale"][1].get<double>()) + jsonfile["transform"]["translate"][1].get<double>();
-                //                    double z = (vi[2] * jsonfile["transform"]["scale"][2].get<double>()) + jsonfile["transform"]["translate"][2].get<double>();
+                for (auto& g : bo_part["geometry"]) {
+                    for (auto& shell : g["boundaries"]) {
+                        // surface position in boundaries list: shell[index] -- [[1,2,3], [4,5,6]]
+                        for (auto& index : eobj.boundaries_index)
+                        {
+                            std::cout << "index: " << index << '\n';
+                            auto& surface = shell[index];
 
-                //                    //std::cout << v << " (" << x << " " << y << " " << z << ")" << '\n';
-                //                }
-                //            }
-                //        }
+                            for (auto& ring : surface)
+                            {
+                                std::cout << ring << '\n';
+                                for (auto& v : ring)
+                                {
+                                    std::vector<int> vi = jsonfile["vertices"][v.get<int>()];
+                                    double x = (vi[0] * jsonfile["transform"]["scale"][0].get<double>()) + jsonfile["transform"]["translate"][0].get<double>();
+                                    double y = (vi[1] * jsonfile["transform"]["scale"][1].get<double>()) + jsonfile["transform"]["translate"][1].get<double>();
+                                    double z = (vi[2] * jsonfile["transform"]["scale"][2].get<double>()) + jsonfile["transform"]["translate"][2].get<double>();
 
-                //    }
-                //}
+                                    std::cout << v << " (" << x << " " << y << " " << z << ")" << '\n';
+                                }
+                                std::cout << '\n';
+                            }
+                        }
+
+                    }
+                }
 
                 std::cout << '\n';
 
