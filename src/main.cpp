@@ -64,47 +64,56 @@ public:
         {
             if (!f.value()["validity"]) // false -- each false building
             {
+                //std::cout << "key: " << f.key() << '\n';
                 ErrorObject eobj;
                 eobj.building_id = f.value()["id"];
 
                 for (auto& p : f.value()["primitives"]) // each building part of false building
                 {
-                    if (!p["validity"])eobj.building_part_id = p["id"];
+                    if (!p["validity"]) // for each buildingpart, the error type is the same
+                    {      
+                        eobj.building_part_id = p["id"];
 
-                    for (auto& e : p["errors"])
-                    {
-                        eobj.error_code = e["code"].get<int>();
-
-                        if (e["code"].get<int>() == 102) // error 102
+                        for (auto& e : p["errors"]) // for each error
                         {
-                            std::string str_id = e["id"].get<std::string>();
-                            int b_index = atoi(str_id.c_str());
-                            eobj.boundaries_index.emplace_back(b_index);
-                           
-                            eobj.error_type = e["description"].get<std::string>();
-                            
+                            //std::cout << e["code"].get<int>() << " "; // check the error code for one building part
+
+                            if (e["code"].get<int>() == 102) // error 102
+                            {
+                                eobj.error_code = e["code"].get<int>();
+                                eobj.error_type = e["description"].get<std::string>();
+
+                                std::string str_id = e["id"].get<std::string>();
+                                int b_index = atoi(str_id.c_str());
+                                eobj.boundaries_index.emplace_back(b_index);
+
+                            }
+
+                            if (e["code"].get<int>() == 302) // unclosed shell
+                            {
+
+                            }
+
+                            if (e["code"].get<int>() == 303) // non manifold
+                            {
+                                eobj.error_code = e["code"].get<int>();
+                                eobj.error_type = e["description"].get<std::string>();
+
+                                std::string str_id = e["id"].get<std::string>();
+                                int b_index = atoi(str_id.c_str());
+                                eobj.boundaries_index.emplace_back(b_index);
+                            }
+
                         }
 
-                        if (e["code"].get<int>() == 302) // unclosed shell
-                        {
-                           
-                        }
-
-                        if (e["code"].get<int>() == 303) // non manifold
-                        {
-                            std::string str_id = e["id"].get<std::string>();
-                            int b_index = atoi(str_id.c_str());
-                            eobj.boundaries_index.emplace_back(b_index);
-
-                            eobj.error_type = e["description"].get<std::string>();
-                        }
-                
                     }
-                    
+
+
                 } // end for: building part
 
-                // add the eobj to error_objects
-                error_objects.emplace_back(eobj);
+                error_objects.emplace_back(eobj); // some error objects don't have geometry
+
+               
             }// end if: validity = false
         }
     }
@@ -169,11 +178,13 @@ public:
         {
             if (eobj.error_code == 303) // each consecutive points object
             {
-                //auto& bo = jsonfile["CityObjects"][eobj.building_id]; // building object
+                auto& bo = jsonfile["CityObjects"][eobj.building_id]; // building object
+                std::cout << bo["children"];
                 //std::string building_part_key = bo["children"][0]; // one children of building object
                 //auto& bo_part = jsonfile["CityObjects"][building_part_key]; // building part
 
-                std::cout << eobj.error_code << '\n';
+                std::cout << eobj.building_id << '\n';
+                std::cout << eobj.building_part_id << '\n';
                 //for (auto& g : bo_part["geometry"]) {
                 //    for (auto& shell : g["boundaries"]) {
                 //        // surface position in boundaries list: shell[index] -- [[1,2,3], [4,5,6]]
@@ -814,14 +825,16 @@ int main(int argc, const char* argv[]) {
     //std::cout << "consecutive points: " << '\n';
     //errorProcess::error_process_consecutive_points(j, error_objects);
 
-    errorProcess::error_process_non_manifold(j_error, error_objects);
+    std::cout << "error_objects size: " << error_objects.size() << '\n';
     std::cout << '\n';
+
     std::cout << "non manifold: " << '\n';
+    errorProcess::error_process_non_manifold(j, error_objects);
+    std::cout << '\n';   
     for (auto& eobj : error_objects) {
         if (eobj.error_code == 303) {
             for (auto& index : eobj.boundaries_index)std::cout << index << " ";
         }
-        std::cout << '\n';
     }
 
     return 0;
