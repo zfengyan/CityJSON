@@ -58,9 +58,40 @@ class writeFiles;
 
 class errorProcess {
 public:
-    static void consecutive_points(json& j)
+    static void error_process(json& errorjson, std::vector<ErrorObject>& error_objects)
     {
-        
+        for (auto& f : errorjson["features"].items()) // -- each building
+        {
+            if (!f.value()["validity"]) // false -- each false building
+            {
+                ErrorObject eobj;
+                eobj.building_id = f.value()["id"];
+
+                for (auto& p : f.value()["primitives"]) // each building part of false building
+                {
+                    if (!p["validity"])eobj.building_part_id = p["id"];
+
+                    for (auto& e : p["errors"])
+                    {
+                        if (e["code"].get<int>() == 102)
+                        {
+                            std::string str_id = e["id"].get<std::string>();
+                            int b_index = atoi(str_id.c_str());
+                            eobj.boundaries_index.emplace_back(b_index);
+
+                            eobj.error_code = e["code"].get<int>();
+                            eobj.error_type = e["description"].get<std::string>();
+                            
+                        }
+                
+                    }
+                    
+                } // end for: building part
+
+                // add the eobj to error_objects
+                error_objects.emplace_back(eobj);
+            }// end if: validity = false
+        }
     }
 
 };
@@ -528,6 +559,8 @@ int main(int argc, const char* argv[]) {
     std::string filename_triangulated = "/myfile.triangulated.city.json";
     std::string writefilename = "/testwrite.reduce.myfile.city.json";
 
+    std::string errorfile = "/error.report.json";
+
     /**********************************************************************************/
 
     //-- reading the (original)file with nlohmann json: https://github.com/nlohmann/json  
@@ -541,6 +574,14 @@ int main(int argc, const char* argv[]) {
     json j_triangulated;
     input_triangulated >> j_triangulated;
     input_triangulated.close();
+
+    // -- reading the error report file
+    std::ifstream input_error(DATA_PATH + errorfile);
+    json j_error;
+    input_error >> j_error;
+    input_error.close();
+
+    /**********************************************************************************/
 
     //-- get total number of RoofSurface in the file
     int noroofsurfaces = get_no_roof_surfaces(j); // depends on the geometry type: Multisurface, solid...
@@ -644,7 +685,12 @@ int main(int argc, const char* argv[]) {
     /*
     * error process
     */
-    errorProcess::consecutive_points(j);
+    std::vector<ErrorObject> error_objects;
+    errorProcess::error_process(j_error, error_objects);
+
+    for (auto& eobj : error_objects) {
+        if(eobj.error_code == 102)std::cout << eobj.building_id << '\n';
+    }     
 
     return 0;
 }

@@ -11,11 +11,32 @@
 #define quadrant_pi_radius 0.785398163 // pi/4 used for determine the prientation
 
 
+class ErrorObject;
 
 class Vertex;
 class Vector3d;
 class Volume;
 class RoofSurface;
+
+
+
+class ErrorObject {
+public:
+	std::string building_id; // Building id
+	std::string building_part_id; // BuildingPart id
+	std::string error_type; 
+
+	int error_code; // error code
+
+	std::vector<int> boundaries_index; // error faces' indexes with consecutive points in the boundaries list
+public:
+	ErrorObject():
+		building_id("null"),
+		building_part_id("null"),
+		error_type("null"),
+		error_code(0)
+	{}
+};
 
 
 
