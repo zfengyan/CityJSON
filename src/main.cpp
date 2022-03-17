@@ -58,7 +58,7 @@ class writeFiles;
 
 class errorProcess {
 public:
-    static void error_process(json& errorjson, std::vector<ErrorObject>& error_objects)
+    static void error_preprocess(json& errorjson, std::vector<ErrorObject>& error_objects)
     {
         for (auto& f : errorjson["features"].items()) // -- each building
         {
@@ -92,6 +92,95 @@ public:
                 error_objects.emplace_back(eobj);
             }// end if: validity = false
         }
+    }
+
+
+    /*
+    * process error consecutive points: error 102
+    */
+    static void error_process_consecutive_points(
+        json& jsonfile,
+        std::vector<ErrorObject>& error_objects)
+    {
+        for (auto& eobj : error_objects)
+        {
+            if (eobj.error_code == 102) // each consecutive points object
+            {
+                auto& bo = jsonfile["CityObjects"][eobj.building_id]; // building object
+                std::string building_part_key = bo["children"][0]; // one children of building object
+                auto& bo_part = jsonfile["CityObjects"][building_part_key]; // building part
+
+                for (auto& g : bo_part["geometry"]) {
+                    for (auto& shell : g["boundaries"]){
+                        // surface position in boundaries list: shell[index] -- [[1,2,3], [4,5,6]]
+                        for (auto& index : eobj.boundaries_index)
+                        {
+                            auto& surface = shell[index];
+                            for (auto& ring : surface)
+                            {
+                                std::cout << ring << '\n';
+                            }
+                        }
+                        
+                    }
+                }
+
+                std::cout << '\n';
+                
+            } // end if: consecutive points object
+            
+        }
+        
+        //for (auto& co : jsonfile["CityObjects"].items()) // each city object 
+        //{
+        //    if (co.value()["geometry"].size() != 0) // each BuildingPart
+        //    {
+        //        for (auto& g : co.value()["geometry"]) { // each city object may only have ONE geometry
+
+        //            if (g["type"] == "Solid") // valid geometry for one BuildingPart
+        //            {
+        //                for (int i = 0; i < g["boundaries"].size(); ++i) { // g["boundaries"]: [[ [[1,2,3,4]], [[5,6,7,8]] ]]
+        //                    for (int j = 0; j < g["boundaries"][i].size(); ++j) { // g["boundaries"][i]: [ [[1,2,3,4]], [[5,6,7,8]] ]         
+
+        //                        int sem_index = g["semantics"]["values"][i][j]; // semantic values index
+
+        //                        // if it's a roof surface
+        //                        if (g["semantics"]["surfaces"][sem_index]["type"].get<std::string>().compare("RoofSurface") == 0)
+        //                        {
+        //                          
+        //                            //std::cout << "RoofSurface: " << g["boundaries"][i][j] << '\n';
+
+        //                            // construct vertices of this roof
+        //                            // g["boundaries"][i][j] : [[1,2,3,4], [4,5,6],...[]], each roof face, may contain inner faces
+        //                            std::vector<Vertex> one_interior;
+        //                            for (int m = 0; m < g["boundaries"][i][j].size(); ++m)
+        //                            {
+        //                                // g["boundaries"][i][j][m] : [1,2,3,4], [4,5,6], ... []
+        //                                auto N = g["boundaries"][i][j][m].size();
+
+        //                                for (int n = 0; n < N; ++n) // get vertices for this face
+        //                                {
+        //                                    int v = g["boundaries"][i][j][m][n].get<int>();
+        //                                    std::vector<int> vi = jsonfile["vertices"][v];
+
+        //                                    double x = (vi[0] * jsonfile["transform"]["scale"][0].get<double>()) + jsonfile["transform"]["translate"][0].get<double>();
+        //                                    double y = (vi[1] * jsonfile["transform"]["scale"][1].get<double>()) + jsonfile["transform"]["translate"][1].get<double>();
+        //                                    double z = (vi[2] * jsonfile["transform"]["scale"][2].get<double>()) + jsonfile["transform"]["translate"][2].get<double>();
+
+        //                                }
+
+        //                            } //end for: each roof surface
+
+        //                        }
+        //                    }
+        //                }
+        //            } // end if
+
+        //        } // end for: each geometry of one BuildingPart object
+
+        //    } // end if: BuildingPart            
+
+        //} // end for: each city object
     }
 
 };
@@ -686,11 +775,14 @@ int main(int argc, const char* argv[]) {
     * error process
     */
     std::vector<ErrorObject> error_objects;
-    errorProcess::error_process(j_error, error_objects);
+    errorProcess::error_preprocess(j_error, error_objects);
 
     for (auto& eobj : error_objects) {
         if(eobj.error_code == 102)std::cout << eobj.building_id << '\n';
-    }     
+    }
+
+    std::cout << '\n';
+    errorProcess::error_process_consecutive_points(j, error_objects);
 
     return 0;
 }
