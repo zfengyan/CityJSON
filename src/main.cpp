@@ -119,6 +119,15 @@ public:
                             for (auto& ring : surface)
                             {
                                 std::cout << ring << '\n';
+                                for (auto& v : ring)
+                                {
+                                    std::vector<int> vi = jsonfile["vertices"][v.get<int>()];
+                                    double x = (vi[0] * jsonfile["transform"]["scale"][0].get<double>()) + jsonfile["transform"]["translate"][0].get<double>();
+                                    double y = (vi[1] * jsonfile["transform"]["scale"][1].get<double>()) + jsonfile["transform"]["translate"][1].get<double>();
+                                    double z = (vi[2] * jsonfile["transform"]["scale"][2].get<double>()) + jsonfile["transform"]["translate"][2].get<double>();
+                                   
+                                    std::cout << v << " (" << x << ", " << y << ", " << z << ")" << '\n';
+                                }
                             }
                         }
                         
