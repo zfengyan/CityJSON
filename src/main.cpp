@@ -48,12 +48,22 @@ int   get_no_roof_surfaces(json& j);
 void  list_all_vertices(json& j);
 void  visit_roofsurfaces(json& j);
 
-
+class errorProcess;
 
 class calculateVolume;
 class calculateOrientation;
 class writeAttributes;
 class writeFiles;
+
+
+class errorProcess {
+public:
+    static void consecutive_points(json& j)
+    {
+        
+    }
+
+};
 
 
 
@@ -586,10 +596,10 @@ int main(int argc, const char* argv[]) {
     * volume
     ***********************************************************************************/
 
-    std::map<std::string, double> volume_dictionary;
-    calculateVolume::calculate_volume(j_triangulated, volume_dictionary); // use triangulated file to calculte the volume
-    writeAttributes::write_volume(j, volume_dictionary); // write attributes to the original file
-    std::cout << '\n';
+    //std::map<std::string, double> volume_dictionary;
+    //calculateVolume::calculate_volume(j_triangulated, volume_dictionary); // use triangulated file to calculte the volume
+    //writeAttributes::write_volume(j, volume_dictionary); // write attributes to the original file
+    //std::cout << '\n';
 
     /**********************************************************************************/
 
@@ -598,7 +608,7 @@ int main(int argc, const char* argv[]) {
     * floor -- calculate and write to attributes
     ***********************************************************************************/
     
-    calculateFloor::cal_floor(j);
+    //calculateFloor::cal_floor(j);
 
     /**********************************************************************************/
 
@@ -607,11 +617,11 @@ int main(int argc, const char* argv[]) {
     * orientation and area
     ***********************************************************************************/
 
-    std::cout << "orientation test" << '\n';
-    std::cout << '\n';
-    std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;
-    calculateOrientationArea::calculate_orientation_area(j, roof_surfaces_dictionary);
-    writeAttributes::write_orientation_area(j, roof_surfaces_dictionary); // write attributes
+    //std::cout << "orientation test" << '\n';
+    //std::cout << '\n';
+    //std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;
+    //calculateOrientationArea::calculate_orientation_area(j, roof_surfaces_dictionary);
+    //writeAttributes::write_orientation_area(j, roof_surfaces_dictionary); // write attributes
 
     /**********************************************************************************/
 
@@ -624,12 +634,17 @@ int main(int argc, const char* argv[]) {
     * write files
     ***********************************************************************************/
 
-    std::cout << "writing files..." << '\n';    
-    writeFiles::write_json_file(j, writefilename);
-    std::cout << "writing files done" << '\n';
+    //std::cout << "writing files..." << '\n';    
+    //writeFiles::write_json_file(j, writefilename);
+    //std::cout << "writing files done" << '\n';
 
     /**********************************************************************************/   
 
+
+    /*
+    * error process
+    */
+    errorProcess::consecutive_points(j);
 
     return 0;
 }
