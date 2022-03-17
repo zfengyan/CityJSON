@@ -815,7 +815,7 @@ int main(int argc, const char* argv[]) {
     * error process
     */
     std::vector<ErrorObject> error_objects;
-    errorProcess::error_preprocess(j_error, error_objects);
+    errorProcess::error_preprocess(j_error, error_objects); // pass j_error as argument
 
     /*for (auto& eobj : error_objects) {
         if(eobj.error_code == 102)std::cout << eobj.building_id << '\n';
@@ -829,8 +829,9 @@ int main(int argc, const char* argv[]) {
     std::cout << '\n';
 
     std::cout << "non manifold: " << '\n';
-    errorProcess::error_process_non_manifold(j, error_objects);
+    errorProcess::error_process_non_manifold(j, error_objects); // pass j as argument
     std::cout << '\n';   
+
     for (auto& eobj : error_objects) {
         if (eobj.error_code == 303) {
             for (auto& index : eobj.boundaries_index)std::cout << index << " ";
