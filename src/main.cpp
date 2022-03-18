@@ -811,7 +811,7 @@ int main(int argc, const char* argv[]) {
 
             for (auto& vertex : roof.exteriorSurface)
             {
-                std::cout << "v" << " " << vertex.x << ", " << vertex.y << ", " << vertex.z << '\n';
+                //std::cout << "v" << " " << vertex.x << ", " << vertex.y << ", " << vertex.z << '\n';
             }
 
         }
