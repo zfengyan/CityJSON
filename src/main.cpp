@@ -47,6 +47,7 @@ using json = nlohmann::json;
 int   get_no_roof_surfaces(json& j);
 void  list_all_vertices(json& j);
 void  visit_roofsurfaces(json& j);
+void print_roofsurfaces_vertices(json& j);
 
 class errorProcess;
 
@@ -682,7 +683,7 @@ int main(int argc, const char* argv[]) {
     std::string writefilename = "/testwrite.reduce.myfile.city.json";
 
     std::string errorfile = "/error.report.json";
-    std::string testfile = "/cube.city.json";
+    std::string testfile = "/NL.IMBAG.Pand.0503100000004247.city.json";
 
     /**********************************************************************************/
 
@@ -760,6 +761,8 @@ int main(int argc, const char* argv[]) {
 
     std::cout << "my output: " << '\n';
     std::cout << '\n';
+
+    print_roofsurfaces_vertices(j_test);
 
 
     /*
@@ -919,6 +922,44 @@ void list_all_vertices(json& j) {
             }
         }
     }
+}
+
+
+void print_roofsurfaces_vertices(json& jsonfile) {
+    for (auto& co : jsonfile["CityObjects"].items()) { // each city object 
+
+        for (auto& g : co.value()["geometry"]) { // each city object may only have ONE geometry
+
+            if (g["type"] == "Solid") { // type of geometry, may be multisurface, solid... 
+
+                for (int i = 0; i < g["boundaries"].size(); i++) { // index of each primitive in "boundaries"
+
+                    for (int j = 0; j < g["boundaries"][i].size(); j++) { // for each primitive in "boundaries"
+                        int sem_index = g["semantics"]["values"][i][j];
+
+                        if (g["semantics"]["surfaces"][sem_index]["type"].get<std::string>().compare("RoofSurface") == 0) {
+                            std::cout << "RoofSurface: " << g["boundaries"][i][j] << '\n';
+
+                            for (auto& ring : g["boundaries"][i][j])
+                            {
+                                for (auto& v : ring)
+                                {
+                                    std::vector<int> vi = jsonfile["vertices"][v.get<int>()];
+                                    double x = (vi[0] * jsonfile["transform"]["scale"][0].get<double>()) + jsonfile["transform"]["translate"][0].get<double>();
+                                    double y = (vi[1] * jsonfile["transform"]["scale"][1].get<double>()) + jsonfile["transform"]["translate"][1].get<double>();
+                                    double z = (vi[2] * jsonfile["transform"]["scale"][2].get<double>()) + jsonfile["transform"]["translate"][2].get<double>();
+                                    //std::cout << std::setprecision(2) << std::fixed << v << " (" << x << ", " << y << ", " << z << ")" << std::endl;
+                                    std::cout << "v" << " " << x << " " << y << " " << z << " " << '\n';
+                                }
+                            }
+                            std::cout << '\n';
+                        }
+                    } // end for: each primitive
+                } // end for: index of each primitive
+            } // end if
+        } // end for: each geometry
+    } // end for: each city object
+
 }
 
 
