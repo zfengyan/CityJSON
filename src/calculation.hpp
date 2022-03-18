@@ -117,25 +117,33 @@ public:
 
 	// get normal vector of one face
 	// exteriorSurface: store vertices of one face's exterior surface, at least contains 3 vertices
-	// vertices should be oriented as CCW from outside
+	// projected 2d vertices should be oriented as CCW
 	static Vector3d find_normal(std::vector<Vertex>& exteriorSurface) {
 		
-		// use the first 3 vertices to define two vectors of this roof surface
-		// v1: starts from vertex[0], ends at vertex[1]
-		// v2: starts from vertex[1], ends at vertex[2]
-		Vector3d v1(
-			(exteriorSurface[1].x - exteriorSurface[0].x),
-			(exteriorSurface[1].y - exteriorSurface[0].y),
-			(exteriorSurface[1].z - exteriorSurface[0].z)
-		);
+		int N = (int)exteriorSurface.size();
+		int middle = int(N * 0.5);
 
-		Vector3d v2(
-			(exteriorSurface[2].x - exteriorSurface[1].x),
-			(exteriorSurface[2].y - exteriorSurface[1].y),
-			(exteriorSurface[2].z - exteriorSurface[1].z)
-		);
+		if (roof_vertices_ccw_check(exteriorSurface[0], exteriorSurface[middle], exteriorSurface[N-1]))
+		{
+			// use the 3 ccw vertices to define two vectors of this roof surface
+			// v1: starts from vertex[i], ends at vertex[i+1]
+			// v2: starts from vertex[i+1], ends at vertex[i+2]
+			Vector3d v1(
+				(exteriorSurface[middle].x - exteriorSurface[0].x),
+				(exteriorSurface[middle].y - exteriorSurface[0].y),
+				(exteriorSurface[middle].z - exteriorSurface[0].z)
+			);
 
-		return cross(v1, v2);
+			Vector3d v2(
+				(exteriorSurface[N - 1].x - exteriorSurface[middle].x),
+				(exteriorSurface[N - 1].y - exteriorSurface[middle].y),
+				(exteriorSurface[N - 1].z - exteriorSurface[middle].z)
+			);
+
+			return cross(v1, v2);
+		}
+		else return Vector3d(9999, 0, 0); // marker: no proper normal vector is found
+
 	}
 
 
@@ -145,6 +153,20 @@ public:
 	static double det_2x2(Vertex& v1, Vertex& v2)
 	{
 		return (v1.x * v2.y - v1.y * v2.x);
+	}
+
+
+	//ccw from outside check
+	//@return:
+	//true -- ccw from outside
+	//false -- cw or colinear from outside
+	//only for roof surface -- if projected to 2d
+	//if for fround surface -- if projected to 2d then CCW from outside correponds to CW in xy plane
+	static bool roof_vertices_ccw_check(Vertex& p, Vertex& q, Vertex& r)
+	{
+		double area = det_2x2(p, q) + det_2x2(q, r) + det_2x2(r, p);
+		if (area > epsilon)return true;
+		else return false;
 	}
 
 };
@@ -246,6 +268,13 @@ public:
 		// use exterior surface of current roof surface to get the normal vector
 		Vector3d& normal = Vector3d::find_normal(roof.exteriorSurface);
 		roof.roof_normal = normal;
+
+		if (abs(normal.x - 9999) < epsilon) // vector: (9999, 0, 0) -- indicates no proper normal found
+		{
+			std::cout << "no proper normal found in buildingpart: " << '\n';
+			std::cout << roof.BuildingPart_id << '\n';
+			return "null";
+		}
 
 		// situation cannot use alpha = arctan(x/y)
 		// orientaion is either East or West(using 2d coordinates x, y to estimate the orientation)

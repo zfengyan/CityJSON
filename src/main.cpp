@@ -797,7 +797,7 @@ int main(int argc, const char* argv[]) {
     calculateOrientationArea::calculate_orientation_area(j_test, roof_surfaces_dictionary);
     writeAttributes::write_orientation_area(j_test, roof_surfaces_dictionary); // write attributes
 
-    std::cout << "size: " << roof_surfaces_dictionary.size() << '\n';
+    std::cout << "roof_surfaces_dictionary size: " << roof_surfaces_dictionary.size() << '\n';
     for (auto& roof : roof_surfaces_dictionary)
     {
         std::string key = roof.first;
@@ -805,17 +805,15 @@ int main(int argc, const char* argv[]) {
         std::cout << '\n';
         for (auto& roof : roof_surfaces_dictionary[key])
         {
-            std::cout << "(" << roof.roof_normal.x << "," << roof.roof_normal.y << "," << roof.roof_normal.z << ")" << " ";
+            std::cout <<"normal: " << "(" << roof.roof_normal.x << "," << roof.roof_normal.y << "," << roof.roof_normal.z << ")" << " ";
             std::cout << "area: " << roof.area << '\n';
             std::cout << "vertices: " << '\n';
 
-            int count = 1;
             for (auto& vertex : roof.exteriorSurface)
             {
-                std::cout << "v" << " " << vertex.x << " " << vertex.y << " " << vertex.z << '\n';
-                ++count;
+                std::cout << "v" << " " << vertex.x << ", " << vertex.y << ", " << vertex.z << '\n';
             }
-            std::cout << count << '\n';
+
         }
     }
 
