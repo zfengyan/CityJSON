@@ -224,6 +224,7 @@ public:
 
 	std::vector<Vertex> exteriorSurface; // store the vertices of exterior face, should be CCW from outside
 	std::vector<std::vector<Vertex>> interiorSurfaces; // store the vertices of interior faces, should be CW(for each interior face) from outside
+	Vector3d roof_normal;
 public:
 	RoofSurface():
 		BuildingPart_id("null"),
@@ -244,6 +245,7 @@ public:
 	{
 		// use exterior surface of current roof surface to get the normal vector
 		Vector3d& normal = Vector3d::find_normal(roof.exteriorSurface);
+		roof.roof_normal = normal;
 
 		// situation cannot use alpha = arctan(x/y)
 		// orientaion is either East or West(using 2d coordinates x, y to estimate the orientation)

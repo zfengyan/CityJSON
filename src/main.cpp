@@ -684,6 +684,7 @@ int main(int argc, const char* argv[]) {
 
     std::string errorfile = "/error.report.json";
     std::string testfile = "/NL.IMBAG.Pand.0503100000004247.city.json";
+    std::string testwritefilename = "/write.NL.IMBAG.Pand.0503100000004247.city.json";
 
     /**********************************************************************************/
 
@@ -790,11 +791,33 @@ int main(int argc, const char* argv[]) {
     * orientation and area
     ***********************************************************************************/
 
-    //std::cout << "orientation test" << '\n';
-    //std::cout << '\n';
-    //std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;
-    //calculateOrientationArea::calculate_orientation_area(j, roof_surfaces_dictionary);
-    //writeAttributes::write_orientation_area(j, roof_surfaces_dictionary); // write attributes
+    std::cout << "orientation test" << '\n';
+    std::cout << '\n';
+    std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;
+    calculateOrientationArea::calculate_orientation_area(j_test, roof_surfaces_dictionary);
+    writeAttributes::write_orientation_area(j_test, roof_surfaces_dictionary); // write attributes
+
+    std::cout << "size: " << roof_surfaces_dictionary.size() << '\n';
+    for (auto& roof : roof_surfaces_dictionary)
+    {
+        std::string key = roof.first;
+        std::cout << key << '\n';
+        std::cout << '\n';
+        for (auto& roof : roof_surfaces_dictionary[key])
+        {
+            std::cout << "(" << roof.roof_normal.x << "," << roof.roof_normal.y << "," << roof.roof_normal.z << ")" << " ";
+            std::cout << "area: " << roof.area << '\n';
+            std::cout << "vertices: " << '\n';
+
+            int count = 1;
+            for (auto& vertex : roof.exteriorSurface)
+            {
+                std::cout << "v" << " " << vertex.x << " " << vertex.y << " " << vertex.z << '\n';
+                ++count;
+            }
+            std::cout << count << '\n';
+        }
+    }
 
     /**********************************************************************************/
 
@@ -807,9 +830,9 @@ int main(int argc, const char* argv[]) {
     * write files
     ***********************************************************************************/
 
-    //std::cout << "writing files..." << '\n';    
-    //writeFiles::write_json_file(j, writefilename);
-    //std::cout << "writing files done" << '\n';
+    std::cout << "writing files..." << '\n';    
+    writeFiles::write_json_file(j_test, testwritefilename);
+    std::cout << "writing files done" << '\n';
 
     /**********************************************************************************/   
 
@@ -820,6 +843,10 @@ int main(int argc, const char* argv[]) {
     std::vector<ErrorObject> error_objects;
     errorProcess::error_preprocess(j_error, error_objects); // pass j_error as argument
 
+
+    /**********************************************************************************/
+    // consecutive points
+
     /*for (auto& eobj : error_objects) {
         if(eobj.error_code == 102)std::cout << eobj.building_id << '\n';
     }*/
@@ -828,18 +855,21 @@ int main(int argc, const char* argv[]) {
     //std::cout << "consecutive points: " << '\n';
     //errorProcess::error_process_consecutive_points(j, error_objects);
 
-    std::cout << "error_objects size: " << error_objects.size() << '\n';
-    std::cout << '\n';
+    /**********************************************************************************/
+    // non-manifold
+    // 
+    //std::cout << "error_objects size: " << error_objects.size() << '\n';
+    //std::cout << '\n';
 
-    std::cout << "non manifold: " << '\n';
-    errorProcess::error_process_non_manifold(j, error_objects); // pass j as argument
-    std::cout << '\n';   
+    //std::cout << "non manifold: " << '\n';
+    //errorProcess::error_process_non_manifold(j, error_objects); // pass j as argument
+    //std::cout << '\n';   
 
-    for (auto& eobj : error_objects) {
-        if (eobj.error_code == 303) {
-            for (auto& index : eobj.boundaries_index)std::cout << index << " ";
-        }
-    }
+    //for (auto& eobj : error_objects) {
+    //    if (eobj.error_code == 303) {
+    //        for (auto& index : eobj.boundaries_index)std::cout << index << " ";
+    //    }
+    //}
 
     return 0;
 }
