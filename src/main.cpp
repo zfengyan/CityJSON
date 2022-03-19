@@ -698,6 +698,10 @@ public:
 
 class errorProcess {
 public:
+
+    /*
+    * preprocess: build error_objects
+    */
     static void error_preprocess(json& errorjson, std::vector<ErrorObject>& error_objects)
     {
         for (auto& f : errorjson["features"].items()) // -- each building
@@ -756,6 +760,17 @@ public:
 
             }// end if: validity = false
         }
+    }
+
+
+    /*
+    * error process volume: set volume of invalid buildings as null
+    * @param:
+    * j_error_process_input -- "myfile.output.second.city.json";
+    */
+    static void error_process_volume(json& j_error_process_input, std::vector<ErrorObject>& error_objects)
+    {
+
     }
 
 
@@ -888,7 +903,7 @@ int main(int argc, const char* argv[]) {
 
     /**********************************************************************************/
 
-    std::cout << "----------------------------------------- Basic Info: -----------------------------------------" << '\n';
+    std::cout << "----------------------------------------- Basic Info -----------------------------------------" << '\n';
     
     //-- get total number of RoofSurface in the file
     int noroofsurfaces = get_no_roof_surfaces(j); // depends on the geometry type: Multisurface, solid...
@@ -931,12 +946,12 @@ int main(int argc, const char* argv[]) {
     o.close();
     std::cout << '\n';*/
 
-    std::cout << "----------------------------------------- Basic Info: -----------------------------------------" << '\n';
+    std::cout << "----------------------------------------- Basic Info -----------------------------------------" << '\n';
     std::cout << '\n';
     /**********************************************************************************/
 
 
-    std::cout << "----------------------------------------- my output: -----------------------------------------" << '\n';
+    std::cout << "----------------------------------------- my output -----------------------------------------" << '\n';
 
     //print_roofsurfaces_vertices(j_test);
 
@@ -1093,7 +1108,7 @@ int main(int argc, const char* argv[]) {
     std::cout << "error processing done " << '\n';
     std::cout << "-----------------------------------------" << '\n';
     std::cout << '\n';
-    std::cout << "----------------------------------------- my output: -----------------------------------------" << '\n';
+    std::cout << "----------------------------------------- my output -----------------------------------------" << '\n';
     
     /**********************************************************************************/
     // consecutive points
