@@ -617,6 +617,7 @@ public:
                             sur[roof.semantics_surfaces_index]["type"] = roof.type;
                             //sur[roof.semantics_surfaces_index]["BuildingPart_id"] = roof.BuildingPart_id;
                             //sur[roof.semantics_surfaces_index]["boundaries_index"] = roof.boundaries_index;
+                            sur[roof.semantics_surfaces_index]["roof_id"] = roof.roof_id;
 
                             // orientation
                             if(roof.orientation != "null")sur[roof.semantics_surfaces_index]["orientation"] = roof.orientation;
@@ -810,7 +811,7 @@ int main(int argc, const char* argv[]) {
     //std::cout << '\n';
     std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;
     calculateOrientationArea::calculate_orientation_area(j_test, roof_surfaces_dictionary);
-    //writeAttributes::write_orientation_area(j_test, roof_surfaces_dictionary); // write attributes
+    writeAttributes::write_orientation_area(j_test, roof_surfaces_dictionary); // write attributes
 
     //std::cout << "roof_surfaces_dictionary size: " << roof_surfaces_dictionary.size() << '\n';
     //for (auto& roof : roof_surfaces_dictionary)
@@ -843,9 +844,9 @@ int main(int argc, const char* argv[]) {
     * write files
     ***********************************************************************************/
 
-    /*std::cout << "writing files..." << '\n';    
+    std::cout << "writing files..." << '\n';    
     writeFiles::write_json_file(j_test, testwritefilename);
-    std::cout << "writing files done" << '\n';*/
+    std::cout << "writing files done" << '\n';
 
     /**********************************************************************************/   
 
