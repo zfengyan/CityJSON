@@ -873,7 +873,6 @@ int main(int argc, const char* argv[]) {
 
     std::string filename = "/myfile.city.json";
     std::string filename_triangulated = "/myfile.triangulated.city.json";
-    std::string writefilename = "/testwrite.reduce.myfile.city.json";
 
     std::string errorfile = "/error.report.json";
 
