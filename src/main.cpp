@@ -876,8 +876,6 @@ int main(int argc, const char* argv[]) {
 
     std::string errorfile = "/error.report.json";
 
-    /**********************************************************************************/
-
     //-- reading the (original)file with nlohmann json: https://github.com/nlohmann/json  
     std::ifstream input(DATA_PATH + filename);
     json j;
@@ -896,7 +894,10 @@ int main(int argc, const char* argv[]) {
     input_error >> j_error;
     input_error.close();
 
+    /**********************************************************************************/
 
+    std::cout << "----------------------------------------- Basic Info: -----------------------------------------" << '\n';
+    
     //-- get total number of RoofSurface in the file
     int noroofsurfaces = get_no_roof_surfaces(j); // depends on the geometry type: Multisurface, solid...
     std::cout << "Total RoofSurface: " << noroofsurfaces << '\n';
@@ -924,8 +925,6 @@ int main(int argc, const char* argv[]) {
     //-- print out the number of vertices in the file
     std::cout << "Number of vertices " << j["vertices"].size() << '\n';
 
-    std::cout << '\n';
-
     //-- add an attribute "volume"
     /*for (auto& co : j["CityObjects"]) {
         if (co["type"] == "Building") {
@@ -940,11 +939,12 @@ int main(int argc, const char* argv[]) {
     o.close();
     std::cout << '\n';*/
 
+    std::cout << "----------------------------------------- Basic Info: -----------------------------------------" << '\n';
+    std::cout << '\n';
     /**********************************************************************************/
 
 
-    std::cout << "my output: " << '\n';
-    std::cout << '\n';
+    std::cout << "----------------------------------------- my output: -----------------------------------------" << '\n';
 
     //print_roofsurfaces_vertices(j_test);
 
@@ -953,9 +953,13 @@ int main(int argc, const char* argv[]) {
     * volume
     ***********************************************************************************/
 
+    std::cout << "-------- calculating volume... --------" << '\n';
+
     std::map<std::string, double> volume_dictionary;
     calculateVolume::calculate_volume(j_triangulated, volume_dictionary); // use triangulated file to calculte the volume
     writeAttributes::write_volume(j, volume_dictionary); // write attributes to the original file
+    
+    std::cout << "-------- done --------" << '\n';
     std::cout << '\n';
 
     /**********************************************************************************/
@@ -965,7 +969,10 @@ int main(int argc, const char* argv[]) {
     * floor -- calculate and write to attributes
     ***********************************************************************************/
     
+    std::cout << "-------- calculating and writing floor to attributes... --------" << '\n';
     calculateFloor::cal_floor(j);
+    std::cout << "-------- done --------" << '\n';
+    std::cout << '\n';
 
     /**********************************************************************************/
 
@@ -974,24 +981,30 @@ int main(int argc, const char* argv[]) {
     * build surfaces
     ***********************************************************************************/
 
-    std::cout << "building surfaces: " << '\n';
-    //std::cout << '\n';
+    std::cout << "-------- building roof surfaces: --------" << '\n';
     std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;
     buildRoofSurfaces::build_roof_surfaces(j, roof_surfaces_dictionary);
+    std::cout << "done" << '\n';
+    std::cout << "writing to attributes..." << '\n';
     writeAttributes::write_orientation_area_to_attributes(j, roof_surfaces_dictionary); // write attributes
+    std::cout << "done" << '\n';
+    std::cout << "-------- building roof surfaces done --------" << '\n';
+    std::cout << '\n';
+
 
     // First output
     /**********************************************************************************/
-    std::cout << "first writing files..." << '\n';
+    std::cout << "-------- first writing files...--------" << '\n';
     std::string FirstOutput = "/myfile.output.first.city.json";
     writeFiles::write_json_file(j, FirstOutput);
-    std::cout << "first writing files done" << '\n';
+    std::cout << "-------- first writing files done --------" << '\n';
+    std::cout << '\n';
 
 
     // Second input
     /**********************************************************************************/
 
-    std::cout << "Second input: " << '\n';
+    std::cout << "-------- Second input: --------" << '\n';
     std::string SecondInput = "/myfile.input.second.city.json";
     std::string SecondInput_triangulated = "/myfile.input.second.triangulated.city.json";
 
