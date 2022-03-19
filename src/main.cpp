@@ -884,8 +884,8 @@ int main(int argc, const char* argv[]) {
     std::cout << "orientation and area: " << '\n';
     //std::cout << '\n';
     std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;
-    calculateOrientationArea::calculate_orientation_area(j_test, roof_surfaces_dictionary);
-    writeAttributes::write_orientation_area(j_test, roof_surfaces_dictionary); // write attributes
+    calculateOrientationArea::calculate_orientation_area(j, roof_surfaces_dictionary);
+    writeAttributes::write_orientation_area(j, roof_surfaces_dictionary); // write attributes
 
     //std::cout << "roof_surfaces_dictionary size: " << roof_surfaces_dictionary.size() << '\n';
     //for (auto& roof : roof_surfaces_dictionary)
@@ -922,7 +922,7 @@ int main(int argc, const char* argv[]) {
     ***********************************************************************************/
 
     std::cout << "writing files..." << '\n';    
-    writeFiles::write_json_file(j_test, test_write_filename);
+    writeFiles::write_json_file(j, writefilename);
     std::cout << "writing files done" << '\n';
 
     /**********************************************************************************/   
