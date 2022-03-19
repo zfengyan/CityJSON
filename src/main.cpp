@@ -312,7 +312,7 @@ public:
             if (co.value()["geometry"].size() != 0 &&
                 co.value()["parents"].size() == 1)
             {
-                std::cout << "CityObject has geometry: " << co.key() << '\n';
+                //std::cout << "CityObject has geometry: " << co.key() << '\n';
                 //std::cout << "parent id: " << co.value()["parents"][0] << '\n';
 
 
@@ -380,7 +380,7 @@ public:
             }// end if: BuildingPart object
 
         } // end for: each item in building object
-        std::cout << '\n';
+        //std::cout << '\n';
 
         /***********************************************************************************/
 
@@ -394,7 +394,7 @@ public:
         int count = 0;
 		for (it = volume_dictionary.begin(); it != volume_dictionary.end(); ++it)
 		{
-            std::cout << it->first << "    " << it->second << '\n';
+            //std::cout << it->first << "    " << it->second << '\n';
             ++count;
 		}
         std::cout << "total elements in volume dictionary: " << count << '\n';
@@ -569,7 +569,8 @@ public:
             //std::cout << key << "    ";
             //std::cout << "roof surface(s): " << it->second.size() << '\n';
 
-            for (auto& roof : roof_surfaces_dictionary[key])std::cout << roof.roof_id << '\n';
+            //for (auto& roof : roof_surfaces_dictionary[key])
+                //std::cout << roof.roof_id << '\n';
             
             ++count;
             countRoof += (int)it->second.size();
@@ -969,10 +970,10 @@ int main(int argc, const char* argv[]) {
     * volume
     ***********************************************************************************/
 
-    //std::map<std::string, double> volume_dictionary;
-    //calculateVolume::calculate_volume(j_triangulated, volume_dictionary); // use triangulated file to calculte the volume
-    //writeAttributes::write_volume(j, volume_dictionary); // write attributes to the original file
-    //std::cout << '\n';
+    std::map<std::string, double> volume_dictionary;
+    calculateVolume::calculate_volume(j_triangulated, volume_dictionary); // use triangulated file to calculte the volume
+    writeAttributes::write_volume(j, volume_dictionary); // write attributes to the original file
+    std::cout << '\n';
 
     /**********************************************************************************/
 
@@ -981,76 +982,59 @@ int main(int argc, const char* argv[]) {
     * floor -- calculate and write to attributes
     ***********************************************************************************/
     
-    //calculateFloor::cal_floor(j);
+    calculateFloor::cal_floor(j);
 
     /**********************************************************************************/
 
 
     /*
-    * orientation and area
+    * build surfaces
     ***********************************************************************************/
 
     std::cout << "building surfaces: " << '\n';
     //std::cout << '\n';
     std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;
-    buildRoofSurfaces::build_roof_surfaces(j_test, roof_surfaces_dictionary);
-    writeAttributes::write_orientation_area(j_test, roof_surfaces_dictionary); // write attributes
+    buildRoofSurfaces::build_roof_surfaces(j, roof_surfaces_dictionary);
+    writeAttributes::write_orientation_area(j, roof_surfaces_dictionary); // write attributes
 
-    std::cout << "roof surface triangles: " << '\n';
-    RoofSurfaceTriangles::roof_surface_triangles(j_test_write_triangulated, roof_surfaces_dictionary);
-    std::cout << '\n';
+    // First output
+    /**********************************************************************************/
+    std::cout << "writing files..." << '\n';
+    std::string FirstOutput = "/myfile.output.first.city.json";
+    writeFiles::write_json_file(j, FirstOutput);
+    std::cout << "writing files done" << '\n';
 
+
+    // Second input
     /**********************************************************************************/
 
-    // calculate area
-    calculateArea::calculate_tri_area(roof_surfaces_dictionary);
+    //std::cout << "roof surface triangles: " << '\n';
+    //RoofSurfaceTriangles::roof_surface_triangles(j_test_write_triangulated, roof_surfaces_dictionary);
+    //std::cout << '\n';
 
-    // calculate orientation
-    calculateOrientation::calculate_orientation(roof_surfaces_dictionary);
 
-    // update attributes
-    writeAttributes::write_orientation_area(j_test, roof_surfaces_dictionary); // write attributes
+    //// calculate area
+    //calculateArea::calculate_tri_area(roof_surfaces_dictionary);
 
-    /**********************************************************************************/
+    //// calculate orientation
+    //calculateOrientation::calculate_orientation(roof_surfaces_dictionary);
 
-    std::cout << "print roof surface triangle -- vertices: " << '\n';
-    std::map<std::string, std::vector<RoofSurface>>::iterator it;
-	for (it = roof_surfaces_dictionary.begin(); it != roof_surfaces_dictionary.end(); ++it)
-	{
-		std::string key = it->first;
-		//std::cout << key << " " << '\n';
-
-		for (auto& roof : it->second)
-		{
-            //std::cout << roof.roof_id << " " << "triangles size: ";
-            //std::cout << roof.triangles.size() << '\n';
-            //std::cout << "vertices: " << '\n';
-            for (auto& onetri : roof.triangles)
-            {
-                for (auto& v : onetri)
-                {
-                    //std::cout << v.x << " " << v.y << " " << v.z << '\n';
-                }
-                //std::cout << '\n';
-            }
-		}
-		//std::cout << '\n';
-	}
+    //// update attributes
+    //writeAttributes::write_orientation_area(j_test, roof_surfaces_dictionary); // write attributes
 
     /**********************************************************************************/
-
 
     std::cout << "processing done" << '\n';
     std::cout << '\n';
 
 
     /*
-    * write files
+    * write result files
     ***********************************************************************************/
 
-    std::cout << "writing files..." << '\n';    
-    writeFiles::write_json_file(j_test, test_write_filename);
-    std::cout << "writing files done" << '\n';
+    //std::cout << "writing files..." << '\n';    
+    //writeFiles::write_json_file(j_test, test_write_filename);
+    //std::cout << "writing files done" << '\n';
 
     /**********************************************************************************/   
 
