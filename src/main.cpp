@@ -996,26 +996,6 @@ int main(int argc, const char* argv[]) {
     buildRoofSurfaces::build_roof_surfaces(j_test, roof_surfaces_dictionary);
     writeAttributes::write_orientation_area(j_test, roof_surfaces_dictionary); // write attributes
 
-    //std::cout << "roof_surfaces_dictionary size: " << roof_surfaces_dictionary.size() << '\n';
-    //for (auto& roof : roof_surfaces_dictionary)
-    //{
-    //    std::string key = roof.first;
-    //    std::cout << key << '\n';
-    //    std::cout << '\n';
-    //    for (auto& roof : roof_surfaces_dictionary[key])
-    //    {
-    //        std::cout <<"normal: " << "(" << roof.roof_normal.x << "," << roof.roof_normal.y << "," << roof.roof_normal.z << ")" << " ";
-    //        std::cout << "area: " << roof.area << '\n';
-    //        std::cout << "vertices: " << '\n';
-
-    //        for (auto& vertex : roof.exteriorSurface)
-    //        {
-    //            //std::cout << "v" << " " << vertex.x << ", " << vertex.y << ", " << vertex.z << '\n';
-    //        }
-
-    //    }
-    //}
-
     std::cout << "roof surface triangles: " << '\n';
     RoofSurfaceTriangles::roof_surface_triangles(j_test_write_triangulated, roof_surfaces_dictionary);
     std::cout << '\n';
