@@ -877,13 +877,6 @@ int main(int argc, const char* argv[]) {
 
     std::string errorfile = "/error.report.json";
 
-    std::string testfile = "/NL.IMBAG.Pand.0503100000004247.city.json";
-
-    std::string test_write_filename = "/write.NL.IMBAG.Pand.0503100000004247.city.json";
-    //std::string test_write_filename = writefilename;
-
-    std::string testfile_write_triangulated = "/write.NL.IMBAG.Pand.0503100000004247.triangulated.city.json";
-
     /**********************************************************************************/
 
     //-- reading the (original)file with nlohmann json: https://github.com/nlohmann/json  
@@ -904,26 +897,6 @@ int main(int argc, const char* argv[]) {
     input_error >> j_error;
     input_error.close();
 
-    // -- reading the test file
-    std::ifstream input_test(DATA_PATH + testfile);
-    json j_test;
-    input_test >> j_test;
-    input_test.close();
-
-    /**********************************************************************************/
-
-    std::ifstream input_test_write(DATA_PATH + test_write_filename);
-    json j_test_write;
-    input_test_write >> j_test_write;
-    input_test_write.close();
-    
-    
-    std::ifstream input_test_write_triangulated(DATA_PATH + testfile_write_triangulated);
-    json j_test_write_triangulated;
-    input_test_write_triangulated >> j_test_write_triangulated;
-    input_test_write_triangulated.close();
-
-    /**********************************************************************************/
 
     //-- get total number of RoofSurface in the file
     int noroofsurfaces = get_no_roof_surfaces(j); // depends on the geometry type: Multisurface, solid...
