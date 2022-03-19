@@ -1086,13 +1086,26 @@ int main(int argc, const char* argv[]) {
     */
     std::cout << "-----------------------------------------" << '\n';
     std::cout << "error processing... " << '\n';
+
+    // -- error report file
     std::string errorfile = "/myfile.output.second.city.error.report.json";
     std::cout << "input error report file: " << errorfile << '\n';
+    
     // -- reading the error report file
     std::ifstream input_error(DATA_PATH + errorfile);
     json j_error;
     input_error >> j_error;
     input_error.close();
+
+    // -- error process input file
+    std::string error_process_file = "/myfile.error.process.input.json";
+    std::cout << "input error process file: " << error_process_file << '\n';
+
+    // -- reading the error process file
+    std::ifstream input_error_process(DATA_PATH + error_process_file);
+    json j_error_process;
+    input_error_process >> j_error_process;
+    input_error_process.close();
 
     std::vector<ErrorObject> error_objects;
     errorProcess::error_preprocess(j_error, error_objects); // pass j_error as argument
@@ -1103,7 +1116,8 @@ int main(int argc, const char* argv[]) {
         std::cout << eobj.building_id << '\n';
     }
     std::cout << "volume of these buildings will be set as null " << '\n';
-
+    
+    std::cout << "update volume of invalid buildings: " << '\n';
 
     std::cout << "error processing done " << '\n';
     std::cout << "-----------------------------------------" << '\n';
