@@ -52,7 +52,7 @@ void print_roofsurfaces_vertices(json& j);
 class errorProcess;
 
 class calculateVolume;
-class calculateOrientation;
+
 class writeAttributes;
 class writeFiles;
 
@@ -768,6 +768,27 @@ public:
         double area = sqrt(s * (s - a) * (s - b) * (s - c));
         return area;
     }
+
+
+    // calculate area and
+    // @param: roof_surfaces_dictionary
+    static void calculate_tri_area(std::map<std::string, std::vector<RoofSurface>>& roof_surfaces_dictionary)
+    {
+        std::map<std::string, std::vector<RoofSurface>>::iterator it;
+        for (it = roof_surfaces_dictionary.begin(); it != roof_surfaces_dictionary.end(); ++it)
+        {
+            std::string key = it->first;
+
+            for (auto& roof : it->second)
+            {
+                for (auto& onetri : roof.triangles)
+                {
+                    roof.area_tri += one_triangle_area(onetri);
+                }
+                std::cout << "tri_area: " << roof.area_tri << '\n';
+            }
+        }
+    }
 };
 
 
@@ -945,6 +966,14 @@ int main(int argc, const char* argv[]) {
     std::cout << "roof surface triangles: " << '\n';
     RoofSurfaceTriangles::roof_surface_triangles(j_test_write_triangulated, roof_surfaces_dictionary);
     std::cout << '\n';
+
+    // calculate area
+    calculateOrientationArea::calculate_tri_area(roof_surfaces_dictionary);
+
+    // update attributes
+    writeAttributes::write_orientation_area(j_test, roof_surfaces_dictionary); // write attributes
+
+    /**********************************************************************************/
 
     std::cout << "print roof surface triangle -- vertices: " << '\n';
     std::map<std::string, std::vector<RoofSurface>>::iterator it;
