@@ -871,7 +871,6 @@ int main(int argc, const char* argv[]) {
     //std::string test_write_filename = writefilename;
 
     std::string testfile_write_triangulated = "/write.NL.IMBAG.Pand.0503100000004247.triangulated.city.json";
-    //std::string testfile_write_triangulated = "/testwrite.reduce.triangulated.myfile.city.json";
 
     /**********************************************************************************/
 
