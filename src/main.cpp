@@ -817,11 +817,19 @@ public:
 
             for (auto& roof : it->second) // each roof
             {
-                for (auto& onetri : roof.triangle_list) // each triangle of each roof
+                // find the triangle with the maximum area -- use as the triangle to find normal
+                double max_area = 0;
+                for (int i = 0; i != roof.triangle_list.size(); ++i) // each triangle of each roof
                 {
-                    //std::cout << "t area: " << onetri.t_area << " ";
+                    max_area = max_area > roof.triangle_list[i].t_area ? max_area : roof.triangle_list[i].t_area;
                 }
-               
+                int max_area_index = 0;
+                for (int i = 0; i != roof.triangle_list.size(); ++i)
+                {
+                    if (abs(roof.triangle_list[i].t_area - max_area) < epsilon)max_area_index = i;
+                }
+
+      
             }
         }
     }
