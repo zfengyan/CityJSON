@@ -1069,8 +1069,10 @@ int main(int argc, const char* argv[]) {
     /*
     * error process
     */
+    std::cout << "-----------------------------------------" << '\n';
+    std::cout << "error processing... " << '\n';
     std::string errorfile = "/myfile.output.second.city.error.report.json";
-
+    std::cout << "input error report file: " << errorfile << '\n';
     // -- reading the error report file
     std::ifstream input_error(DATA_PATH + errorfile);
     json j_error;
@@ -1079,7 +1081,20 @@ int main(int argc, const char* argv[]) {
 
     std::vector<ErrorObject> error_objects;
     errorProcess::error_preprocess(j_error, error_objects); // pass j_error as argument
+    std::cout << "error building part id: " << '\n';
 
+    for (auto& eobj : error_objects)
+    {
+        std::cout << eobj.building_id << '\n';
+    }
+    std::cout << "volume of these buildings will be set as null " << '\n';
+
+
+    std::cout << "error processing done " << '\n';
+    std::cout << "-----------------------------------------" << '\n';
+    std::cout << '\n';
+    std::cout << "----------------------------------------- my output: -----------------------------------------" << '\n';
+    
     /**********************************************************************************/
     // consecutive points
 
