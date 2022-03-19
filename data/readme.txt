@@ -18,6 +18,7 @@ Second output:
 myfile.output.second.city.json
 
 ************** error process ****************
+
 Error process input:
 myfile.error.process.input.json -- the same file as Second output
 
