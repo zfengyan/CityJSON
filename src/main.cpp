@@ -699,8 +699,11 @@ int main(int argc, const char* argv[]) {
     std::string writefilename = "/testwrite.reduce.myfile.city.json";
 
     std::string errorfile = "/error.report.json";
+
     std::string testfile = "/NL.IMBAG.Pand.0503100000004247.city.json";
     std::string testwritefilename = "/write.NL.IMBAG.Pand.0503100000004247.city.json";
+
+    std::string testfile_write_triangulated = "/write.NL.IMBAG.Pand.0503100000004247.triangulated.city.json";
 
     /**********************************************************************************/
 
@@ -727,6 +730,13 @@ int main(int argc, const char* argv[]) {
     json j_test;
     input_test >> j_test;
     input_test.close();
+
+    /**********************************************************************************/
+
+    std::ifstream input_test_write_triangulated(DATA_PATH + testfile_write_triangulated);
+    json j_test_write_triangulated;
+    input_test_write_triangulated >> j_test_write_triangulated;
+    input_test_write_triangulated.close();
 
     /**********************************************************************************/
 
