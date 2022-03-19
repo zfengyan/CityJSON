@@ -829,6 +829,13 @@ public:
                     if (abs(roof.triangle_list[i].t_area - max_area) < epsilon)max_area_index = i;
                 }
 
+                // use the biggest triangle to catch the normal of this roof:
+                roof.roof_normal = Vector3d::get_normal(roof.triangle_list[max_area_index]);
+                std::cout << "roof normal: " << " ";
+                std::cout << roof.roof_normal.x << " " << roof.roof_normal.y << " " << roof.roof_normal.z << '\n';
+                std::cout << "corrsponding triangle: " << '\n';
+                roof.triangle_list[max_area_index].print();
+
       
             }
         }
