@@ -498,7 +498,7 @@ public:
                                     roof.semantics_surfaces_index = new_semantic_surfaces_index;
                                     ++new_semantic_surfaces_index; // once added a new roof surface, the index += 1
                                     
-                                    std::cout << "RoofSurface: " << g["boundaries"][i][j] << '\n';
+                                    //std::cout << "RoofSurface: " << g["boundaries"][i][j] << '\n';
 
                                     // construct vertices of this roof
                                     // g["boundaries"][i][j] : [[1,2,3,4], [4,5,6],...[]], each roof face, may contain inner faces
@@ -724,8 +724,8 @@ public:
                                 for (auto& roof : roof_surfaces_dictionary[key_bp]) // each roof
                                 {
                                     if (rid == roof.roof_id) {
-                                        std::cout << roof.roof_id << " ";
-                                        std::cout << g["boundaries"][i][j] << " ";
+                                        //std::cout << roof.roof_id << " ";
+                                        //std::cout << g["boundaries"][i][j] << " ";
 
                                         std::vector<Vertex> one_triangle;
                                         for (auto& v : g["boundaries"][i][j][0]) // each vertex
@@ -740,7 +740,7 @@ public:
                                         roof.triangles.emplace_back(one_triangle);
                                         one_triangle.clear();
                                             
-                                        std::cout << '\n';
+                                        //std::cout << '\n';
                                     }
                                 }
                                 
@@ -835,6 +835,7 @@ public:
                 std::cout << roof.roof_normal.x << " " << roof.roof_normal.y << " " << roof.roof_normal.z << '\n';
                 std::cout << "corrsponding triangle: " << '\n';
                 roof.triangle_list[max_area_index].print();
+                std::cout << '\n';
 
       
             }
@@ -1037,23 +1038,23 @@ int main(int argc, const char* argv[]) {
 	for (it = roof_surfaces_dictionary.begin(); it != roof_surfaces_dictionary.end(); ++it)
 	{
 		std::string key = it->first;
-		std::cout << key << " " << '\n';
+		//std::cout << key << " " << '\n';
 
 		for (auto& roof : it->second)
 		{
-            std::cout << roof.roof_id << " " << "triangles size: ";
-            std::cout << roof.triangles.size() << '\n';
-            std::cout << "vertices: " << '\n';
+            //std::cout << roof.roof_id << " " << "triangles size: ";
+            //std::cout << roof.triangles.size() << '\n';
+            //std::cout << "vertices: " << '\n';
             for (auto& onetri : roof.triangles)
             {
                 for (auto& v : onetri)
                 {
-                    std::cout << v.x << " " << v.y << " " << v.z << '\n';
+                    //std::cout << v.x << " " << v.y << " " << v.z << '\n';
                 }
-                std::cout << '\n';
+                //std::cout << '\n';
             }
 		}
-		std::cout << '\n';
+		//std::cout << '\n';
 	}
 
     /**********************************************************************************/
