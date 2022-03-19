@@ -598,7 +598,7 @@ public:
     * "semantics" -> "surfaces"
     * "semantics" -> "values"
     */
-    static void write_orientation_area(
+    static void write_orientation_area_to_attributes(
         json& jsonfile,
         std::map<std::string, std::vector<RoofSurface>>& roof_surfaces_dictionary)
     {
@@ -690,7 +690,7 @@ public:
 /*
 * use generated file to find triangles belong to which original surface
 */
-class RoofSurfaceTriangles {
+class BuildRoofSurfaceTriangles {
 public:
 
     /*
@@ -701,7 +701,7 @@ public:
     * -- key: buildingpart id
     * -- value: a vector contains roof surface objects of each building
     */
-    static void roof_surface_triangles(
+    static void build_roof_surface_triangles(
         json& j_triangulated_write,
         std::map<std::string, std::vector<RoofSurface>>& roof_surfaces_dictionary)
     {
@@ -815,7 +815,7 @@ public:
         for (it = roof_surfaces_dictionary.begin(); it != roof_surfaces_dictionary.end(); ++it)
         {
             std::string key = it->first;
-            std::cout << "key: " << key << '\n';
+            //std::cout << "key: " << key << '\n';
 
             for (auto& roof : it->second) // each roof
             {
@@ -1006,7 +1006,7 @@ int main(int argc, const char* argv[]) {
     //std::cout << '\n';
     std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;
     buildRoofSurfaces::build_roof_surfaces(j, roof_surfaces_dictionary);
-    writeAttributes::write_orientation_area(j, roof_surfaces_dictionary); // write attributes
+    writeAttributes::write_orientation_area_to_attributes(j, roof_surfaces_dictionary); // write attributes
 
     // First output
     /**********************************************************************************/
@@ -1035,8 +1035,8 @@ int main(int argc, const char* argv[]) {
 
     std::cout << "Second input file: " << SecondInput << '\n';
 
-    std::cout << "roof surface triangles: " << '\n'; // !NB! : use second triangulated file
-    RoofSurfaceTriangles::roof_surface_triangles(j_second_triangulated, roof_surfaces_dictionary);
+    std::cout << "build roof surface triangles: " << '\n'; // !NB! : use second triangulated file
+    BuildRoofSurfaceTriangles::build_roof_surface_triangles(j_second_triangulated, roof_surfaces_dictionary);
     //std::cout << '\n';
 
 
@@ -1051,7 +1051,7 @@ int main(int argc, const char* argv[]) {
     std::cout << "done" << '\n';
 
     //update attributes
-    writeAttributes::write_orientation_area(j_second, roof_surfaces_dictionary); // write attributes
+    writeAttributes::write_orientation_area_to_attributes(j_second, roof_surfaces_dictionary); // write attributes
 
     std::cout << "processing done" << '\n';
     std::cout << '\n';
