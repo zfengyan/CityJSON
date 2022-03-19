@@ -1126,6 +1126,16 @@ int main(int argc, const char* argv[]) {
     std::cout << "error processing done " << '\n';
     std::cout << "-----------------------------------------" << '\n';
     std::cout << '\n';
+
+    std::cout << "-----------------------------------------" << '\n';
+    std::cout << "writing result file..." << '\n';
+    std::string result = "/myfile.result.city.json";
+    std::cout << "result file: " << result << '\n';
+    writeFiles::write_json_file(j_error_process, result);
+    std::cout << "writing result file done" << '\n';
+    std::cout << "-----------------------------------------" << '\n';
+    std::cout << '\n';
+
     std::cout << "----------------------------------------- my output -----------------------------------------" << '\n';
     
     /**********************************************************************************/
