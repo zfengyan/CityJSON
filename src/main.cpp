@@ -769,8 +769,18 @@ public:
     * j_error_process_input -- "myfile.output.second.city.json";
     */
     static void error_process_volume(json& j_error_process_input, std::vector<ErrorObject>& error_objects)
-    {
+    {       
+        std::cout << "volume of invalid buildings will be set as null " << '\n';
+        std::cout << "error building id and volume before and after error process: " << '\n';
 
+        for (auto& eobj : error_objects)
+        {
+            auto& co = j_error_process_input["CityObjects"][eobj.building_id];
+            std::cout << eobj.building_id << " ";
+            std::cout << co["attributes"]["volume"] << " ";
+            co["attributes"]["volume"] = nullptr;
+            std::cout << co["attributes"]["volume"] << '\n';
+        }
     }
 
 
@@ -1109,14 +1119,6 @@ int main(int argc, const char* argv[]) {
 
     std::vector<ErrorObject> error_objects;
     errorProcess::error_preprocess(j_error, error_objects); // pass j_error as argument
-    
-    std::cout << "error building part id: " << '\n';
-
-    for (auto& eobj : error_objects)
-    {
-        std::cout << eobj.building_id << '\n';
-    }
-    std::cout << "volume of these buildings will be set as null " << '\n';
     
     std::cout << "updating volume of invalid buildings... " << '\n';
     errorProcess::error_process_volume(j_error_process, error_objects);
