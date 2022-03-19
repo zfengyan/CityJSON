@@ -936,6 +936,15 @@ int main(int argc, const char* argv[]) {
 		{
             std::cout << roof.roof_id << " " << "triangles size: ";
             std::cout << roof.triangles.size() << '\n';
+            std::cout << "vertices: " << '\n';
+            for (auto& onetri : roof.triangles)
+            {
+                for (auto& v : onetri)
+                {
+                    std::cout << v.x << " " << v.y << " " << v.z << '\n';
+                }
+                std::cout << '\n';
+            }
 		}
 		std::cout << '\n';
 	}
