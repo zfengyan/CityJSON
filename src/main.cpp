@@ -682,6 +682,64 @@ public:
 
 
 
+/*
+* use generated file to find triangles belong to which original surface
+*/
+class RoofSurfaceTriangles {
+public:
+
+    /*
+    * @param:
+    * original_write: after adding new semantic objects(the roof surfaces are marked with roof_id)
+    * triangulated_write: triangulated file of original_write
+    * roof_surfaces_dictionary: roof surfaces dictionary
+    * -- key: buildingpart id
+    * -- value: a vector contains roof surface objects of each building
+    */
+    static void roof_surface_triangles(
+        json& original_write, 
+        json& triangulated_write,
+        std::map<std::string, std::vector<RoofSurface>>& roof_surfaces_dictionary)
+    {
+        for (auto& co : triangulated_write["CityObjects"].items()) { // each city object 
+
+            for (auto& g : co.value()["geometry"]) { // each city object may only have ONE geometry
+
+                if (g["type"] == "Solid") { // type of geometry, may be multisurface, solid... 
+                    
+                    std::string key_bp = co.key(); // key: building part id
+                    std::cout << "key: " << key_bp << '\n';
+
+                    for (int i = 0; i < g["boundaries"].size(); i++) { // index of each primitive in "boundaries"
+
+                        for (int j = 0; j < g["boundaries"][i].size(); j++) { // for each primitive in "boundaries"
+                            int sem_index = g["semantics"]["values"][i][j];
+
+                            if (g["semantics"]["surfaces"][sem_index]["type"].get<std::string>().compare("RoofSurface") == 0) { // if it's a roof surface
+                                std::string rid = g["semantics"]["surfaces"][sem_index]["roof_id"];
+                                
+                                for (auto& roof : roof_surfaces_dictionary[key_bp])
+                                {
+                                    if (rid == roof.roof_id) {
+                                        std::cout << roof.roof_id << " ";
+                                        std::cout << g["boundaries"][i][j] << " ";
+                                        for (auto& v : g["boundaries"][i][j][0])
+                                            std::cout << v.get<int>() << " ";
+                                        std::cout << '\n';
+                                    }
+                                }
+                                
+                            }
+                        } 
+                    } 
+                } // end if
+            } // end for: each geometry
+        } // end for: each city object
+    }
+};
+
+
+
 int main(int argc, const char* argv[]) {
     
     /*
@@ -701,7 +759,7 @@ int main(int argc, const char* argv[]) {
     std::string errorfile = "/error.report.json";
 
     std::string testfile = "/NL.IMBAG.Pand.0503100000004247.city.json";
-    std::string testwritefilename = "/write.NL.IMBAG.Pand.0503100000004247.city.json";
+    std::string test_write_filename = "/write.NL.IMBAG.Pand.0503100000004247.city.json";
 
     std::string testfile_write_triangulated = "/write.NL.IMBAG.Pand.0503100000004247.triangulated.city.json";
 
@@ -733,6 +791,12 @@ int main(int argc, const char* argv[]) {
 
     /**********************************************************************************/
 
+    std::ifstream input_test_write(DATA_PATH + test_write_filename);
+    json j_test_write;
+    input_test_write >> j_test_write;
+    input_test_write.close();
+    
+    
     std::ifstream input_test_write_triangulated(DATA_PATH + testfile_write_triangulated);
     json j_test_write_triangulated;
     input_test_write_triangulated >> j_test_write_triangulated;
@@ -843,6 +907,9 @@ int main(int argc, const char* argv[]) {
     //    }
     //}
 
+    std::cout << "roof surface triangles: " << '\n';
+    RoofSurfaceTriangles::roof_surface_triangles(j_test_write, j_test_write_triangulated, roof_surfaces_dictionary);
+
     /**********************************************************************************/
 
 
@@ -855,7 +922,7 @@ int main(int argc, const char* argv[]) {
     ***********************************************************************************/
 
     std::cout << "writing files..." << '\n';    
-    writeFiles::write_json_file(j_test, testwritefilename);
+    writeFiles::write_json_file(j_test, test_write_filename);
     std::cout << "writing files done" << '\n';
 
     /**********************************************************************************/   
