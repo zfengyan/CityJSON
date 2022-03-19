@@ -836,6 +836,7 @@ public:
                 //std::cout << "triangles size: " << " ";
                 //std::cout << roof.triangle_list.size() << '\n';
 
+                // avoid triangle_list.size() == 0, due to consecutive points(potentially)
                 if (roof.triangle_list.size() == 0)roof.orientation = "null";
                 else {
                     roof.roof_normal = Vector3d::get_normal(roof.triangle_list[max_area_index]);

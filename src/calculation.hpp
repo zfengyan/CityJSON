@@ -281,7 +281,7 @@ public:
 		// in the orientation, only 8 values + "horizontal", E, W, N, S should be replaced with proper values(like EN)
 
 		double xylength = sqrt(roof_normal.x * roof_normal.x + roof_normal.y * roof_normal.y);
-		double horizontal_epsilon = 0.1;
+		double horizontal_epsilon = 1;
 		// horizontal judge using xylength: Epsilon = 0.1
 		//std::cout << "roof: " << roof_id << '\n';
 		//std::cout << "xylength: " << xylength << '\n';
