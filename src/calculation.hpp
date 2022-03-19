@@ -237,6 +237,7 @@ class RoofSurface {
 public:
 	std::string BuildingPart_id; // belongs to which BuildingPart
 	std::string type;
+	std::string roof_id; // unique id of a roof surface object
 
 	int boundaries_index; // also semantics_values_index
 	int semantics_surfaces_index;
@@ -253,6 +254,7 @@ public:
 	RoofSurface():
 		BuildingPart_id("null"),
 		type("RoofSurface"),
+		roof_id("null"),
 		boundaries_index(_INFINITE_),
 		semantics_surfaces_index(_INFINITE_),
 		orientation("null"),

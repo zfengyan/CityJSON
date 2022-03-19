@@ -478,6 +478,10 @@ public:
                         // traverse each roof in "boundaries" to find the RoofSurfaces
                         for (int i = 0; i < g["boundaries"].size(); ++i) { // g["boundaries"]: [[ [[1,2,3,4]], [[5,6,7,8]] ]]
 
+                            int r_id = 0;
+                            std::string connect = "."; // used for build roof id
+                            std::string r_marker = "roof";
+
                             for (int j = 0; j < g["boundaries"][i].size(); ++j) { // g["boundaries"][i]: [ [[1,2,3,4]], [[5,6,7,8]] ] -- contains multiple surfaces         
                                 
                                 int sem_index = g["semantics"]["values"][i][j]; // semantic values index
@@ -485,9 +489,11 @@ public:
                                 // if it's a roof surface
                                 if (g["semantics"]["surfaces"][sem_index]["type"].get<std::string>().compare("RoofSurface") == 0) 
                                 {
-                                    RoofSurface roof;
+                                    RoofSurface roof; // build a new RoofSurface object
                                     roof.BuildingPart_id = co.key();
                                     roof.type = "RoofSurface";
+                                    roof.roof_id = co.key() + connect + r_marker + connect + std::to_string(r_id);
+                                    ++r_id; // once used r_id, ++r_id -- unique for one buildingpart
                                     roof.boundaries_index = j;
                                     roof.semantics_surfaces_index = new_semantic_surfaces_index;
                                     ++new_semantic_surfaces_index; // once added a new roof surface, the index += 1
@@ -551,7 +557,8 @@ public:
         /*
         * iterate roof_surfaces_dictionary
         ************************************************************************************/
-
+        
+        std::cout << '\n';
         std::cout << "roof surfaces dictionary: " << '\n';
         std::map<std::string, std::vector<RoofSurface>>::iterator it;
         int count = 0;
@@ -561,17 +568,20 @@ public:
             std::string key = it->first;
             //std::cout << key << "    ";
             //std::cout << "roof surface(s): " << it->second.size() << '\n';
+
+            for (auto& roof : roof_surfaces_dictionary[key])std::cout << roof.roof_id << '\n';
             
             ++count;
             countRoof += (int)it->second.size();
         }
-        //std::cout << '\n';
+        std::cout << '\n';
         std::cout << "total elements( num of BuildingParts ): " << count << '\n';
         std::cout << "total roof surfaces: " << countRoof << '\n';
         std::cout << '\n';
 
         /***********************************************************************************/
     }
+
 
 };
 
@@ -796,7 +806,6 @@ int main(int argc, const char* argv[]) {
     * orientation and area
     ***********************************************************************************/
 
-    std::cout << '\n';
     std::cout << "orientation and area: " << '\n';
     //std::cout << '\n';
     std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;

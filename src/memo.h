@@ -207,6 +207,130 @@
 /**********************************************************************************/
 
 
+/*
+* build dictionary -- need to test
+***********************************************************************************/
+//static void build_roofsurface_dictionary(
+//	json& jsonfile,
+//	std::map<std::string, std::vector<RoofSurface>>& roof_surfaces_dictionary)
+//{
+//	for (auto& co : jsonfile["CityObjects"].items()) // each city object 
+//	{
+//		std::cout << "test";
+//		if (co.value()["geometry"].size() != 0) // each BuildingPart
+//		{
+//
+//			auto& g = co.value()["geometry"]; // each city object may only have ONE geometry                                      
+//			std::vector<RoofSurface> roof_surfaces; // store oriented roof surfaces for each BuildingPart
+//			roof_surfaces_dictionary.insert(
+//				std::pair<std::string, std::vector<RoofSurface>>(co.key(), roof_surfaces));
+//
+//			// track the index in "semantics->surfaces" of the newly-added roofsurface with attributes in each solid
+//			int new_semantic_surfaces_index = (int)g["semantics"]["surfaces"].size();
+//
+//			int r_id = 0;
+//			std::string connect = "."; // used for build roof id
+//			std::string r_marker = "roof";
+//
+//			// traverse each roof in "boundaries" to find the RoofSurfaces
+//			// g["boundaries"]: [[ [[1,2,3,4]], [[5,6,7,8]] ]]
+//			for (int j = 0; j < g["boundaries"][0].size(); ++j) { // g["boundaries"][0]: [ [[1,2,3,4]], [[5,6,7,8]] ] -- contains multiple surfaces         
+//
+//				int sem_index = g["semantics"]["values"][0][j]; // semantic values index
+//
+//				// if it's a roof surface
+//				if (g["semantics"]["surfaces"][sem_index]["type"].get<std::string>().compare("RoofSurface") == 0)
+//				{
+//					RoofSurface roof; // build a new RoofSurface object
+//					roof.BuildingPart_id = co.key();
+//					roof.type = "RoofSurface";
+//					roof.roof_id = co.key() + connect + r_marker + connect + std::to_string(r_id);
+//					++r_id; // once used r_id, ++r_id -- unique for one buildingpart
+//					roof.boundaries_index = j;
+//					roof.semantics_surfaces_index = new_semantic_surfaces_index;
+//					++new_semantic_surfaces_index; // once added a new roof surface, the index += 1
+//
+//					std::cout << "RoofSurface: " << g["boundaries"][0][j] << '\n';
+//
+//					// construct vertices of this roof
+//					// g["boundaries"][0][j] : [[1,2,3,4], [4,5,6],...[]], each roof face, may contain inner faces
+//					std::vector<Vertex> one_interior;
+//					for (int m = 0; m < g["boundaries"][0][j].size(); ++m)
+//					{
+//						// g["boundaries"][i][j][m] : [1,2,3,4], [4,5,6], ... []
+//						auto N = g["boundaries"][0][j][m].size();
+//
+//						for (int n = 0; n < N; ++n) // get vertices for this face
+//						{
+//							int v = g["boundaries"][0][j][m][n].get<int>();
+//							std::vector<int> vi = jsonfile["vertices"][v];
+//
+//							double x = (vi[0] * jsonfile["transform"]["scale"][0].get<double>()) + jsonfile["transform"]["translate"][0].get<double>();
+//							double y = (vi[1] * jsonfile["transform"]["scale"][1].get<double>()) + jsonfile["transform"]["translate"][1].get<double>();
+//							double z = (vi[2] * jsonfile["transform"]["scale"][2].get<double>()) + jsonfile["transform"]["translate"][2].get<double>();
+//
+//							//std::cout << v << " (" << x << ", " << y << ", " << z << ")" << '\n';
+//
+//							// add the vertex to the vector according to the default order
+//							// exterior: CCW
+//							// inner: CW
+//							if (m == 0)roof.exteriorSurface.emplace_back(Vertex(x, y, z, v));
+//							else {
+//								one_interior.emplace_back(Vertex(x, y, z, v));
+//								roof.interiorSurfaces.emplace_back(one_interior);
+//								one_interior.clear();
+//							}
+//
+//						}
+//
+//					} //end for: each roof surface
+//
+//					// calculate orientation of this roof surface
+//					// roof.orientation = RoofSurface::calculate_orientation(roof);
+//
+//					// calculate the area of this roof surface
+//					roof.area = RoofSurface::calculate_area_3d(roof);
+//
+//					// add this roof to the roof surfaces dictionary
+//					roof_surfaces_dictionary[co.key()].emplace_back(roof);
+//
+//				}
+//			}
+//
+//		} // end if: BuildingPart            
+//
+//	} // end for: each city object
+//
+//
+//	/*
+//	* iterate roof_surfaces_dictionary
+//	************************************************************************************/
+//
+//	std::cout << '\n';
+//	std::cout << "roof surfaces dictionary: " << '\n';
+//	std::map<std::string, std::vector<RoofSurface>>::iterator it;
+//	int count = 0;
+//	int countRoof = 0;
+//	for (it = roof_surfaces_dictionary.begin(); it != roof_surfaces_dictionary.end(); ++it)
+//	{
+//		std::string key = it->first;
+//		//std::cout << key << "    ";
+//		//std::cout << "roof surface(s): " << it->second.size() << '\n';
+//
+//		for (auto& roof : roof_surfaces_dictionary[key])std::cout << roof.roof_id << '\n';
+//
+//		++count;
+//		countRoof += (int)it->second.size();
+//	}
+//	std::cout << '\n';
+//	std::cout << "total elements( num of BuildingParts ): " << count << '\n';
+//	std::cout << "total roof surfaces: " << countRoof << '\n';
+//	std::cout << '\n';
+//
+//	/***********************************************************************************/
+//}
+/**********************************************************************************/
+
 
 /*
 * need to re-write:
