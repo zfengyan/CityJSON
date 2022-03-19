@@ -451,6 +451,10 @@ class calculateOrientationArea {
 public:  
     /*
     * orientation and area of roof surfaces
+    * @param:
+    * roof_surfaces_dictionary 
+    * -- key: buildingpart_id
+    * -- values: a vector contains the roof surface objects of this buildingpart
     */
     static void calculate_orientation_area(
         json& jsonfile, 
@@ -473,7 +477,8 @@ public:
                         
                         // traverse each roof in "boundaries" to find the RoofSurfaces
                         for (int i = 0; i < g["boundaries"].size(); ++i) { // g["boundaries"]: [[ [[1,2,3,4]], [[5,6,7,8]] ]]
-                            for (int j = 0; j < g["boundaries"][i].size(); ++j) { // g["boundaries"][i]: [ [[1,2,3,4]], [[5,6,7,8]] ]         
+
+                            for (int j = 0; j < g["boundaries"][i].size(); ++j) { // g["boundaries"][i]: [ [[1,2,3,4]], [[5,6,7,8]] ] -- contains multiple surfaces         
                                 
                                 int sem_index = g["semantics"]["values"][i][j]; // semantic values index
                                 
@@ -487,7 +492,7 @@ public:
                                     roof.semantics_surfaces_index = new_semantic_surfaces_index;
                                     ++new_semantic_surfaces_index; // once added a new roof surface, the index += 1
                                     
-                                    //std::cout << "RoofSurface: " << g["boundaries"][i][j] << '\n';
+                                    std::cout << "RoofSurface: " << g["boundaries"][i][j] << '\n';
 
                                     // construct vertices of this roof
                                     // g["boundaries"][i][j] : [[1,2,3,4], [4,5,6],...[]], each roof face, may contain inner faces
@@ -523,7 +528,7 @@ public:
                                     } //end for: each roof surface
 
                                     // calculate orientation of this roof surface
-                                    roof.orientation = RoofSurface::calculate_orientation(roof);
+                                    // roof.orientation = RoofSurface::calculate_orientation(roof);
 
                                     // calculate the area of this roof surface
                                     roof.area = RoofSurface::calculate_area_3d(roof);
@@ -554,13 +559,13 @@ public:
         for (it = roof_surfaces_dictionary.begin(); it != roof_surfaces_dictionary.end(); ++it)
         {
             std::string key = it->first;
-            std::cout << key << "    ";
-            std::cout << "roof surface(s): " << it->second.size() << '\n';
+            //std::cout << key << "    ";
+            //std::cout << "roof surface(s): " << it->second.size() << '\n';
             
             ++count;
             countRoof += (int)it->second.size();
         }
-        std::cout << '\n';
+        //std::cout << '\n';
         std::cout << "total elements( num of BuildingParts ): " << count << '\n';
         std::cout << "total roof surfaces: " << countRoof << '\n';
         std::cout << '\n';
@@ -791,10 +796,11 @@ int main(int argc, const char* argv[]) {
     * orientation and area
     ***********************************************************************************/
 
-    //std::cout << "orientation test" << '\n';
+    std::cout << '\n';
+    std::cout << "orientation and area: " << '\n';
     //std::cout << '\n';
-    //std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;
-    //calculateOrientationArea::calculate_orientation_area(j_test, roof_surfaces_dictionary);
+    std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;
+    calculateOrientationArea::calculate_orientation_area(j_test, roof_surfaces_dictionary);
     //writeAttributes::write_orientation_area(j_test, roof_surfaces_dictionary); // write attributes
 
     //std::cout << "roof_surfaces_dictionary size: " << roof_surfaces_dictionary.size() << '\n';
