@@ -712,7 +712,7 @@ public:
                 if (g["type"] == "Solid") { // type of geometry, may be multisurface, solid... 
                     
                     std::string key_bp = co.key(); // key: building part id
-                    std::cout << "key: " << key_bp << '\n';
+                    //std::cout << "key: " << key_bp << '\n';
 
                     for (int i = 0; i < g["boundaries"].size(); i++) { // index of each primitive in "boundaries"
 
@@ -797,7 +797,7 @@ public:
 
                     //roof.area_tri += t.t_area;
                 }
-                std::cout << "tri_area: " << roof.area_tri << '\n';
+                //std::cout << "tri_area: " << roof.area_tri << '\n';
             }
         }
     }
@@ -815,6 +815,7 @@ public:
         for (it = roof_surfaces_dictionary.begin(); it != roof_surfaces_dictionary.end(); ++it)
         {
             std::string key = it->first;
+            std::cout << "key: " << key << '\n';
 
             for (auto& roof : it->second) // each roof
             {
@@ -831,13 +832,22 @@ public:
                 }
 
                 // use the biggest triangle to catch the normal of this roof:
-                roof.roof_normal = Vector3d::get_normal(roof.triangle_list[max_area_index]);
+               
+                //std::cout << "triangles size: " << " ";
+                //std::cout << roof.triangle_list.size() << '\n';
+
+                if (roof.triangle_list.size() == 0)roof.orientation = "null";
+                else {
+                    roof.roof_normal = Vector3d::get_normal(roof.triangle_list[max_area_index]);
+                    roof.get_orientation();
+                }
+
                 //std::cout << "roof normal: " << " ";
                 //std::cout << roof.roof_normal.x << " " << roof.roof_normal.y << " " << roof.roof_normal.z << '\n';
                 //std::cout << "corrsponding triangle: " << '\n';
                 //roof.triangle_list[max_area_index].print();
                 //std::cout << '\n';
-                roof.get_orientation();
+                //roof.get_orientation();
 
       
             }
@@ -1030,10 +1040,14 @@ int main(int argc, const char* argv[]) {
 
 
     //calculate area
+    std::cout << "calculating area..." << '\n';
     calculateArea::calculate_tri_area(roof_surfaces_dictionary);
+    std::cout << "done" << '\n';
 
-    //// calculate orientation
-    //calculateOrientation::calculate_orientation(roof_surfaces_dictionary);
+    //calculate orientation
+    std::cout << "calculating orientation..." << '\n';
+    calculateOrientation::calculate_orientation(roof_surfaces_dictionary);
+    std::cout << "done" << '\n';
 
     //update attributes
     writeAttributes::write_orientation_area(j_second, roof_surfaces_dictionary); // write attributes
