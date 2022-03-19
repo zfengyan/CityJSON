@@ -172,6 +172,16 @@ public:
 };
 
 
+class Triangle {
+public:
+	Vertex v0;
+	Vertex v1;
+	Vertex v2;
+	double t_area;
+public:
+	Triangle() :t_area(0) {};
+};
+
 
 // class related to volume
 class Volume {
@@ -250,6 +260,7 @@ public:
 	std::vector<std::vector<Vertex>> interiorSurfaces; // store the vertices of interior faces, should be CW(for each interior face) from outside
 	
 	std::vector<std::vector<Vertex>> triangles; // store the triangles of one surface(from triangulated file)
+	std::vector<Triangle> triangle_list; // store the triangles as Triangle class
 	Vector3d roof_normal; // normal vector, might be useful
 public:
 	RoofSurface():
@@ -269,7 +280,7 @@ public:
 	* calculate and assign the orientation of roof surface
 	* use y-axis as the North(North vector: [0, 1, 0])
 	*/
-	static std::string calculate_orientation(RoofSurface& roof)
+	static std::string calculate_orientation_one_roof(RoofSurface& roof)
 	{
 		// use exterior surface of current roof surface to get the normal vector
 		Vector3d& normal = Vector3d::find_normal(roof.exteriorSurface);

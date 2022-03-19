@@ -779,16 +779,53 @@ public:
         {
             std::string key = it->first;
 
-            for (auto& roof : it->second)
+            for (auto& roof : it->second) // each roof
             {
-                for (auto& onetri : roof.triangles)
+                for (auto& onetri : roof.triangles) // each triangle of each roof
                 {
-                    roof.area_tri += one_triangle_area(onetri);
+                    roof.area_tri += one_triangle_area(onetri); // sum up area
+
+                    // add triangle to triangle_list
+                    Triangle t;
+                    t.v0 = onetri[0];
+                    t.v1 = onetri[1];
+                    t.v2 = onetri[2];
+                    t.t_area = one_triangle_area(onetri);
+
+                    roof.triangle_list.emplace_back(t);
+
+                    //roof.area_tri += t.t_area;
                 }
                 std::cout << "tri_area: " << roof.area_tri << '\n';
             }
         }
     }
+};
+
+
+
+class calculateOrientation {
+public:
+    
+    // orientation
+    static void calculate_orientation(std::map<std::string, std::vector<RoofSurface>>& roof_surfaces_dictionary)
+    {
+        std::map<std::string, std::vector<RoofSurface>>::iterator it;
+        for (it = roof_surfaces_dictionary.begin(); it != roof_surfaces_dictionary.end(); ++it)
+        {
+            std::string key = it->first;
+
+            for (auto& roof : it->second) // each roof
+            {
+                for (auto& onetri : roof.triangle_list) // each triangle of each roof
+                {
+                    //std::cout << "t area: " << onetri.t_area << " ";
+                }
+               
+            }
+        }
+    }
+
 };
 
 
@@ -971,6 +1008,9 @@ int main(int argc, const char* argv[]) {
 
     // calculate area
     calculateArea::calculate_tri_area(roof_surfaces_dictionary);
+
+    // calculate orientation
+    calculateOrientation::calculate_orientation(roof_surfaces_dictionary);
 
     // update attributes
     writeAttributes::write_orientation_area(j_test, roof_surfaces_dictionary); // write attributes
