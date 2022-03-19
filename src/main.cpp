@@ -755,7 +755,7 @@ public:
 
 
 
-class calculateOrientationArea {
+class calculateArea {
 public:
 
     // area of one triangle, using Heron's formula
@@ -937,7 +937,7 @@ int main(int argc, const char* argv[]) {
     * orientation and area
     ***********************************************************************************/
 
-    std::cout << "orientation and area: " << '\n';
+    std::cout << "area: " << '\n';
     //std::cout << '\n';
     std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;
     buildRoofSurfaces::build_roof_surfaces(j_test, roof_surfaces_dictionary);
@@ -967,8 +967,10 @@ int main(int argc, const char* argv[]) {
     RoofSurfaceTriangles::roof_surface_triangles(j_test_write_triangulated, roof_surfaces_dictionary);
     std::cout << '\n';
 
+    /**********************************************************************************/
+
     // calculate area
-    calculateOrientationArea::calculate_tri_area(roof_surfaces_dictionary);
+    calculateArea::calculate_tri_area(roof_surfaces_dictionary);
 
     // update attributes
     writeAttributes::write_orientation_area(j_test, roof_surfaces_dictionary); // write attributes

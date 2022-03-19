@@ -250,7 +250,7 @@ public:
 	std::vector<std::vector<Vertex>> interiorSurfaces; // store the vertices of interior faces, should be CW(for each interior face) from outside
 	
 	std::vector<std::vector<Vertex>> triangles; // store the triangles of one surface(from triangulated file)
-	Vector3d roof_normal;
+	Vector3d roof_normal; // normal vector, might be useful
 public:
 	RoofSurface():
 		BuildingPart_id("null"),
