@@ -874,8 +874,6 @@ int main(int argc, const char* argv[]) {
     std::string filename = "/myfile.city.json";
     std::string filename_triangulated = "/myfile.triangulated.city.json";
 
-    std::string errorfile = "/error.report.json";
-
     //-- reading the (original)file with nlohmann json: https://github.com/nlohmann/json  
     std::ifstream input(DATA_PATH + filename);
     json j;
@@ -887,12 +885,6 @@ int main(int argc, const char* argv[]) {
     json j_triangulated;
     input_triangulated >> j_triangulated;
     input_triangulated.close();
-
-    // -- reading the error report file
-    std::ifstream input_error(DATA_PATH + errorfile);
-    json j_error;
-    input_error >> j_error;
-    input_error.close();
 
     /**********************************************************************************/
 
@@ -959,7 +951,7 @@ int main(int argc, const char* argv[]) {
     calculateVolume::calculate_volume(j_triangulated, volume_dictionary); // use triangulated file to calculte the volume
     writeAttributes::write_volume(j, volume_dictionary); // write attributes to the original file
     
-    std::cout << "done " << '\n';
+    std::cout << "calculating volume done " << '\n';
     std::cout << "-----------------------------------------" << '\n';
     std::cout << '\n';
 
@@ -973,7 +965,7 @@ int main(int argc, const char* argv[]) {
     std::cout << "-----------------------------------------" << '\n';
     std::cout << "calculating and writing floor to attributes... " << '\n';
     calculateFloor::cal_floor(j);
-    std::cout << "done " << '\n';
+    std::cout << "calculating and writing floor to attributes done " << '\n';
     std::cout << "-----------------------------------------" << '\n';
     std::cout << '\n';
 
@@ -1003,6 +995,8 @@ int main(int argc, const char* argv[]) {
     std::cout << "first writing files... " << '\n';
     std::string FirstOutput = "/myfile.output.first.city.json";
     writeFiles::write_json_file(j, FirstOutput);
+    std::cout << "first writing file: " << FirstOutput << '\n';
+    std::cout << "first writing file will be used as the second input file " << '\n';
     std::cout << "first writing files done " << '\n';
     std::cout << "-----------------------------------------" << '\n';
     std::cout << '\n';
@@ -1026,13 +1020,17 @@ int main(int argc, const char* argv[]) {
     input_second_triangulated >> j_second_triangulated;
     input_second_triangulated.close();
 
-    std::cout << "Second input file: " << SecondInput << '\n';
+    std::cout << "Second input file - 1: " << SecondInput << '\n';
+    std::cout << "Second input file - 2: " << SecondInput_triangulated << '\n';
+    std::cout << "Second input file - 1 is the same as the first output file " << '\n';
+    std::cout << "Second input file - 2 is the triangulated file of Second input file - 1(using cjio@develop)" << '\n';
     std::cout << "Second input done " << '\n';
     std::cout << "-----------------------------------------" << '\n';
     std::cout << '\n';
 
     std::cout << "-----------------------------------------" << '\n';
-    std::cout << "build roof surface triangles: " << '\n'; // !NB! : use second triangulated file
+    std::cout << "building roof surface triangles... " << '\n'; // !NB! : use second triangulated file
+    std::cout << "NB: USE Second input file - 2(triangulated file) to build roof surface triangles " << '\n';
     BuildRoofSurfaceTriangles::build_roof_surface_triangles(j_second_triangulated, roof_surfaces_dictionary);
     std::cout << "build roof surface triangles done " << '\n';
     std::cout << "-----------------------------------------" << '\n';
@@ -1071,9 +1069,16 @@ int main(int argc, const char* argv[]) {
     /*
     * error process
     */
+    std::string errorfile = "/error.report.json";
+
+    // -- reading the error report file
+    std::ifstream input_error(DATA_PATH + errorfile);
+    json j_error;
+    input_error >> j_error;
+    input_error.close();
+
     std::vector<ErrorObject> error_objects;
     errorProcess::error_preprocess(j_error, error_objects); // pass j_error as argument
-
 
     /**********************************************************************************/
     // consecutive points
