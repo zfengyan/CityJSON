@@ -990,7 +990,7 @@ int main(int argc, const char* argv[]) {
     * orientation and area
     ***********************************************************************************/
 
-    std::cout << "area: " << '\n';
+    std::cout << "building surfaces: " << '\n';
     //std::cout << '\n';
     std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;
     buildRoofSurfaces::build_roof_surfaces(j_test, roof_surfaces_dictionary);
