@@ -22,5 +22,4 @@ Error process input:
 myfile.error.process.input.json -- the same file as Second output
 
 Error process output:
-
-set the invalid buildingpart's volume as nullptr
+myfile.result.city.json -- result file
