@@ -282,9 +282,9 @@ public:
 
 		double xylength = sqrt(roof_normal.x * roof_normal.x + roof_normal.y * roof_normal.y);
 		double horizontal_epsilon = 0.1;
-		// horizontal judge using xylength: Epsilon = 0.001
-		std::cout << "roof: " << roof_id << '\n';
-		std::cout << "xylength: " << xylength << '\n';
+		// horizontal judge using xylength: Epsilon = 0.1
+		//std::cout << "roof: " << roof_id << '\n';
+		//std::cout << "xylength: " << xylength << '\n';
 
 		if (xylength < horizontal_epsilon) {
 			orientation = "horizontal";
