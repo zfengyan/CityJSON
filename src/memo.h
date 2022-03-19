@@ -341,4 +341,6 @@
 * calculate_orientation()
 * 
 * !NB! volume process: invalid solid - set volume as null
+* 
+* !NB! precision issue -- keep 2 behind dot?
 */

@@ -244,6 +244,7 @@ public:
 		
 	std::string orientation; // indicates orientaion
 	double area; // indicates area
+	double area_tri;
 
 	std::vector<Vertex> exteriorSurface; // store the vertices of exterior face, should be CCW from outside
 	std::vector<std::vector<Vertex>> interiorSurfaces; // store the vertices of interior faces, should be CW(for each interior face) from outside
@@ -258,7 +259,8 @@ public:
 		boundaries_index(_INFINITE_),
 		semantics_surfaces_index(_INFINITE_),
 		orientation("null"),
-		area(0)
+		area(0),
+		area_tri(0)
 	{}
 
 public:

@@ -447,7 +447,7 @@ public:
 * use the original file to calculate the orientation
 * to avoid the triangulated faces which point inwards
 */
-class calculateOrientationArea {
+class buildRoofSurfaces {
 public:  
     /*
     * orientation and area of roof surfaces
@@ -456,7 +456,7 @@ public:
     * -- key: buildingpart_id
     * -- values: a vector contains the roof surface objects of this buildingpart
     */
-    static void calculate_orientation_area(
+    static void build_roof_surfaces(
         json& jsonfile, 
         std::map<std::string, std::vector<RoofSurface>>& roof_surfaces_dictionary)
     {
@@ -627,6 +627,10 @@ public:
                             if (roof.area > epsilon)sur[roof.semantics_surfaces_index]["area"] = ceil(roof.area * 100) / 100; // restrict the decimal places
                             else sur[roof.semantics_surfaces_index]["area"] = nullptr;
 
+                            // area_tri
+                            if (roof.area_tri > epsilon)sur[roof.semantics_surfaces_index]["area_tri"] = ceil(roof.area_tri * 100) / 100; // restrict the decimal places
+                            else sur[roof.semantics_surfaces_index]["area_tri"] = nullptr;
+
                             // change the corresponding index values in "semantics" -> "values" array
                             // Solid array depth: 4
                             // semantics -> values array depth: 4 - 2 = 2
@@ -746,6 +750,23 @@ public:
                 } // end if
             } // end for: each geometry
         } // end for: each city object
+    }
+};
+
+
+
+class calculateOrientationArea {
+public:
+
+    // area of one triangle, using Heron's formula
+    static double one_triangle_area(std::vector<Vertex>& one_triangle)
+    {
+        double a = sqrt((one_triangle[0].x - one_triangle[1].x) * (one_triangle[0].x - one_triangle[1].x) + (one_triangle[0].y - one_triangle[1].y) * (one_triangle[0].y - one_triangle[1].y) + (one_triangle[0].z - one_triangle[1].z) * (one_triangle[0].z - one_triangle[1].z));
+        double b = sqrt((one_triangle[1].x - one_triangle[2].x) * (one_triangle[1].x - one_triangle[2].x) + (one_triangle[1].y - one_triangle[2].y) * (one_triangle[1].y - one_triangle[2].y) + (one_triangle[1].z - one_triangle[2].z) * (one_triangle[1].z - one_triangle[2].z));
+        double c = sqrt((one_triangle[2].x - one_triangle[0].x) * (one_triangle[2].x - one_triangle[0].x) + (one_triangle[2].y - one_triangle[0].y) * (one_triangle[2].y - one_triangle[0].y) + (one_triangle[2].z - one_triangle[0].z) * (one_triangle[2].z - one_triangle[0].z));
+        double s = (a + b + c) * 0.5;
+        double area = sqrt(s * (s - a) * (s - b) * (s - c));
+        return area;
     }
 };
 
@@ -898,7 +919,7 @@ int main(int argc, const char* argv[]) {
     std::cout << "orientation and area: " << '\n';
     //std::cout << '\n';
     std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;
-    calculateOrientationArea::calculate_orientation_area(j_test, roof_surfaces_dictionary);
+    buildRoofSurfaces::build_roof_surfaces(j_test, roof_surfaces_dictionary);
     writeAttributes::write_orientation_area(j_test, roof_surfaces_dictionary); // write attributes
 
     //std::cout << "roof_surfaces_dictionary size: " << roof_surfaces_dictionary.size() << '\n';
@@ -960,9 +981,9 @@ int main(int argc, const char* argv[]) {
     * write files
     ***********************************************************************************/
 
-    //std::cout << "writing files..." << '\n';    
-    //writeFiles::write_json_file(j, writefilename);
-    //std::cout << "writing files done" << '\n';
+    std::cout << "writing files..." << '\n';    
+    writeFiles::write_json_file(j_test, test_write_filename);
+    std::cout << "writing files done" << '\n';
 
     /**********************************************************************************/   
 
