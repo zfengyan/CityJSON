@@ -57,169 +57,6 @@ class writeAttributes;
 class writeFiles;
 
 
-class errorProcess {
-public:
-    static void error_preprocess(json& errorjson, std::vector<ErrorObject>& error_objects)
-    {
-        for (auto& f : errorjson["features"].items()) // -- each building
-        {
-            if (!f.value()["validity"]) // false -- each false building
-            {
-                //std::cout << "key: " << f.key() << '\n';
-                ErrorObject eobj;
-                eobj.building_id = f.value()["id"];
-
-                for (auto& p : f.value()["primitives"]) // each building part of false building
-                {
-                    if (!p["validity"]) // for each buildingpart, the error type is the same
-                    {      
-                        eobj.building_part_id = p["id"];
-
-                        for (auto& e : p["errors"]) // for each error
-                        {
-                            //std::cout << e["code"].get<int>() << " "; // check the error code for one building part
-
-                            if (e["code"].get<int>() == 102) // error 102
-                            {
-                                eobj.error_code = e["code"].get<int>();
-                                eobj.error_type = e["description"].get<std::string>();
-
-                                std::string str_id = e["id"].get<std::string>();
-                                int b_index = atoi(str_id.c_str());
-                                eobj.boundaries_index.emplace_back(b_index);
-
-                            }
-
-                            if (e["code"].get<int>() == 302) // unclosed shell
-                            {
-
-                            }
-
-                            if (e["code"].get<int>() == 303) // non manifold
-                            {
-                                eobj.error_code = e["code"].get<int>();
-                                eobj.error_type = e["description"].get<std::string>();
-
-                                std::string str_id = e["id"].get<std::string>();
-                                int b_index = atoi(str_id.c_str());
-                                eobj.boundaries_index.emplace_back(b_index);
-                            }
-
-                        }
-
-                    }
-
-
-                } // end for: building part
-
-                error_objects.emplace_back(eobj); // some error objects don't have geometry
-
-               
-            }// end if: validity = false
-        }
-    }
-
-
-    /*
-    * process error consecutive points: error 102
-    */
-    static void error_process_consecutive_points(
-        json& jsonfile,
-        std::vector<ErrorObject>& error_objects)
-    {
-        for (auto& eobj : error_objects)
-        {
-            if (eobj.error_code == 102) // each consecutive points object
-            {
-                auto& bo = jsonfile["CityObjects"][eobj.building_id]; // building object
-                std::string building_part_key = bo["children"][0]; // one children of building object
-                auto& bo_part = jsonfile["CityObjects"][building_part_key]; // building part
-
-                for (auto& g : bo_part["geometry"]) {
-                    for (auto& shell : g["boundaries"]){
-                        // surface position in boundaries list: shell[index] -- [[1,2,3], [4,5,6]]
-                        for (auto& index : eobj.boundaries_index)
-                        {
-                            auto& surface = shell[index];
-                            for (auto& ring : surface)
-                            {
-                                std::cout << ring << '\n';
-                                for (auto& v : ring)
-                                {
-                                    std::vector<int> vi = jsonfile["vertices"][v.get<int>()];
-                                    double x = (vi[0] * jsonfile["transform"]["scale"][0].get<double>()) + jsonfile["transform"]["translate"][0].get<double>();
-                                    double y = (vi[1] * jsonfile["transform"]["scale"][1].get<double>()) + jsonfile["transform"]["translate"][1].get<double>();
-                                    double z = (vi[2] * jsonfile["transform"]["scale"][2].get<double>()) + jsonfile["transform"]["translate"][2].get<double>();
-                                   
-                                    //std::cout << v << " (" << x << " " << y << " " << z << ")" << '\n';
-                                }
-                            }
-                        }
-                        
-                    }
-                }
-
-                std::cout << '\n';
-                
-            } // end if: consecutive points object
-            
-        }
-        
-    }
-
-
-    /*
-    * non manifold error 
-    */
-    static void error_process_non_manifold(
-        json& jsonfile,
-        std::vector<ErrorObject>& error_objects)
-    {
-        for (auto& eobj : error_objects)
-        {
-            if (eobj.error_code == 303) // each non-manifold object
-            {
-                auto& bo = jsonfile["CityObjects"][eobj.building_id]; // building object
-                std::string building_part_key = bo["children"][0]; // one children of building object
-                auto& bo_part = jsonfile["CityObjects"][building_part_key]; // building part
-
-                for (auto& g : bo_part["geometry"]) {
-                    for (auto& shell : g["boundaries"]) {
-                        // surface position in boundaries list: shell[index] -- [[1,2,3], [4,5,6]]
-                        for (auto& index : eobj.boundaries_index)
-                        {
-                            std::cout << "index: " << index << '\n';
-                            auto& surface = shell[index];
-
-                            for (auto& ring : surface)
-                            {
-                                std::cout << ring << '\n';
-                                for (auto& v : ring)
-                                {
-                                    std::vector<int> vi = jsonfile["vertices"][v.get<int>()];
-                                    double x = (vi[0] * jsonfile["transform"]["scale"][0].get<double>()) + jsonfile["transform"]["translate"][0].get<double>();
-                                    double y = (vi[1] * jsonfile["transform"]["scale"][1].get<double>()) + jsonfile["transform"]["translate"][1].get<double>();
-                                    double z = (vi[2] * jsonfile["transform"]["scale"][2].get<double>()) + jsonfile["transform"]["translate"][2].get<double>();
-
-                                    std::cout << v << " (" << x << " " << y << " " << z << ")" << '\n';
-                                }
-                                std::cout << '\n';
-                            }
-                        }
-
-                    }
-                }
-
-                std::cout << '\n';
-
-            } // end if: non-manifold object
-
-        }
-    }
-
-};
-
-
 
 /*
 * calculate volume
@@ -859,6 +696,170 @@ public:
 
 
 
+class errorProcess {
+public:
+    static void error_preprocess(json& errorjson, std::vector<ErrorObject>& error_objects)
+    {
+        for (auto& f : errorjson["features"].items()) // -- each building
+        {
+            if (!f.value()["validity"]) // false -- each false building
+            {
+                //std::cout << "key: " << f.key() << '\n';
+                ErrorObject eobj;
+                eobj.building_id = f.value()["id"];
+
+                for (auto& p : f.value()["primitives"]) // each building part of false building
+                {
+                    if (!p["validity"]) // for each buildingpart, the error type is the same
+                    {
+                        eobj.building_part_id = p["id"];
+
+                        for (auto& e : p["errors"]) // for each error
+                        {
+                            //std::cout << e["code"].get<int>() << " "; // check the error code for one building part
+
+                            if (e["code"].get<int>() == 102) // error 102
+                            {
+                                eobj.error_code = e["code"].get<int>();
+                                eobj.error_type = e["description"].get<std::string>();
+
+                                std::string str_id = e["id"].get<std::string>();
+                                int b_index = atoi(str_id.c_str());
+                                eobj.boundaries_index.emplace_back(b_index);
+
+                            }
+
+                            if (e["code"].get<int>() == 302) // unclosed shell
+                            {
+
+                            }
+
+                            if (e["code"].get<int>() == 303) // non manifold
+                            {
+                                eobj.error_code = e["code"].get<int>();
+                                eobj.error_type = e["description"].get<std::string>();
+
+                                std::string str_id = e["id"].get<std::string>();
+                                int b_index = atoi(str_id.c_str());
+                                eobj.boundaries_index.emplace_back(b_index);
+                            }
+
+                        }
+
+                    }
+
+
+                } // end for: building part
+
+                error_objects.emplace_back(eobj); // some error objects don't have geometry
+
+
+            }// end if: validity = false
+        }
+    }
+
+
+    /*
+    * process error consecutive points: error 102
+    */
+    static void error_process_consecutive_points(
+        json& jsonfile,
+        std::vector<ErrorObject>& error_objects)
+    {
+        for (auto& eobj : error_objects)
+        {
+            if (eobj.error_code == 102) // each consecutive points object
+            {
+                auto& bo = jsonfile["CityObjects"][eobj.building_id]; // building object
+                std::string building_part_key = bo["children"][0]; // one children of building object
+                auto& bo_part = jsonfile["CityObjects"][building_part_key]; // building part
+
+                for (auto& g : bo_part["geometry"]) {
+                    for (auto& shell : g["boundaries"]) {
+                        // surface position in boundaries list: shell[index] -- [[1,2,3], [4,5,6]]
+                        for (auto& index : eobj.boundaries_index)
+                        {
+                            auto& surface = shell[index];
+                            for (auto& ring : surface)
+                            {
+                                std::cout << ring << '\n';
+                                for (auto& v : ring)
+                                {
+                                    std::vector<int> vi = jsonfile["vertices"][v.get<int>()];
+                                    double x = (vi[0] * jsonfile["transform"]["scale"][0].get<double>()) + jsonfile["transform"]["translate"][0].get<double>();
+                                    double y = (vi[1] * jsonfile["transform"]["scale"][1].get<double>()) + jsonfile["transform"]["translate"][1].get<double>();
+                                    double z = (vi[2] * jsonfile["transform"]["scale"][2].get<double>()) + jsonfile["transform"]["translate"][2].get<double>();
+
+                                    //std::cout << v << " (" << x << " " << y << " " << z << ")" << '\n';
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+                std::cout << '\n';
+
+            } // end if: consecutive points object
+
+        }
+
+    }
+
+
+    /*
+    * non manifold error
+    */
+    static void error_process_non_manifold(
+        json& jsonfile,
+        std::vector<ErrorObject>& error_objects)
+    {
+        for (auto& eobj : error_objects)
+        {
+            if (eobj.error_code == 303) // each non-manifold object
+            {
+                auto& bo = jsonfile["CityObjects"][eobj.building_id]; // building object
+                std::string building_part_key = bo["children"][0]; // one children of building object
+                auto& bo_part = jsonfile["CityObjects"][building_part_key]; // building part
+
+                for (auto& g : bo_part["geometry"]) {
+                    for (auto& shell : g["boundaries"]) {
+                        // surface position in boundaries list: shell[index] -- [[1,2,3], [4,5,6]]
+                        for (auto& index : eobj.boundaries_index)
+                        {
+                            std::cout << "index: " << index << '\n';
+                            auto& surface = shell[index];
+
+                            for (auto& ring : surface)
+                            {
+                                std::cout << ring << '\n';
+                                for (auto& v : ring)
+                                {
+                                    std::vector<int> vi = jsonfile["vertices"][v.get<int>()];
+                                    double x = (vi[0] * jsonfile["transform"]["scale"][0].get<double>()) + jsonfile["transform"]["translate"][0].get<double>();
+                                    double y = (vi[1] * jsonfile["transform"]["scale"][1].get<double>()) + jsonfile["transform"]["translate"][1].get<double>();
+                                    double z = (vi[2] * jsonfile["transform"]["scale"][2].get<double>()) + jsonfile["transform"]["translate"][2].get<double>();
+
+                                    std::cout << v << " (" << x << " " << y << " " << z << ")" << '\n';
+                                }
+                                std::cout << '\n';
+                            }
+                        }
+
+                    }
+                }
+
+                std::cout << '\n';
+
+            } // end if: non-manifold object
+
+        }
+    }
+
+};
+
+
+
 int main(int argc, const char* argv[]) {
     
     /*
@@ -866,9 +867,8 @@ int main(int argc, const char* argv[]) {
     ***********************************************************************************/
 
     /*
-    * INPUT files
-    * OUTPUT file name
-    * Modify INPUT and OUTPUT files here
+    * First INPUT files
+    * First OUTPUT file name
     ***********************************************************************************/
 
     std::string filename = "/myfile.city.json";
