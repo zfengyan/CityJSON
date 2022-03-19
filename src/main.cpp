@@ -763,7 +763,7 @@ int main(int argc, const char* argv[]) {
     std::cout << "my output: " << '\n';
     std::cout << '\n';
 
-    print_roofsurfaces_vertices(j_test);
+    //print_roofsurfaces_vertices(j_test);
 
 
     /*
@@ -791,31 +791,31 @@ int main(int argc, const char* argv[]) {
     * orientation and area
     ***********************************************************************************/
 
-    std::cout << "orientation test" << '\n';
-    std::cout << '\n';
-    std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;
-    calculateOrientationArea::calculate_orientation_area(j_test, roof_surfaces_dictionary);
-    writeAttributes::write_orientation_area(j_test, roof_surfaces_dictionary); // write attributes
+    //std::cout << "orientation test" << '\n';
+    //std::cout << '\n';
+    //std::map<std::string, std::vector<RoofSurface>> roof_surfaces_dictionary;
+    //calculateOrientationArea::calculate_orientation_area(j_test, roof_surfaces_dictionary);
+    //writeAttributes::write_orientation_area(j_test, roof_surfaces_dictionary); // write attributes
 
-    std::cout << "roof_surfaces_dictionary size: " << roof_surfaces_dictionary.size() << '\n';
-    for (auto& roof : roof_surfaces_dictionary)
-    {
-        std::string key = roof.first;
-        std::cout << key << '\n';
-        std::cout << '\n';
-        for (auto& roof : roof_surfaces_dictionary[key])
-        {
-            std::cout <<"normal: " << "(" << roof.roof_normal.x << "," << roof.roof_normal.y << "," << roof.roof_normal.z << ")" << " ";
-            std::cout << "area: " << roof.area << '\n';
-            std::cout << "vertices: " << '\n';
+    //std::cout << "roof_surfaces_dictionary size: " << roof_surfaces_dictionary.size() << '\n';
+    //for (auto& roof : roof_surfaces_dictionary)
+    //{
+    //    std::string key = roof.first;
+    //    std::cout << key << '\n';
+    //    std::cout << '\n';
+    //    for (auto& roof : roof_surfaces_dictionary[key])
+    //    {
+    //        std::cout <<"normal: " << "(" << roof.roof_normal.x << "," << roof.roof_normal.y << "," << roof.roof_normal.z << ")" << " ";
+    //        std::cout << "area: " << roof.area << '\n';
+    //        std::cout << "vertices: " << '\n';
 
-            for (auto& vertex : roof.exteriorSurface)
-            {
-                //std::cout << "v" << " " << vertex.x << ", " << vertex.y << ", " << vertex.z << '\n';
-            }
+    //        for (auto& vertex : roof.exteriorSurface)
+    //        {
+    //            //std::cout << "v" << " " << vertex.x << ", " << vertex.y << ", " << vertex.z << '\n';
+    //        }
 
-        }
-    }
+    //    }
+    //}
 
     /**********************************************************************************/
 
@@ -828,9 +828,9 @@ int main(int argc, const char* argv[]) {
     * write files
     ***********************************************************************************/
 
-    std::cout << "writing files..." << '\n';    
+    /*std::cout << "writing files..." << '\n';    
     writeFiles::write_json_file(j_test, testwritefilename);
-    std::cout << "writing files done" << '\n';
+    std::cout << "writing files done" << '\n';*/
 
     /**********************************************************************************/   
 

@@ -205,3 +205,16 @@
 //}
 
 /**********************************************************************************/
+
+
+
+/*
+* need to re-write:
+* !NB! orientation - normal selection
+* 
+* find_normal()
+* 
+* calculate_orientation()
+* 
+* !NB! volume process: invalid solid - set volume as null
+*/

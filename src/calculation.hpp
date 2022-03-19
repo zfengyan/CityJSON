@@ -120,29 +120,29 @@ public:
 	// projected 2d vertices should be oriented as CCW
 	static Vector3d find_normal(std::vector<Vertex>& exteriorSurface) {
 		
-		int N = (int)exteriorSurface.size();
-		int middle = int(N * 0.5);
+		//int N = (int)exteriorSurface.size();
+		//int middle = int(N * 0.5);
 
-		if (roof_vertices_ccw_check(exteriorSurface[0], exteriorSurface[middle], exteriorSurface[N-1]))
-		{
-			// use the 3 ccw vertices to define two vectors of this roof surface
-			// v1: starts from vertex[i], ends at vertex[i+1]
-			// v2: starts from vertex[i+1], ends at vertex[i+2]
-			Vector3d v1(
-				(exteriorSurface[middle].x - exteriorSurface[0].x),
-				(exteriorSurface[middle].y - exteriorSurface[0].y),
-				(exteriorSurface[middle].z - exteriorSurface[0].z)
-			);
+		//if (roof_vertices_ccw_check(exteriorSurface[0], exteriorSurface[middle], exteriorSurface[N-1]))
+		//{
+		//	// use the 3 ccw vertices to define two vectors of this roof surface
+		//	// v1: starts from vertex[i], ends at vertex[i+1]
+		//	// v2: starts from vertex[i+1], ends at vertex[i+2]
+		//	Vector3d v1(
+		//		(exteriorSurface[middle].x - exteriorSurface[0].x),
+		//		(exteriorSurface[middle].y - exteriorSurface[0].y),
+		//		(exteriorSurface[middle].z - exteriorSurface[0].z)
+		//	);
 
-			Vector3d v2(
-				(exteriorSurface[N - 1].x - exteriorSurface[middle].x),
-				(exteriorSurface[N - 1].y - exteriorSurface[middle].y),
-				(exteriorSurface[N - 1].z - exteriorSurface[middle].z)
-			);
+		//	Vector3d v2(
+		//		(exteriorSurface[N - 1].x - exteriorSurface[middle].x),
+		//		(exteriorSurface[N - 1].y - exteriorSurface[middle].y),
+		//		(exteriorSurface[N - 1].z - exteriorSurface[middle].z)
+		//	);
 
-			return cross(v1, v2);
-		}
-		else return Vector3d(9999, 0, 0); // marker: no proper normal vector is found
+		//	return cross(v1, v2);
+		//}
+		//else return Vector3d(9999, 0, 0); // marker: no proper normal vector is found
 
 	}
 
@@ -246,6 +246,8 @@ public:
 
 	std::vector<Vertex> exteriorSurface; // store the vertices of exterior face, should be CCW from outside
 	std::vector<std::vector<Vertex>> interiorSurfaces; // store the vertices of interior faces, should be CW(for each interior face) from outside
+	
+	std::vector<std::vector<Vertex>> triangles; // store the triangles of one surface(from triangulated file)
 	Vector3d roof_normal;
 public:
 	RoofSurface():
