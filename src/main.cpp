@@ -836,6 +836,7 @@ public:
                 std::cout << "corrsponding triangle: " << '\n';
                 roof.triangle_list[max_area_index].print();
                 std::cout << '\n';
+                roof.get_orientation();
 
       
             }

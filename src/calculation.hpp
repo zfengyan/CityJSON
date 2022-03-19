@@ -274,78 +274,71 @@ public:
 	{}
 
 public:
+	void get_orientation()
+	{
+		// situation cannot use alpha = arctan(x/y)
+		// orientaion is either East or West(using 2d coordinates x, y to estimate the orientation)
+		// in the orientation, only 8 values + "horizontal", E, W, N, S should be replaced with proper values(like EN)
 
-	///*
-	//* calculate and assign the orientation of roof surface
-	//* use y-axis as the North(North vector: [0, 1, 0])
-	//*/
-	//static std::string calculate_orientation_one_roof(RoofSurface& roof)
-	//{
-	//	// use exterior surface of current roof surface to get the normal vector
-	//	Vector3d& normal = Vector3d::get_normal(roof.exteriorSurface);
-	//	roof.roof_normal = normal;
+		double xylength = sqrt(roof_normal.x * roof_normal.x + roof_normal.y * roof_normal.y);
+		double horizontal_epsilon = 0.1;
+		// horizontal judge using xylength: Epsilon = 0.001
+		std::cout << "roof: " << roof_id << '\n';
+		std::cout << "xylength: " << xylength << '\n';
 
-	//	if (abs(normal.x - 9999) < epsilon) // vector: (9999, 0, 0) -- indicates no proper normal found
-	//	{
-	//		std::cout << "no proper normal found in buildingpart: " << '\n';
-	//		std::cout << roof.BuildingPart_id << '\n';
-	//		return "null";
-	//	}
+		if (xylength < horizontal_epsilon) {
+			orientation = "horizontal";
+		}
+		else {
 
-	//	// situation cannot use alpha = arctan(x/y)
-	//	// orientaion is either East or West(using 2d coordinates x, y to estimate the orientation)
-	//	// in the orientation, only 8 values + "horizontal", E, W, N, S should be replaced with proper values(like EN)
-	//	if (abs(normal.y) < epsilon) // y = 0
-	//	{
-	//		if (normal.x > epsilon)return "EN"; // x > 0 (y = 0)
-	//		else if (abs(normal.x) < epsilon)return "horizontal"; // x = 0 (y = 0)
-	//		else return "WN"; // x < 0 (y = 0)
-	//	}
+			// situation can NOT use alpha = arctan(x/y): y == 0, if x is small engough then this situation belongs to if(xylength < horizontal_epsilon)
+			if (abs(roof_normal.y) < epsilon) // y = 0
+			{
+				if (roof_normal.x > epsilon)orientation = "EN"; // x > 0 (y = 0)
+				else if (abs(roof_normal.x) < epsilon)orientation = "horizontal"; // x = 0 (y = 0)
+				else orientation = "WN"; // x < 0 (y = 0)
+			}
+			else // use alpha =  arctan(x/y)
+			{
+				int quadrant = Vector3d::assign_quadrant(roof_normal.x, roof_normal.y);
 
-	//	// situation can use alpha = arctan(x/y)
-	//	// double alpha = atan(abs_normal.x / abs_normal.y);
-	//	// 
-	//	// use normal to decide the quadrant
-	//	// use abs_normal to calculate the angle
-	//	// 
-	//	// first assign the quadrant according to x,y signs
-	//	int quadrant = Vector3d::assign_quadrant(normal.x, normal.y);
+				// use abs_normal to get the angle(radius, value of atan(): [-pi, pi])
+				double radius_angle = atan(abs(roof_normal.x) / abs(roof_normal.y));
 
-	//	// use abs_normal to get the angle(radius, value of atan(): [-pi, pi])
-	//	double radius_angle = atan(abs(normal.x) / abs(normal.y));
+				switch (quadrant)
+				{
+				case 1: // 1-th quadrant
+					if (radius_angle > quadrant_pi_radius + epsilon) // > pi/4
+						orientation = "EN";
+					else orientation = "NE";
+					break;
 
-	//	switch (quadrant)
-	//	{
-	//	case 1: // 1-th quadrant
-	//		if (radius_angle > quadrant_pi_radius + epsilon) // > pi/4
-	//			return "EN";
-	//		else return "NE";
-	//		break;
-	//		
-	//	case 2: // 2-th quadrant
-	//		if (radius_angle > quadrant_pi_radius + epsilon) // > pi/4
-	//			return "WN";
-	//		else return "NW";
-	//		break;
+				case 2: // 2-th quadrant
+					if (radius_angle > quadrant_pi_radius + epsilon) // > pi/4
+						orientation = "WN";
+					else orientation = "NW";
+					break;
 
-	//	case 3: // 3-th quadrant
-	//		if (radius_angle > quadrant_pi_radius + epsilon) // > pi/4
-	//			return "WS";
-	//		else return "SW";
-	//		break;
+				case 3: // 3-th quadrant
+					if (radius_angle > quadrant_pi_radius + epsilon) // > pi/4
+						orientation = "WS";
+					else orientation = "SW";
+					break;
 
-	//	case 4: // 4-th quadrant
-	//		if (radius_angle > quadrant_pi_radius + epsilon) // > pi/4
-	//			return "ES";
-	//		else return "SE";
-	//		break;
+				case 4: // 4-th quadrant
+					if (radius_angle > quadrant_pi_radius + epsilon) // > pi/4
+						orientation = "ES";
+					else orientation = "SE";
+					break;
 
-	//	default:
-	//		break;
-	//	}
+				default:
+					break;
+				}
+			}
 
-	//	return "null"; // if no matching found, return null
-	//}
+		}
+
+	}
 
 
 
