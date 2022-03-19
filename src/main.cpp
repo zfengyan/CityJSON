@@ -697,11 +697,10 @@ public:
     * -- value: a vector contains roof surface objects of each building
     */
     static void roof_surface_triangles(
-        json& original_write, 
-        json& triangulated_write,
+        json& j_triangulated_write,
         std::map<std::string, std::vector<RoofSurface>>& roof_surfaces_dictionary)
     {
-        for (auto& co : triangulated_write["CityObjects"].items()) { // each city object 
+        for (auto& co : j_triangulated_write["CityObjects"].items()) { // each city object 
 
             for (auto& g : co.value()["geometry"]) { // each city object may only have ONE geometry
 
@@ -718,13 +717,25 @@ public:
                             if (g["semantics"]["surfaces"][sem_index]["type"].get<std::string>().compare("RoofSurface") == 0) { // if it's a roof surface
                                 std::string rid = g["semantics"]["surfaces"][sem_index]["roof_id"];
                                 
-                                for (auto& roof : roof_surfaces_dictionary[key_bp])
+                                for (auto& roof : roof_surfaces_dictionary[key_bp]) // each roof
                                 {
                                     if (rid == roof.roof_id) {
                                         std::cout << roof.roof_id << " ";
                                         std::cout << g["boundaries"][i][j] << " ";
-                                        for (auto& v : g["boundaries"][i][j][0])
-                                            std::cout << v.get<int>() << " ";
+
+                                        std::vector<Vertex> one_triangle;
+                                        for (auto& v : g["boundaries"][i][j][0]) // each vertex
+                                        {
+                                            //std::cout << v.get<int>() << " ";
+                                            std::vector<int> vi = j_triangulated_write["vertices"][v.get<int>()];
+                                            double x = (vi[0] * j_triangulated_write["transform"]["scale"][0].get<double>()) + j_triangulated_write["transform"]["translate"][0].get<double>();
+                                            double y = (vi[1] * j_triangulated_write["transform"]["scale"][1].get<double>()) + j_triangulated_write["transform"]["translate"][1].get<double>();
+                                            double z = (vi[2] * j_triangulated_write["transform"]["scale"][2].get<double>()) + j_triangulated_write["transform"]["translate"][2].get<double>();
+                                            one_triangle.emplace_back(Vertex(x, y, z));
+                                        }
+                                        roof.triangles.emplace_back(one_triangle);
+                                        one_triangle.clear();
+                                            
                                         std::cout << '\n';
                                     }
                                 }
@@ -911,7 +922,23 @@ int main(int argc, const char* argv[]) {
     //}
 
     std::cout << "roof surface triangles: " << '\n';
-    RoofSurfaceTriangles::roof_surface_triangles(j_test_write, j_test_write_triangulated, roof_surfaces_dictionary);
+    RoofSurfaceTriangles::roof_surface_triangles(j_test_write_triangulated, roof_surfaces_dictionary);
+    std::cout << '\n';
+
+    std::cout << "print roof surface triangle -- vertices: " << '\n';
+    std::map<std::string, std::vector<RoofSurface>>::iterator it;
+	for (it = roof_surfaces_dictionary.begin(); it != roof_surfaces_dictionary.end(); ++it)
+	{
+		std::string key = it->first;
+		std::cout << key << " " << '\n';
+
+		for (auto& roof : it->second)
+		{
+            std::cout << roof.roof_id << " " << "triangles size: ";
+            std::cout << roof.triangles.size() << '\n';
+		}
+		std::cout << '\n';
+	}
 
     /**********************************************************************************/
 
