@@ -1002,24 +1002,30 @@ int main(int argc, const char* argv[]) {
     std::cout << "first writing files..." << '\n';
     std::string FirstOutput = "/myfile.output.first.city.json";
     writeFiles::write_json_file(j, FirstOutput);
-    std::cout << "writing files done" << '\n';
+    std::cout << "first writing files done" << '\n';
 
 
     // Second input
     /**********************************************************************************/
 
     std::cout << "Second input: " << '\n';
-    std::string SecondInput = FirstOutput;
+    std::string SecondInput = "/myfile.input.second.city.json";
+    std::string SecondInput_triangulated = "/myfile.input.second.triangulated.city.json";
 
     std::ifstream input_second(DATA_PATH + SecondInput);
-    json j_second_input;
-    input_second >> j_second_input;
+    json j_second;
+    input_second >> j_second;
     input_second.close();
+
+    std::ifstream input_second_triangulated(DATA_PATH + SecondInput_triangulated);
+    json j_second_triangulated;
+    input_second_triangulated >> j_second_triangulated;
+    input_second_triangulated.close();
 
     std::cout << "Second input file: " << SecondInput << '\n';
 
-    std::cout << "roof surface triangles: " << '\n';
-    RoofSurfaceTriangles::roof_surface_triangles(j_second_input, roof_surfaces_dictionary);
+    std::cout << "roof surface triangles: " << '\n'; // !NB! : use second triangulated file
+    RoofSurfaceTriangles::roof_surface_triangles(j_second_triangulated, roof_surfaces_dictionary);
     //std::cout << '\n';
 
 
@@ -1030,15 +1036,15 @@ int main(int argc, const char* argv[]) {
     //calculateOrientation::calculate_orientation(roof_surfaces_dictionary);
 
     //update attributes
-    writeAttributes::write_orientation_area(j_second_input, roof_surfaces_dictionary); // write attributes
+    writeAttributes::write_orientation_area(j_second, roof_surfaces_dictionary); // write attributes
 
     std::cout << "processing done" << '\n';
     std::cout << '\n';
 
     std::cout << "second writing files..." << '\n';
     std::string SecondOutput = "/myfile.output.second.city.json";
-    writeFiles::write_json_file(j_second_input, SecondOutput);
-    std::cout << "writing files done" << '\n';
+    writeFiles::write_json_file(j_second, SecondOutput);
+    std::cout << "second writing files done" << '\n';
 
     /**********************************************************************************/   
 
