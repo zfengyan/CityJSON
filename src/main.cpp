@@ -1069,7 +1069,7 @@ int main(int argc, const char* argv[]) {
     /*
     * error process
     */
-    std::string errorfile = "/error.report.json";
+    std::string errorfile = "/myfile.output.second.city.error.report.json";
 
     // -- reading the error report file
     std::ifstream input_error(DATA_PATH + errorfile);
