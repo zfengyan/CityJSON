@@ -1109,6 +1109,7 @@ int main(int argc, const char* argv[]) {
 
     std::vector<ErrorObject> error_objects;
     errorProcess::error_preprocess(j_error, error_objects); // pass j_error as argument
+    
     std::cout << "error building part id: " << '\n';
 
     for (auto& eobj : error_objects)
@@ -1117,7 +1118,8 @@ int main(int argc, const char* argv[]) {
     }
     std::cout << "volume of these buildings will be set as null " << '\n';
     
-    std::cout << "update volume of invalid buildings: " << '\n';
+    std::cout << "updating volume of invalid buildings... " << '\n';
+    errorProcess::error_process_volume(j_error_process, error_objects);
 
     std::cout << "error processing done " << '\n';
     std::cout << "-----------------------------------------" << '\n';
