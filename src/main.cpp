@@ -735,7 +735,8 @@ public:
 
                             if (e["code"].get<int>() == 302) // unclosed shell
                             {
-
+                                eobj.error_code = e["code"].get<int>();
+                                eobj.error_type = e["description"].get<std::string>();
                             }
 
                             if (e["code"].get<int>() == 303) // non manifold
@@ -746,6 +747,24 @@ public:
                                 std::string str_id = e["id"].get<std::string>();
                                 int b_index = atoi(str_id.c_str());
                                 eobj.boundaries_index.emplace_back(b_index);
+                            }
+
+                            if (e["code"].get<int>() == 0) // no geometry -- 0 (609)
+                            {
+                                eobj.error_code = e["code"].get<int>();
+                                eobj.error_type = e["description"].get<std::string>();
+                            }
+
+                            if (e["code"].get<int>() == 104)
+                            {
+                                eobj.error_code = e["code"].get<int>();
+                                eobj.error_type = e["description"].get<std::string>();
+                            }
+
+                            if (e["code"].get<int>() == 204) 
+                            {
+                                eobj.error_code = e["code"].get<int>();
+                                eobj.error_type = e["description"].get<std::string>();
                             }
 
                         }
@@ -780,6 +799,27 @@ public:
             std::cout << co["attributes"]["volume"] << " ";
             co["attributes"]["volume"] = nullptr;
             std::cout << co["attributes"]["volume"] << '\n';
+        }
+    }
+
+
+    /*
+    * error process floor: set floor of no geometry buildings as null
+    */
+    static void error_process_floor(json& j_error_process_input, std::vector<ErrorObject>& error_objects)
+    {
+        std::cout << "floor of no geometry buildings will be set as null " << '\n';
+        std::cout << "error building id and floor: " << '\n';
+
+        for (auto& eobj : error_objects)
+        {
+            if (eobj.error_code == 0) // no geometry buildings error code 0, error type null
+            {
+                auto& co = j_error_process_input["CityObjects"][eobj.building_id];
+                std::cout << eobj.building_id << " ";
+                co["attributes"]["floor"] = nullptr;
+                std::cout << co["attributes"]["floor"] << '\n';
+            }            
         }
     }
 
@@ -1122,6 +1162,9 @@ int main(int argc, const char* argv[]) {
     
     std::cout << "updating volume of invalid buildings... " << '\n';
     errorProcess::error_process_volume(j_error_process, error_objects);
+
+    std::cout << "updating floor of no geometry buildings... " << '\n';
+    errorProcess::error_process_floor(j_error_process, error_objects);
 
     std::cout << "error processing done " << '\n';
     std::cout << "-----------------------------------------" << '\n';
