@@ -1,0 +1,139 @@
+###########################################################################
+#                                                                         #
+#                          iSci Document Format                           #
+#                           Latex Instructions                            #
+#                                                                         #
+# v1.0 - 01.20.2022: First Published                                       #
+# v1.1 - 02.17.2022: Revised Version                                      #
+#                                                                         #
+###########################################################################
+
+[0] Description of files in this folder
+
+    Example article produced from "iSci Document Format"
+    -----------------------------------------------------------
+    main.tex - LaTeX source file (Encoding: UTF-8)
+    Example.bib - BibTeX source file (Encoding: UTF-8)
+    Black Hole Image.jpg - jpg file of an example of a figure
+
+[1] Description of the iSci Document Format Template
+    
+    This template was created for the Integrated Science program 
+    at McMaster University in Hamilton, Ontario, Canada. It it used 
+    by students in the program for research project submissions, lab
+    reports, and assignments, but it can be used by anyone looking for
+    a LaTeX template to script a document. See usage instructions below.
+
+[2] Usage of the iSci Document Format Template
+
+    Below you will find instructions for different typesetting habits.
+    Please choose the one suits best for you and apply.
+
+    PERSONAL USAGE
+    ----------------
+    If you would like to use the template personally please continue
+    reading on [A] or [B].
+
+[A] For those who know little to nothing about LaTeX
+----------------------------------------------------
+
+    1) If you are completely new to LaTeX, then we are
+    hoping that this template will act as you "LaTeX 
+    training wheels" in a sense. We have designed it 
+    aiming to make the transition from other word  
+    processors to LaTeX as easy as possible. We have 
+    also included examples for inserting equations,
+    figures, and bibliographies. 
+    
+    2) If you find the learning curve of learning Latex
+    a bit challenging, we have attached some links below
+    to some useful sources that should help you getting 
+    started, or as a reference when scripting
+    
+    https://en.wikibooks.org/wiki/LaTeX/Basics - A good overview of the basics
+    
+    https://latex.guide/ - Useful for searching for mathematical symbols
+    
+    https://www.overleaf.com/learn - Teaches a wide variety of the ins and outs of LaTeX
+    
+    https://stackoverflow.com/ - A site with a community of developers; good for niche questions
+    
+    https://www.mn.uio.no/ifi/tjenester/it/hjelp/latex/biblatex-guide.pdf - Good for if you want to modify the citation style
+    
+    These sources are excellent for making the task of
+    learning LaTeX much less daunting. After some practise,
+    we hope that you will only have to focus on the writing
+    and not on "will this compile?". After all, the importance
+    is on WHAT you write, not HOW you write it.
+    
+    Once you are familiar with these sources, we recommend that 
+    you rename the main.tex to the name of your document and 
+    change the title from "iSci Document Format" to the title 
+    of your work. Once this is done, you are ready to start
+    scripting!
+    
+[B] Quick Start - For those who have used LaTeX in the past
+-----------------------------------------------------------
+    1) The first step is the change the title of the 
+    document from "iSci Document Format" to the title 
+    of your work and you rename the main.tex to the 
+    name of your document as well.
+    
+    2) Import any figures into your LaTeX directory by
+    clicking upload at the top left of the screen, under
+    Menu, and importing the figures from your files.
+    
+    3) Go the the main tex document and edit using your
+    normal typesetting habits and tools. Be sure to change
+    any unwanted filler text and example equations/figures
+    so they are not present in your final work (Unless of 
+    course, you want a black hole image or the time dependent 
+    Schrodinger equation/dose attenuation formulas; the figure
+    is under the Creative Commons license).
+    
+    4) Citations can be done using a variety of techniques.
+    Zotero can be linked to LaTeX, but this requires a premium
+    membership. However, it can still be done using the free 
+    version. Once all of your citations are in your Zotero 
+    folder, right click on the folder, then click "Export
+    Collection". This then takes you to a small window. 
+    Here, click export notes. Be sure that it is in BibTex
+    format and unicode (UTF-8) character encoding. Then 
+    name the BibTex file to whatever you want and download it.
+    Now, upload it to the directory as you did for the
+    figures. Lastly and very importantly, in the main tex, 
+    change the argument in the command \addbibresource{Example.bib}
+    on line 58 to contain the name of you bib file. Now
+    BibTex should be working for you and it will default to 
+    Anglia Ruskin Harvard style. To insert citations at the 
+    end of sentences, use the command \autocite{}. To insert
+    citations in-text, use \textcite{}. To insert your
+    bibliography at the end, use \printbibliography. 
+    
+    *Note for books, be sure to include editors by adding another author in Zotero, then changing title from author to editor. A simpler but more crude method would involve simply adding the editors directly in the .bib file in the same format as the authors.  
+    
+    Alternatively, you can export the Zotero collection
+    using a word processor like you normally would, however
+    you may need to make a list for the bibliography using the commands:
+    \begin{itemize}
+        \item[] bibliography entry
+    \end{itemize}
+    
+    This can also present challenges in terms or tracking citations 
+    if you use a numeric style such as Vancouver, but it should be fine
+    when using Anglia Ruskin Harvard.
+    
+    5) Once your citations are complete, export your
+    document from the LaTeX source file. It will be 
+    downloaded as a pdf. Before you export, be sure
+    to check the following:
+     
+     (a) Are all author names?
+     (b) Are all figures and tables included and formatted correctly?
+     (c) Are all captions numbered in correct order?
+     (d) Are all cited work (references) listed at the end? Are they cited correctly?
+     (e) Is your document free of grammatical errors?
+     
+     
+    We hope you find this template helpful and happy
+    scripting!
