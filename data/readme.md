@@ -31,9 +31,12 @@ in the [main.cpp -> line 1070](https://github.com/SEUZFY/CityJSON/blob/master/sr
 generated file `myfile.input.second.city.json` of the first output and its corresponding triangulated file `myfile.input.second.triangulated.city.json`
 
 as second input files, thus for the first run (to obtain the first output files), you may be willing to comment the code below the `//Second input`, and
-
 after first output files are obtained, you could uncomment those to let the program finish the second output.
 
 As for the error process code starting from [main.cpp -> line 1136](https://github.com/SEUZFY/CityJSON/blob/master/src/main.cpp) the related files of error 
 
-report are also required. 
+report are also required:
+
+`myfile.output.second.city.error.report.json` -- error report downloaded from val3dity with the second output file `myfile.output.second.city.json`
+
+`myfile.error.process.input.json` -- the second output file `myfile.output.second.city.json`
