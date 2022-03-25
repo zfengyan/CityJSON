@@ -1,6 +1,9 @@
 # CityJSON
 Read and perform some basic calculations based on CityJSON file.
 
+![image](https://user-images.githubusercontent.com/72781910/160214206-75409f01-f7f5-4490-8db4-c940bd8e7788.png)
+
+
 The following attributes are calculated:
 
 * volume of `Building`
