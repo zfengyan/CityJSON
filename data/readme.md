@@ -34,7 +34,6 @@ as second input files, thus for the first run (to obtain the first output files)
 after first output files are obtained, you could uncomment those to let the program finish the second output.
 
 As for the error process code starting from [main.cpp -> line 1136](https://github.com/SEUZFY/CityJSON/blob/master/src/main.cpp) the related files of error 
-
 report are also required:
 
 `myfile.output.second.city.error.report.json` -- error report downloaded from val3dity with the second output file `myfile.output.second.city.json`
