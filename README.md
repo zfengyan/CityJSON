@@ -3,6 +3,8 @@ Read and perform some basic calculations based on CityJSON file.
 
 <img src="https://user-images.githubusercontent.com/72781910/160214206-75409f01-f7f5-4490-8db4-c940bd8e7788.png" width="600" height="300">
 
+(from [ninja.cityjson.org](https://ninja.cityjson.org/))
+
 
 The following attributes are calculated:
 
