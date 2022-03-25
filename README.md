@@ -1,5 +1,5 @@
 # CityJSON
-Project for reading and performing some basic calculations based on CityJSON file.
+Read and perform some basic calculations based on CityJSON file.
 
 The following attributes are calculated:
 
